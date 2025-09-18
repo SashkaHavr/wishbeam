@@ -1,0 +1,38 @@
+{
+  "name": "@wishbeam/db",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:up": "bun exec \"docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres && echo 'DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres' > ./.env && pnpm db:push\"",
+    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "prettier": "@wishbeam/prettier-config",
+  "dependencies": {
+    "@wishbeam/env": "workspace:*",
+    "drizzle-kit": "catalog:drizzle",
+    "drizzle-orm": "catalog:drizzle",
+    "pg": "catalog:drizzle"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/pg": "catalog:drizzle",
+    "@wishbeam/eslint-config": "workspace:*",
+    "@wishbeam/prettier-config": "workspace:*",
+    "@wishbeam/typescript-config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

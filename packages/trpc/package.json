@@ -1,0 +1,36 @@
+{
+  "name": "@wishbeam/trpc",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",
+    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "prettier": "@wishbeam/prettier-config",
+  "dependencies": {
+    "@trpc/server": "catalog:trpc",
+    "@wishbeam/auth": "workspace:*",
+    "@wishbeam/db": "workspace:*",
+    "@wishbeam/env": "workspace:*",
+    "drizzle-orm": "catalog:drizzle",
+    "superjson": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@wishbeam/eslint-config": "workspace:*",
+    "@wishbeam/prettier-config": "workspace:*",
+    "@wishbeam/typescript-config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+  },
+  "extends": "@wishbeam/typescript-config"
+}
