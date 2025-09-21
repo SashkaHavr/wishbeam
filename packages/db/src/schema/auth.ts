@@ -1,7 +1,7 @@
 import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 import { baseTable } from '#utils/base-table.ts';
-import { foreignKeyCascadeOnDelete } from '#utils/foreign-keys.ts';
+import { oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
 
 export const user = pgTable('user', {
   ...baseTable,
@@ -21,7 +21,7 @@ export const session = pgTable('session', {
   token: text().notNull().unique(),
   ipAddress: text(),
   userAgent: text(),
-  userId: foreignKeyCascadeOnDelete(() => user.id),
+  userId: oneToManyCascadeOnDelete(() => user.id),
   impersonatedBy: text(),
 });
 
@@ -29,7 +29,7 @@ export const account = pgTable('account', {
   ...baseTable,
   accountId: uuid().notNull(),
   providerId: text().notNull(),
-  userId: foreignKeyCascadeOnDelete(() => user.id),
+  userId: oneToManyCascadeOnDelete(() => user.id),
   accessToken: text(),
   refreshToken: text(),
   idToken: text(),

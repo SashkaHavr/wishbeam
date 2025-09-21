@@ -7,18 +7,18 @@ type ForeignKeyColumn = ReturnType<
   typeof pgTable<string, typeof baseTable>
 >['id'];
 
-export function foreignKeyCascadeOnDelete(column: () => ForeignKeyColumn) {
+export function oneToManyCascadeOnDelete(column: () => ForeignKeyColumn) {
   return uuid().notNull().references(column, { onDelete: 'cascade' });
 }
 
-export function foreignKeyRestrictDelete(column: () => ForeignKeyColumn) {
+export function oneToMany(column: () => ForeignKeyColumn) {
   return uuid().notNull().references(column, { onDelete: 'restrict' });
 }
 
-export function foreignKeyNullable(column: () => ForeignKeyColumn) {
+export function oneToManyNullable(column: () => ForeignKeyColumn) {
   return uuid().references(column, { onDelete: 'set null' });
 }
 
-export function foreignKeyOneToOne(column: () => ForeignKeyColumn) {
+export function oneToOne(column: () => ForeignKeyColumn) {
   return uuid().notNull().unique().references(column, { onDelete: 'cascade' });
 }
