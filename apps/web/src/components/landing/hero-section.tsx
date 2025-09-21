@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@tanstack/react-router';
 import { ListTodo } from 'lucide-react';
 
 import { AnimatedGroup } from '~/components/ui/animated-group';
@@ -71,10 +72,10 @@ export function HeroSection() {
               >
                 <div className="mt-8">
                   <Button size="lg" asChild>
-                    <a href="#">
+                    <Link to="/{-$locale}/login">
                       <ListTodo className="relative size-4" />
                       <span className="text-nowrap">Create your wishlist</span>
-                    </a>
+                    </Link>
                   </Button>
                 </div>
               </AnimatedGroup>

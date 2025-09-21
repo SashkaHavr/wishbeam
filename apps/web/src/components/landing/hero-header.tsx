@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@tanstack/react-router';
 import { Menu, X } from 'lucide-react';
 
 import { Button } from '~/components/ui/button';
@@ -88,9 +89,9 @@ export const HeroHeader = () => {
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
                 <Button asChild size="sm" className={cn('lg:inline-flex')}>
-                  <a href="#">
+                  <Link to="/{-$locale}/login">
                     <span>Get Started</span>
-                  </a>
+                  </Link>
                 </Button>
               </div>
             </div>
