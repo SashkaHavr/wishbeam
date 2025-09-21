@@ -1,5 +1,4 @@
 import { revalidateLogic } from '@tanstack/react-form';
-import { Gift } from 'lucide-react';
 import { z } from 'zod';
 
 // import { Button } from '~/components/ui/button';
@@ -7,6 +6,7 @@ import { z } from 'zod';
 import { authClient } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import { useAppForm } from './form/use-app-form';
+import { Logo } from './logo';
 
 export function LoginForm({
   className,
@@ -29,14 +29,8 @@ export function LoginForm({
         <form.Form>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
-              <a
-                href="#"
-                className="flex flex-col items-center gap-2 font-medium"
-              >
-                <div className="flex size-8 items-center justify-center rounded-md">
-                  <Gift className="size-6" />
-                </div>
-                <span className="sr-only">Wishbeam</span>
+              <a href="#">
+                <Logo />
               </a>
               <h1 className="text-xl font-bold">Welcome to Wishbeam</h1>
             </div>

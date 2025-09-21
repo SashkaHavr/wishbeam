@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 
 import { cn } from '~/lib/utils';
+import { Logo } from '../logo';
 
 const menuItems = [
   { name: 'Features', href: '#link' },
@@ -39,14 +40,7 @@ export const HeroHeader = () => {
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
             <div className="flex w-full justify-between lg:w-auto">
-              <a
-                href="/"
-                aria-label="home"
-                className="flex items-center space-x-2"
-              >
-                🎁 WishBeam
-              </a>
-
+              <Logo withName />
               <button
                 onClick={() => setMenuState(!menuState)}
                 aria-label={menuState ? 'Close Menu' : 'Open Menu'}
