@@ -4,11 +4,8 @@ import { createServerFn } from '@tanstack/react-start';
 import { getCookie as getCookieServer } from '@tanstack/react-start/server';
 import { getCookie } from 'utils/cookie';
 
-import { Separator } from '~/components/ui/separator';
-
-import { MobileNav } from '~/components/mobile-nav';
-import { desktopSidebarOpenCookieName, Sidebar } from '~/components/sidebar';
-import { useMobileDesktop } from '~/hooks/useBreakpoint';
+import { AppNav } from '~/components/app-nav';
+import { desktopSidebarOpenCookieName } from '~/components/sidebar';
 
 const getDesktopSidebarOpenServerFn = createServerFn().handler(() => {
   return getCookieServer(desktopSidebarOpenCookieName);
@@ -34,25 +31,10 @@ function RouteComponent() {
   const desktopSidebarOpen = Route.useRouteContext({
     select: (state) => state.desktopSidebarOpen,
   });
-  const { mobile, desktop } = useMobileDesktop();
 
   return (
-    <div className="flex h-screen flex-col md:flex-row">
-      {desktop && (
-        <>
-          <Sidebar desktopCanBeClosed desktopOpenDefault={desktopSidebarOpen} />
-          <Separator orientation="vertical" className="hidden md:block" />
-        </>
-      )}
-      {mobile && (
-        <>
-          <MobileNav />
-          <Separator orientation="horizontal" className="md:hidden" />
-        </>
-      )}
-      <div className="grow overflow-y-auto">
-        <Outlet />
-      </div>
-    </div>
+    <AppNav desktopSidebarOpenDefault={desktopSidebarOpen}>
+      <Outlet />
+    </AppNav>
   );
 }
