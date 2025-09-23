@@ -6,6 +6,8 @@ import {
   EllipsisVerticalIcon,
   LogOutIcon,
   MoonIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
   SunIcon,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -18,8 +20,6 @@ import { cn } from '~/lib/utils';
 import { Logo } from './logo';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
-import { PanelLeftCloseIcon } from './ui/panel-left-close';
-import { PanelLeftOpenIcon } from './ui/panel-left-open';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
 import { Skeleton } from './ui/skeleton';
