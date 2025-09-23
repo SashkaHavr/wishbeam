@@ -1,5 +1,5 @@
 import { useIsClient } from './use-is-client';
-import { useMediaQuery } from './useMediaQuery';
+import { useMediaQuery } from './use-media-query';
 
 const screens = {
   sm: '640px',

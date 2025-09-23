@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useMobileDesktop } from '~/hooks/useBreakpoint';
+import { useMobileDesktop } from '~/hooks/use-breakpoint';
 import { cn } from '~/lib/utils';
 import { MobileNav } from './mobile-nav';
 import { Sidebar } from './sidebar';

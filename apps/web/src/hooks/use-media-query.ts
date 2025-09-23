@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { isServer } from '@tanstack/react-query';
 
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect';
 
 interface UseMediaQueryOptions {
   defaultValue?: boolean;

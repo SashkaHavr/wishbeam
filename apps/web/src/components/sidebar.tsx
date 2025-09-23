@@ -30,7 +30,7 @@ export const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
 function ProfileElements({ open = true }: { open?: boolean }) {
   return (
     <>
-      <Avatar className="items-center justify-center">
+      <Avatar className="items-center justify-center transition-none">
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       {open && <span className="truncate font-medium">Profile</span>}
@@ -120,7 +120,7 @@ function SidebarButton({
     <Button
       variant="ghost"
       className={cn(
-        'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:border-sidebar-ring has-[>svg]:px-2 dark:hover:bg-sidebar-accent/50',
+        'transition-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:border-sidebar-ring has-[>svg]:px-2 dark:hover:bg-sidebar-accent/50',
         className,
       )}
       {...props}
