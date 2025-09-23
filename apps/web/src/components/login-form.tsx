@@ -29,9 +29,7 @@ export function LoginForm({
         <form.Form>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
-              <a href="#">
-                <Logo />
-              </a>
+              <Logo />
               <h1 className="text-xl font-bold">Welcome to Wishbeam</h1>
             </div>
             <div className="flex flex-col gap-6">

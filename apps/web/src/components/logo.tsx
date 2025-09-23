@@ -6,15 +6,20 @@ import { cn } from '~/lib/utils';
 export function Logo({
   withName,
   size = 'lg',
+  className,
 }: {
   withName?: boolean;
   size?: 'md' | 'lg';
+  className?: string;
 }) {
   return (
     <Link
       to="/{-$locale}"
       aria-label="home"
-      className="flex items-center gap-2 font-medium text-secondary-foreground"
+      className={cn(
+        'flex items-center gap-2 font-medium text-secondary-foreground',
+        className,
+      )}
     >
       <div
         className={cn(
