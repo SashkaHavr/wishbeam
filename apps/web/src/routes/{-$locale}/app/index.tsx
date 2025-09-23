@@ -5,5 +5,22 @@ export const Route = createFileRoute('/{-$locale}/app/')({
 });
 
 function RouteComponent() {
-  return <div>App</div>;
+  return (
+    <div className="text-8xl font-bold">
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+      <p>App</p>
+    </div>
+  );
 }

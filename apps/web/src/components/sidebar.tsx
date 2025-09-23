@@ -171,7 +171,7 @@ export function Sidebar({
   return (
     <div
       className={cn(
-        'flex flex-col bg-sidebar p-2 text-sidebar-foreground transition-all',
+        'hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex',
         desktopOpen ? 'w-64' : 'w-17',
         className,
       )}
