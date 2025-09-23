@@ -1,16 +1,18 @@
-import type { LinkProps } from '@tanstack/react-router';
 import type React from 'react';
+import type { NavLinkProps } from 'utils/nav-links';
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import {
-  CircleUserIcon,
   EllipsisVerticalIcon,
-  ListCheckIcon,
   LogOutIcon,
-  SettingsIcon,
+  MoonIcon,
+  SunIcon,
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { setCookie } from 'utils/cookie';
+import { navLinks } from 'utils/nav-links';
 
+import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import { Logo } from './logo';
@@ -20,6 +22,7 @@ import { PanelLeftCloseIcon } from './ui/panel-left-close';
 import { PanelLeftOpenIcon } from './ui/panel-left-open';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
+import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
@@ -35,33 +38,65 @@ function ProfileElements({ open = true }: { open?: boolean }) {
   );
 }
 
-interface SidebarLinkProps {
-  to: LinkProps['to'];
-  label: string;
-  icon: React.ComponentType;
-}
-
 function SidebarLink({
-  className,
-  open = true,
+  icon: IconProp,
   ...props
 }: Omit<React.ComponentProps<typeof SidebarButton>, 'children'> &
-  SidebarLinkProps & { open?: boolean }) {
-  const button = (
-    <SidebarButton
-      key={props.to}
-      asChild
-      className={cn(
-        'data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground data-[status=active]:hover:bg-sidebar-primary/90',
-        open && 'justify-start',
-        className,
-      )}
-      size={open ? undefined : 'icon'}
+  NavLinkProps & { open?: boolean }) {
+  return (
+    <SidebarAdaptiveButton
+      className="data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground data-[status=active]:hover:bg-sidebar-primary/90 data-[status=active]:dark:hover:bg-sidebar-primary/50"
+      icon={<IconProp />}
+      {...props}
     >
       <Link to={props.to}>
-        <props.icon />
-        {open && <span>{props.label}</span>}
+        <SidebarAdaptiveButtonContent
+          open={props.open}
+          label={props.label}
+          icon={<IconProp />}
+        />
       </Link>
+    </SidebarAdaptiveButton>
+  );
+}
+
+function SidebarAdaptiveButtonContent({
+  open,
+  label,
+  icon,
+}: {
+  open?: boolean;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <>
+      {icon}
+      {open && <span>{label}</span>}
+    </>
+  );
+}
+
+function SidebarAdaptiveButton({
+  className,
+  open = true,
+  size,
+  label,
+  icon,
+  children,
+  ...props
+}: React.ComponentProps<typeof SidebarButton> &
+  React.ComponentProps<typeof SidebarAdaptiveButtonContent>) {
+  const button = (
+    <SidebarButton
+      asChild={children !== undefined}
+      className={cn(open && 'justify-start', className)}
+      size={open ? size : 'icon'}
+      {...props}
+    >
+      {children ?? (
+        <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />
+      )}
     </SidebarButton>
   );
 
@@ -71,7 +106,7 @@ function SidebarLink({
     <Tooltip>
       <TooltipTrigger asChild>{button}</TooltipTrigger>
       <TooltipContent side="right">
-        <span>{props.label}</span>
+        <span>{label}</span>
       </TooltipContent>
     </Tooltip>
   );
@@ -134,18 +169,6 @@ function SidebarHeader({
   );
 }
 
-const links = [
-  { to: '/{-$locale}/app', label: 'Test', icon: ListCheckIcon },
-] satisfies SidebarLinkProps[];
-
-const bottomLinks = [
-  { to: '/{-$locale}', label: 'Settings', icon: SettingsIcon },
-] satisfies SidebarLinkProps[];
-
-const profileMenuItems = [
-  { label: 'Account', icon: CircleUserIcon },
-] satisfies { label: string; icon: React.ComponentType }[];
-
 function useDesktopSidebarOpen(defaultValue = true) {
   const [isOpen, setIsOpen] = useState(defaultValue);
   useEffect(() => {
@@ -167,6 +190,8 @@ export function Sidebar({
   const [desktopOpen, setDesktopOpen] = useDesktopSidebarOpen(
     desktopCanBeClosed ? desktopOpenDefault : true,
   );
+  const theme = useTheme();
+  const isClient = useIsClient();
 
   return (
     <div
@@ -183,15 +208,28 @@ export function Sidebar({
         onOpenChange={setDesktopOpen}
       />
       <SidebarGroup>
-        {links.map((link) => (
+        {navLinks.main.map((link) => (
           <SidebarLink key={link.to} {...link} open={desktopOpen} />
         ))}
       </SidebarGroup>
       <div className="grow" />
       <SidebarGroup>
-        {bottomLinks.map((link) => (
+        {navLinks.bottom.map((link) => (
           <SidebarLink key={link.to} {...link} open={desktopOpen} />
         ))}
+        {isClient ? (
+          <SidebarAdaptiveButton
+            open={desktopOpen}
+            label={theme.resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
+            icon={theme.resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            onClick={() =>
+              theme.setTheme(theme.resolvedTheme === 'light' ? 'dark' : 'light')
+            }
+            size={desktopOpen ? 'lg' : 'icon'}
+          />
+        ) : (
+          <Skeleton className="size-9" />
+        )}
       </SidebarGroup>
       <SidebarGroup>
         <Popover>
@@ -204,7 +242,6 @@ export function Sidebar({
               size={desktopOpen ? 'lg' : 'icon'}
             >
               <ProfileElements open={desktopOpen} />
-
               {desktopOpen && (
                 <>
                   <div className="grow" />
@@ -219,15 +256,18 @@ export function Sidebar({
             </div>
             <Separator className="m-1" />
             <div>
-              {profileMenuItems.map((item) => (
+              {navLinks.profileMenu.map((item) => (
                 <Button
                   key={item.label}
                   variant="ghost"
                   size="sm"
                   className="w-full justify-start"
+                  asChild
                 >
-                  <item.icon />
-                  <span>{item.label}</span>
+                  <Link to={item.to}>
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </Link>
                 </Button>
               ))}
             </div>
