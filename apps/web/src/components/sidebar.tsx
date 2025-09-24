@@ -19,7 +19,7 @@ import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import { Logo } from './logo';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
@@ -34,17 +34,6 @@ import {
 } from './ui/sheet';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-
-function ProfileElements({ open = true }: { open?: boolean }) {
-  return (
-    <>
-      <Avatar className="items-center justify-center transition-none">
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-      {open && <span className="truncate font-medium">Profile</span>}
-    </>
-  );
-}
 
 function SidebarLink({
   icon: IconProp,
@@ -137,7 +126,9 @@ function SidebarButton({
 }
 
 function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col p-2', className)} {...props}></div>;
+  return (
+    <div className={cn('flex flex-col gap-1 p-2', className)} {...props}></div>
+  );
 }
 
 function SidebarHeader({
@@ -187,10 +178,104 @@ function ThemeSwitcher({ desktopOpen }: { desktopOpen: boolean }) {
       onClick={() =>
         theme.setTheme(theme.resolvedTheme === 'light' ? 'dark' : 'light')
       }
-      size={desktopOpen ? 'lg' : 'icon'}
+      size={desktopOpen ? undefined : 'icon'}
     />
   ) : (
-    <Skeleton className="size-9" />
+    <Skeleton className="size-9 w-full" />
+  );
+}
+
+function ProfileAvatar({ imgSrc, label }: { imgSrc?: string; label: string }) {
+  return (
+    <Avatar className="rounded-lg grayscale">
+      {imgSrc ? (
+        <AvatarImage src={imgSrc} alt={label} />
+      ) : (
+        <AvatarFallback className="rounded-lg uppercase">
+          {label.slice(0, 2)}
+        </AvatarFallback>
+      )}
+    </Avatar>
+  );
+}
+
+function ProfileButton({
+  open = true,
+  label,
+  endIcon,
+  imgSrc,
+  className,
+  ...props
+}: Omit<React.ComponentProps<typeof SidebarButton>, 'children' | 'size'> & {
+  open?: boolean;
+  label: string;
+  endIcon?: React.ReactNode;
+  imgSrc?: string;
+}) {
+  return (
+    <SidebarButton
+      className={cn(
+        'h-12 items-center font-normal',
+        open && 'justify-start p-2',
+        className,
+      )}
+      size={open ? 'lg' : 'icon'}
+      {...props}
+    >
+      <ProfileAvatar imgSrc={imgSrc} label={label} />
+      {open && (
+        <>
+          <span className="truncate font-medium">{label}</span>
+          <div className="grow" />
+          {endIcon}
+        </>
+      )}
+    </SidebarButton>
+  );
+}
+
+function ProfileButtonWithPopover({ open }: { open?: boolean }) {
+  const signout = useSignout();
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <ProfileButton label="Profile" endIcon={<EllipsisVerticalIcon />} />
+      </PopoverTrigger>
+      <PopoverContent side="right" className="p-1">
+        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">
+          <ProfileAvatar label="Profile" />
+          {open && <span className="truncate font-medium">Profile</span>}
+        </div>
+        <Separator className="m-1" />
+        <div>
+          {navLinks.profileMenu.map((item) => (
+            <Button
+              key={item.label}
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+              asChild
+            >
+              <Link to={item.to}>
+                <item.icon />
+                <span>{item.label}</span>
+              </Link>
+            </Button>
+          ))}
+        </div>
+        <Separator className="m-1" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start"
+          onClick={() => signout.mutate()}
+        >
+          <LogOutIcon />
+          <span>Log out</span>
+        </Button>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -203,8 +288,6 @@ export function Sidebar({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-  const signout = useSignout();
-
   return (
     <div
       className={cn(
@@ -228,57 +311,7 @@ export function Sidebar({
         <ThemeSwitcher desktopOpen={open} />
       </SidebarGroup>
       <SidebarGroup>
-        <Popover>
-          <PopoverTrigger asChild>
-            <SidebarButton
-              className={cn(
-                'items-center font-normal',
-                open && 'justify-start',
-              )}
-              size={open ? 'lg' : 'icon'}
-            >
-              <ProfileElements open={open} />
-              {open && (
-                <>
-                  <div className="grow" />
-                  <EllipsisVerticalIcon />
-                </>
-              )}
-            </SidebarButton>
-          </PopoverTrigger>
-          <PopoverContent side="right" className="p-1">
-            <div className="flex items-center gap-1 px-1 py-1.5 text-sm leading-tight">
-              <ProfileElements />
-            </div>
-            <Separator className="m-1" />
-            <div>
-              {navLinks.profileMenu.map((item) => (
-                <Button
-                  key={item.label}
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start"
-                  asChild
-                >
-                  <Link to={item.to}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </Button>
-              ))}
-            </div>
-            <Separator className="m-1" />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start"
-              onClick={() => signout.mutate()}
-            >
-              <LogOutIcon />
-              <span>Log out</span>
-            </Button>
-          </PopoverContent>
-        </Popover>
+        <ProfileButtonWithPopover open={open} />
       </SidebarGroup>
     </div>
   );
@@ -297,11 +330,13 @@ export function MobileNav({
   ]
     .filter((link) => matchRoute({ to: link.to }))
     .pop();
-  const signout = useSignout();
 
   return (
     <div
-      className={cn('flex w-full items-center p-2.5 md:hidden', className)}
+      className={cn(
+        'flex w-full items-center px-8 py-2.5 md:hidden',
+        className,
+      )}
       {...props}
     >
       {matchedLink && (
@@ -314,7 +349,7 @@ export function MobileNav({
             <MenuIcon />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-64">
+        <SheetContent side="right" className="w-64.25 px-2">
           <SheetHeader>
             <SheetTitle>
               <Logo withName />
@@ -323,29 +358,21 @@ export function MobileNav({
               <SheetDescription>Navigation menu</SheetDescription>
             </VisuallyHidden>
           </SheetHeader>
-          <div className="flex flex-col gap-1 px-2">
+          <SidebarGroup>
             {navLinks.main.map((link) => (
               <SidebarLink key={link.to} {...link} />
             ))}
-          </div>
-          <SheetFooter className="p-0 px-2 py-4">
-            <div className="flex flex-col gap-1">
+          </SidebarGroup>
+          <SheetFooter className="p-0 py-4">
+            <SidebarGroup>
               {navLinks.bottom.map((link) => (
                 <SidebarLink key={link.to} {...link} />
               ))}
               <ThemeSwitcher desktopOpen={true} />
-              <Separator />
-              {navLinks.profileMenu.map((link) => (
-                <SidebarLink key={link.to} {...link} />
-              ))}
-              <SidebarButton
-                className="justify-start"
-                onClick={() => signout.mutate()}
-              >
-                <LogOutIcon />
-                <span>Log out</span>
-              </SidebarButton>
-            </div>
+            </SidebarGroup>
+            <SidebarGroup>
+              <ProfileButtonWithPopover open={open} />
+            </SidebarGroup>
           </SheetFooter>
         </SheetContent>
       </Sheet>
