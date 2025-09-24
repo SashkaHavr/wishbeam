@@ -2,16 +2,19 @@ import type React from 'react';
 
 import { useMobileDesktop } from '~/hooks/use-breakpoint';
 import { cn } from '~/lib/utils';
-import { MobileNav } from './mobile-nav';
-import { Sidebar } from './sidebar';
+import { MobileNav, Sidebar } from './sidebar';
 import { Separator } from './ui/separator';
 
 export function AppNav({
   className,
   children,
-  desktopSidebarOpenDefault,
+  desktopSidebarOpen,
+  onDesktopSidebarOpenChange,
   ...props
-}: React.ComponentProps<'div'> & { desktopSidebarOpenDefault?: boolean }) {
+}: React.ComponentProps<'div'> & {
+  desktopSidebarOpen?: boolean;
+  onDesktopSidebarOpenChange?: (open: boolean) => void;
+}) {
   const { mobile, desktop } = useMobileDesktop();
   return (
     <div
@@ -21,8 +24,8 @@ export function AppNav({
       {desktop && (
         <>
           <Sidebar
-            desktopCanBeClosed
-            desktopOpenDefault={desktopSidebarOpenDefault}
+            open={desktopSidebarOpen}
+            onOpenChange={onDesktopSidebarOpenChange}
           />
           <Separator orientation="vertical" className="hidden md:block" />
         </>

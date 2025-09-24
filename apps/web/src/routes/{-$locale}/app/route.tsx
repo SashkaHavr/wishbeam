@@ -1,11 +1,17 @@
 import { isServer } from '@tanstack/react-query';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useRouter,
+} from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie as getCookieServer } from '@tanstack/react-start/server';
-import { getCookie } from 'utils/cookie';
+import { getCookie, setCookie } from 'utils/cookie';
 
 import { AppNav } from '~/components/app-nav';
-import { desktopSidebarOpenCookieName } from '~/components/sidebar';
+
+const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
 
 const getDesktopSidebarOpenServerFn = createServerFn().handler(() => {
   return getCookieServer(desktopSidebarOpenCookieName);
@@ -31,9 +37,16 @@ function RouteComponent() {
   const desktopSidebarOpen = Route.useRouteContext({
     select: (state) => state.desktopSidebarOpen,
   });
+  const router = useRouter();
 
   return (
-    <AppNav desktopSidebarOpenDefault={desktopSidebarOpen}>
+    <AppNav
+      desktopSidebarOpen={desktopSidebarOpen}
+      onDesktopSidebarOpenChange={(open) => {
+        setCookie(desktopSidebarOpenCookieName, JSON.stringify(open));
+        void router.invalidate();
+      }}
+    >
       <Outlet />
     </AppNav>
   );

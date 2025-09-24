@@ -1,17 +1,18 @@
 import type React from 'react';
 import type { NavLinkProps } from 'utils/nav-links';
-import { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { Link, useMatchRoute } from '@tanstack/react-router';
 import {
   EllipsisVerticalIcon,
   LogOutIcon,
+  MenuIcon,
   MoonIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
   SunIcon,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { setCookie } from 'utils/cookie';
 import { navLinks } from 'utils/nav-links';
 
 import { useIsClient } from '~/hooks/use-is-client';
@@ -22,10 +23,17 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-
-export const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
 
 function ProfileElements({ open = true }: { open?: boolean }) {
   return (
@@ -61,7 +69,7 @@ function SidebarLink({
 }
 
 function SidebarAdaptiveButtonContent({
-  open,
+  open = true,
   label,
   icon,
 }: {
@@ -134,20 +142,18 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
 
 function SidebarHeader({
   open,
-  canBeClosed,
   onOpenChange,
 }: {
   open: boolean;
-  canBeClosed: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
   return (
     <SidebarGroup className={cn(open ? 'flex-row' : 'gap-1')}>
       <Logo withName={open} className="p-0.5" />
-      {canBeClosed && (
+      {onOpenChange && (
         <>
           <div className="grow" />
-          <SidebarButton size="icon" onClick={() => onOpenChange?.(!open)}>
+          <SidebarButton size="icon" onClick={() => onOpenChange(!open)}>
             <div className="grid grid-cols-1 grid-rows-1">
               <PanelLeftCloseIcon
                 className={cn(
@@ -169,67 +175,57 @@ function SidebarHeader({
   );
 }
 
-function useDesktopSidebarOpen(defaultValue = true) {
-  const [isOpen, setIsOpen] = useState(defaultValue);
-  useEffect(() => {
-    setCookie(desktopSidebarOpenCookieName, JSON.stringify(isOpen));
-  }, [isOpen]);
-  return [isOpen, setIsOpen] as const;
+function ThemeSwitcher({ desktopOpen }: { desktopOpen: boolean }) {
+  const theme = useTheme();
+  const isClient = useIsClient();
+
+  return isClient ? (
+    <SidebarAdaptiveButton
+      open={desktopOpen}
+      label={theme.resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
+      icon={theme.resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      onClick={() =>
+        theme.setTheme(theme.resolvedTheme === 'light' ? 'dark' : 'light')
+      }
+      size={desktopOpen ? 'lg' : 'icon'}
+    />
+  ) : (
+    <Skeleton className="size-9" />
+  );
 }
 
 export function Sidebar({
   className,
-  desktopOpenDefault = true,
-  desktopCanBeClosed = false,
+  open = true,
+  onOpenChange,
   ...props
 }: React.ComponentProps<'div'> & {
-  desktopOpenDefault?: boolean;
-  desktopCanBeClosed?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const signout = useSignout();
-  const [desktopOpen, setDesktopOpen] = useDesktopSidebarOpen(
-    desktopCanBeClosed ? desktopOpenDefault : true,
-  );
-  const theme = useTheme();
-  const isClient = useIsClient();
 
   return (
     <div
       className={cn(
         'hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex',
-        desktopOpen ? 'w-64' : 'w-17',
+        open ? 'w-64' : 'w-17',
         className,
       )}
       {...props}
     >
-      <SidebarHeader
-        open={desktopOpen}
-        canBeClosed={desktopCanBeClosed}
-        onOpenChange={setDesktopOpen}
-      />
+      <SidebarHeader open={open} onOpenChange={onOpenChange} />
       <SidebarGroup>
         {navLinks.main.map((link) => (
-          <SidebarLink key={link.to} {...link} open={desktopOpen} />
+          <SidebarLink key={link.to} {...link} open={open} />
         ))}
       </SidebarGroup>
       <div className="grow" />
       <SidebarGroup>
         {navLinks.bottom.map((link) => (
-          <SidebarLink key={link.to} {...link} open={desktopOpen} />
+          <SidebarLink key={link.to} {...link} open={open} />
         ))}
-        {isClient ? (
-          <SidebarAdaptiveButton
-            open={desktopOpen}
-            label={theme.resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
-            icon={theme.resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            onClick={() =>
-              theme.setTheme(theme.resolvedTheme === 'light' ? 'dark' : 'light')
-            }
-            size={desktopOpen ? 'lg' : 'icon'}
-          />
-        ) : (
-          <Skeleton className="size-9" />
-        )}
+        <ThemeSwitcher desktopOpen={open} />
       </SidebarGroup>
       <SidebarGroup>
         <Popover>
@@ -237,12 +233,12 @@ export function Sidebar({
             <SidebarButton
               className={cn(
                 'items-center font-normal',
-                desktopOpen && 'justify-start',
+                open && 'justify-start',
               )}
-              size={desktopOpen ? 'lg' : 'icon'}
+              size={open ? 'lg' : 'icon'}
             >
-              <ProfileElements open={desktopOpen} />
-              {desktopOpen && (
+              <ProfileElements open={open} />
+              {open && (
                 <>
                   <div className="grow" />
                   <EllipsisVerticalIcon />
@@ -284,6 +280,75 @@ export function Sidebar({
           </PopoverContent>
         </Popover>
       </SidebarGroup>
+    </div>
+  );
+}
+
+export function MobileNav({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  const [open, setOpen] = useState(false);
+  const matchRoute = useMatchRoute();
+  const matchedLink = [
+    ...navLinks.main,
+    ...navLinks.bottom,
+    ...navLinks.profileMenu,
+  ]
+    .filter((link) => matchRoute({ to: link.to }))
+    .pop();
+  const signout = useSignout();
+
+  return (
+    <div
+      className={cn('flex w-full items-center p-2.5 md:hidden', className)}
+      {...props}
+    >
+      {matchedLink && (
+        <span className="text-lg font-medium">{matchedLink.label}</span>
+      )}
+      <div className="grow" />
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button size="icon" variant="ghost">
+            <MenuIcon />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="w-64">
+          <SheetHeader>
+            <SheetTitle>
+              <Logo withName />
+            </SheetTitle>
+            <VisuallyHidden>
+              <SheetDescription>Navigation menu</SheetDescription>
+            </VisuallyHidden>
+          </SheetHeader>
+          <div className="flex flex-col gap-1 px-2">
+            {navLinks.main.map((link) => (
+              <SidebarLink key={link.to} {...link} />
+            ))}
+          </div>
+          <SheetFooter className="p-0 px-2 py-4">
+            <div className="flex flex-col gap-1">
+              {navLinks.bottom.map((link) => (
+                <SidebarLink key={link.to} {...link} />
+              ))}
+              <ThemeSwitcher desktopOpen={true} />
+              <Separator />
+              {navLinks.profileMenu.map((link) => (
+                <SidebarLink key={link.to} {...link} />
+              ))}
+              <SidebarButton
+                className="justify-start"
+                onClick={() => signout.mutate()}
+              >
+                <LogOutIcon />
+                <span>Log out</span>
+              </SidebarButton>
+            </div>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
