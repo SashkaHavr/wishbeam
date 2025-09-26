@@ -36,7 +36,7 @@ export function AppNav({
           <Separator orientation="horizontal" className="md:hidden" />
         </>
       )}
-      <div className="grow overflow-y-auto">{children}</div>
+      <main className="grow overflow-y-auto">{children}</main>
     </div>
   );
 }

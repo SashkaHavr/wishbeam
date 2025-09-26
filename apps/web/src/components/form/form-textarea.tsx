@@ -1,10 +1,10 @@
-import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 import { useFieldContext } from './form-context';
 
-export function FormInput(props: React.ComponentProps<typeof Input>) {
+export function FormTextarea(props: React.ComponentProps<typeof Textarea>) {
   const field = useFieldContext<string>();
   return (
-    <Input
+    <Textarea
       id={field.name}
       name={field.name}
       value={field.state.value}

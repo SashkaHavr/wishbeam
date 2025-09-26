@@ -4,10 +4,12 @@ import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import { createContext } from '#context.ts';
 import { createCallerFactory, publicProcedure, router } from '#init.ts';
 import { configRouter } from '#routers/config.ts';
+import { wishlistRouter } from '#routers/wishlist.tsx';
 
 const appRouter = router({
   health: publicProcedure.query(() => 'tRPC healthy!'),
   config: configRouter,
+  wishlist: wishlistRouter,
 });
 
 export function trpcHandler({ request }: { request: Request }) {

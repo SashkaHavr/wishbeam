@@ -1,4 +1,4 @@
-import { createMiddleware } from '@tanstack/react-start';
+import { createMiddleware, createServerFn } from '@tanstack/react-start';
 import { getWebRequest } from '@tanstack/react-start/server';
 
 import { createTrpcCaller } from '@wishbeam/trpc';
@@ -12,3 +12,9 @@ export const trpcServerFnMiddleware = createMiddleware({
     },
   });
 });
+
+export const wishlistsGetOwnedServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .handler(async ({ context }) => {
+    return context.trpc.wishlist.getOwned();
+  });

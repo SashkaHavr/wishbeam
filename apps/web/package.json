@@ -38,6 +38,7 @@
     "@wishbeam/auth": "workspace:*",
     "@wishbeam/intl": "workspace:*",
     "@wishbeam/trpc": "workspace:*",
+    "@wishbeam/utils": "workspace:*",
     "babel-plugin-react-compiler": "latest",
     "better-auth": "catalog:",
     "class-variance-authority": "catalog:tailwind",
@@ -52,6 +53,7 @@
     "tailwindcss": "catalog:tailwind",
     "tw-animate-css": "catalog:tailwind",
     "use-intl": "catalog:",
+    "vaul": "^1.1.2",
     "vite": "catalog:vite",
     "vite-tsconfig-paths": "catalog:vite",
     "zod": "catalog:"

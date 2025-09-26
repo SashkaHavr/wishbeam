@@ -1,5 +1,10 @@
 import type { LinkProps } from '@tanstack/react-router';
-import { CircleUserIcon, ListCheckIcon, SettingsIcon } from 'lucide-react';
+import {
+  CircleUserIcon,
+  ListCheckIcon,
+  SettingsIcon,
+  Share2Icon,
+} from 'lucide-react';
 
 export interface NavLinkProps {
   to: LinkProps['to'];
@@ -8,7 +13,16 @@ export interface NavLinkProps {
 }
 
 const mainLinks = [
-  { to: '/{-$locale}/app', label: 'Test', icon: ListCheckIcon },
+  {
+    to: '/{-$locale}/app/wishlists',
+    label: 'My wishlists',
+    icon: ListCheckIcon,
+  },
+  {
+    to: '/{-$locale}/app/shared-wishlists',
+    label: 'Shared with me wishlists',
+    icon: Share2Icon,
+  },
 ] satisfies NavLinkProps[];
 
 const bottomLinks = [

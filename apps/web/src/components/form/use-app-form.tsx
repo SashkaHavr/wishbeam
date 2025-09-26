@@ -6,6 +6,7 @@ import { FormFieldset } from './form-fieldset';
 import { FormInput } from './form-input';
 import { FormLabel } from './form-label';
 import { FormSubmitButton } from './form-submit-button';
+import { FormTextarea } from './form-textarea';
 
 export const { useAppForm } = createFormHook({
   fieldContext,
@@ -14,6 +15,7 @@ export const { useAppForm } = createFormHook({
     FormInput,
     FormLabel,
     FormFieldset,
+    FormTextarea,
   },
   formComponents: { FormSubmitButton, Form },
 });
