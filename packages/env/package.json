@@ -8,7 +8,8 @@
   "exports": {
     "./server": "./src/server.ts",
     "./db": "./src/db.ts",
-    "./auth": "./src/auth.ts"
+    "./auth": "./src/auth.ts",
+    "./pubsub": "./src/pubsub.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",

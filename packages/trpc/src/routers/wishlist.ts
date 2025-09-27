@@ -8,6 +8,7 @@ import {
 import { wishlistSchema } from '@wishbeam/utils/schemas';
 
 import { protectedProcedure, router } from '#init.ts';
+import { invalidateCache } from '#utils/cache-invalidation.ts';
 
 export const wishlistRouter = router({
   getOwned: protectedProcedure.query(async ({ ctx }) => {
@@ -40,6 +41,7 @@ export const wishlistRouter = router({
           message: 'Could not create wishlist',
         });
       }
+      invalidateCache(ctx.userId, { type: 'wishlists' });
       return wishlist;
     }),
 });

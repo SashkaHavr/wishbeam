@@ -10,6 +10,7 @@ import { getCookie as getCookieServer } from '@tanstack/react-start/server';
 import { getCookie, setCookie } from 'utils/cookie';
 
 import { AppNav } from '~/components/app-nav';
+import { useCacheInvalidation } from '~/hooks/use-cache-invalidation';
 
 const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
 
@@ -38,6 +39,8 @@ function RouteComponent() {
     select: (state) => state.desktopSidebarOpen,
   });
   const router = useRouter();
+
+  useCacheInvalidation();
 
   return (
     <AppNav

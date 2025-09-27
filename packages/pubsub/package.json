@@ -1,5 +1,5 @@
 {
-  "name": "@wishbeam/trpc",
+  "name": "@wishbeam/pubsub",
   "private": true,
   "type": "module",
   "imports": {
@@ -18,14 +18,8 @@
   },
   "prettier": "@wishbeam/prettier-config",
   "dependencies": {
-    "@trpc/server": "catalog:trpc",
-    "@wishbeam/auth": "workspace:*",
-    "@wishbeam/db": "workspace:*",
+    "@nats-io/transport-node": "^3.2.0",
     "@wishbeam/env": "workspace:*",
-    "@wishbeam/pubsub": "workspace:*",
-    "@wishbeam/utils": "workspace:*",
-    "drizzle-orm": "catalog:drizzle",
-    "superjson": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
