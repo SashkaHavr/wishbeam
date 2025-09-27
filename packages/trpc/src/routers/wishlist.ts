@@ -26,6 +26,15 @@ export const wishlistRouter = router({
       });
       return { wishlists };
     }),
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .output(z.object({ wishlist: wishlistOutputSchema.optional() }))
+    .query(async ({ input, ctx }) => {
+      const wishlist = await db.query.wishlist.findFirst({
+        where: { id: input.id, wishlistOwners: { userId: ctx.userId } },
+      });
+      return { wishlist };
+    }),
   create: protectedProcedure
     .input(wishlistSchema)
     .output(z.object({ newWishlist: wishlistOutputSchema }))
