@@ -33,7 +33,20 @@ export function CreateWishlistButton({
       onDynamic: wishlistSchema,
     },
     onSubmit: async ({ value, formApi }) => {
-      await createWishlist.mutateAsync(value);
+      await createWishlist.mutateAsync(value, {
+        onSuccess: (data, variables, onMutateResult, context) => {
+          context.client.setQueryData(
+            trpc.wishlist.getOwned.queryKey(),
+            (old) =>
+              old
+                ? { wishlists: [...old.wishlists, data.newWishlist] }
+                : { wishlists: [data.newWishlist] },
+          );
+          void context.client.invalidateQueries({
+            queryKey: trpc.wishlist.getOwned.queryKey(),
+          });
+        },
+      });
       setOpen(false);
       formApi.reset();
     },

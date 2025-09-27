@@ -28,7 +28,7 @@ export const wishlistRouter = router({
     }),
   create: protectedProcedure
     .input(wishlistSchema)
-    .output(z.undefined())
+    .output(z.object({ newWishlist: wishlistOutputSchema }))
     .mutation(async ({ input, ctx }) => {
       const wishlist = await db.transaction(async (tx) => {
         const [wishlist] = await tx
@@ -52,5 +52,6 @@ export const wishlistRouter = router({
         });
       }
       invalidateCache(ctx.userId, { type: 'wishlists' });
+      return { newWishlist: wishlist };
     }),
 });
