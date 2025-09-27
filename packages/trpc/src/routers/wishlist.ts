@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import z from 'zod';
 
 import { db } from '@wishbeam/db';
 import {
@@ -10,15 +11,24 @@ import { wishlistSchema } from '@wishbeam/utils/schemas';
 import { protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
 
+const wishlistOutputSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+});
+
 export const wishlistRouter = router({
-  getOwned: protectedProcedure.query(async ({ ctx }) => {
-    const wishlists = await db.query.wishlist.findMany({
-      where: { wishlistOwners: { userId: ctx.userId } },
-    });
-    return { wishlists };
-  }),
+  getOwned: protectedProcedure
+    .output(z.object({ wishlists: z.array(wishlistOutputSchema) }))
+    .query(async ({ ctx }) => {
+      const wishlists = await db.query.wishlist.findMany({
+        where: { wishlistOwners: { userId: ctx.userId } },
+      });
+      return { wishlists };
+    }),
   create: protectedProcedure
     .input(wishlistSchema)
+    .output(z.undefined())
     .mutation(async ({ input, ctx }) => {
       const wishlist = await db.transaction(async (tx) => {
         const [wishlist] = await tx
@@ -42,6 +52,5 @@ export const wishlistRouter = router({
         });
       }
       invalidateCache(ctx.userId, { type: 'wishlists' });
-      return wishlist;
     }),
 });
