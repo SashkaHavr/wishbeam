@@ -334,7 +334,7 @@ export function MobileNav({
   return (
     <div
       className={cn(
-        'flex w-full items-center px-8 py-2.5 md:hidden',
+        'flex w-full items-center py-2.5 pr-4 pl-8 md:hidden',
         className,
       )}
       {...props}
