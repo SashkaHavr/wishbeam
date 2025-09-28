@@ -23,7 +23,20 @@ export function CreateWishlistButton({
   defaultTitle?: string;
 }) {
   const trpc = useTRPC();
-  const createWishlist = useMutation(trpc.wishlist.create.mutationOptions());
+  const createWishlist = useMutation(
+    trpc.wishlist.create.mutationOptions({
+      onSuccess: (data, variables, onMutateResult, context) => {
+        context.client.setQueryData(trpc.wishlist.getOwned.queryKey(), (old) =>
+          old
+            ? { wishlists: [...old.wishlists, data.newWishlist] }
+            : { wishlists: [data.newWishlist] },
+        );
+        void context.client.invalidateQueries({
+          queryKey: trpc.wishlist.getOwned.queryKey(),
+        });
+      },
+    }),
+  );
   const [open, setOpen] = useState(false);
 
   const form = useAppForm({
@@ -33,20 +46,7 @@ export function CreateWishlistButton({
       onDynamic: wishlistSchema,
     },
     onSubmit: async ({ value, formApi }) => {
-      await createWishlist.mutateAsync(value, {
-        onSuccess: (data, variables, onMutateResult, context) => {
-          context.client.setQueryData(
-            trpc.wishlist.getOwned.queryKey(),
-            (old) =>
-              old
-                ? { wishlists: [...old.wishlists, data.newWishlist] }
-                : { wishlists: [data.newWishlist] },
-          );
-          void context.client.invalidateQueries({
-            queryKey: trpc.wishlist.getOwned.queryKey(),
-          });
-        },
-      });
+      await createWishlist.mutateAsync(value);
       setOpen(false);
       formApi.reset();
     },

@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
 import z from 'zod';
 
 import { db } from '@wishbeam/db';
@@ -23,11 +24,12 @@ export const wishlistRouter = router({
     .query(async ({ ctx }) => {
       const wishlists = await db.query.wishlist.findMany({
         where: { wishlistOwners: { userId: ctx.userId } },
+        orderBy: { createdAt: 'asc' },
       });
       return { wishlists };
     }),
   getById: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.uuidv7() }))
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .query(async ({ input, ctx }) => {
       const wishlist = await db.query.wishlist.findFirst({
@@ -51,8 +53,10 @@ export const wishlistRouter = router({
           .values(input)
           .returning();
         if (!wishlist) {
-          tx.rollback();
-          return;
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Could not create wishlist',
+          });
         }
         await tx.insert(wishlistOwnerTable).values({
           userId: ctx.userId,
@@ -60,13 +64,37 @@ export const wishlistRouter = router({
         });
         return wishlist;
       });
-      if (!wishlist) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Could not create wishlist',
-        });
-      }
       invalidateCache(ctx.userId, { type: 'wishlists' });
       return { newWishlist: wishlist };
+    }),
+  update: protectedProcedure
+    .input(z.object({ id: z.uuidv7(), data: wishlistSchema.partial() }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      await db.transaction(async (tx) => {
+        const wishlist = (
+          await tx
+            .select()
+            .from(wishlistTable)
+            .where(eq(wishlistTable.id, input.id))
+            .for('update')
+            .limit(1)
+        )[0];
+        if (!wishlist) {
+          throw new TRPCError({
+            code: 'UNPROCESSABLE_CONTENT',
+            message: 'Wishlist not found',
+          });
+        }
+        await tx
+          .update(wishlistTable)
+          .set(input.data)
+          .where(eq(wishlistTable.id, input.id));
+      });
+      invalidateCache(ctx.userId, { type: 'wishlists' });
+      invalidateCache(ctx.userId, {
+        type: 'wishlist-data',
+        wishlistId: input.id,
+      });
     }),
 });

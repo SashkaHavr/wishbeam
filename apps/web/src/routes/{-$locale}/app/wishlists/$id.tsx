@@ -3,6 +3,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 
 import { Separator } from '~/components/ui/separator';
 
+import { UpdateWishlistButton } from '~/components/app/update-wishlist-button';
 import { useTRPC } from '~/lib/trpc';
 import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
 
@@ -30,9 +31,15 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-4 pt-6 pb-4">
-      <div className="flex flex-col gap-2 px-4">
-        <h2 className="text-lg font-medium">{wishlist.title}</h2>
-        <p className="text-sm text-muted-foreground">{wishlist.description}</p>
+      <div className="flex px-4">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-medium">{wishlist.title}</h2>
+          <p className="text-sm text-muted-foreground">
+            {wishlist.description}
+          </p>
+        </div>
+        <div className="grow" />
+        <UpdateWishlistButton wishlist={wishlist} />
       </div>
       <div className="px-2">
         <Separator />

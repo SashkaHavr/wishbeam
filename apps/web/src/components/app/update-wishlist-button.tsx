@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { PlusIcon } from 'lucide-react';
+import { EditIcon } from 'lucide-react';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistSchema } from '@wishbeam/utils/schemas';
@@ -22,9 +22,61 @@ interface Props {
   wishlist: TRPCOutput['wishlist']['getById']['wishlist'];
 }
 
-export function EditWishlistButton({ wishlist }: Props) {
+export function UpdateWishlistButton({ wishlist }: Props) {
   const trpc = useTRPC();
-  const createWishlist = useMutation(trpc.wishlist.create.mutationOptions());
+  const updateWishlist = useMutation(
+    trpc.wishlist.update.mutationOptions({
+      onMutate: async (values, context) => {
+        await context.client.cancelQueries({
+          queryKey: trpc.wishlist.getOwned.queryKey(),
+        });
+        await context.client.cancelQueries({
+          queryKey: trpc.wishlist.getById.queryKey({ id: values.id }),
+        });
+
+        const previous = {
+          owned: context.client.getQueryData(trpc.wishlist.getOwned.queryKey()),
+          byId: context.client.getQueryData(
+            trpc.wishlist.getById.queryKey({ id: values.id }),
+          ),
+        };
+
+        context.client.setQueryData(
+          trpc.wishlist.getOwned.queryKey(),
+          (old) => {
+            if (!old) return old;
+            return {
+              wishlists: old.wishlists.map((wishlist) =>
+                wishlist.id === values.id
+                  ? { ...wishlist, ...values.data }
+                  : wishlist,
+              ),
+            };
+          },
+        );
+        context.client.setQueryData(
+          trpc.wishlist.getById.queryKey({ id: values.id }),
+          (old) => {
+            if (!old) return old;
+            return { wishlist: { ...old.wishlist, ...values.data } };
+          },
+        );
+
+        return { previous };
+      },
+      onError: (err, values, onMutateResult, context) => {
+        if (!onMutateResult) return;
+        context.client.setQueryData(
+          trpc.wishlist.getOwned.queryKey(),
+          onMutateResult.previous.owned,
+        );
+        context.client.setQueryData(
+          trpc.wishlist.getById.queryKey({ id: values.id }),
+          onMutateResult.previous.byId,
+        );
+      },
+    }),
+  );
   const [open, setOpen] = useState(false);
 
   const form = useAppForm({
@@ -33,21 +85,8 @@ export function EditWishlistButton({ wishlist }: Props) {
     validators: {
       onDynamic: wishlistSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await createWishlist.mutateAsync(value, {
-        onSuccess: (data, variables, onMutateResult, context) => {
-          context.client.setQueryData(
-            trpc.wishlist.getOwned.queryKey(),
-            (old) =>
-              old
-                ? { wishlists: [...old.wishlists, data.newWishlist] }
-                : { wishlists: [data.newWishlist] },
-          );
-          void context.client.invalidateQueries({
-            queryKey: trpc.wishlist.getOwned.queryKey(),
-          });
-        },
-      });
+    onSubmit: ({ value, formApi }) => {
+      updateWishlist.mutate({ id: wishlist.id, data: value });
       setOpen(false);
       formApi.reset();
     },
@@ -55,17 +94,16 @@ export function EditWishlistButton({ wishlist }: Props) {
 
   return (
     <ResponsiveDialog open={open} onOpenChange={setOpen}>
-      <AppDialogTrigger size="lg" variant="outline">
-        <PlusIcon />
-        <span>Create new wishlist</span>
+      <AppDialogTrigger size="icon" variant="outline">
+        <EditIcon />
       </AppDialogTrigger>
       <ResponsiveDialogContent>
         <form.AppForm>
           <form.Form className="flex w-full flex-col gap-4">
             <ResponsiveDialogHeader>
-              <ResponsiveDialogTitle>Create new wishlist</ResponsiveDialogTitle>
+              <ResponsiveDialogTitle>Update wishlist</ResponsiveDialogTitle>
               <ResponsiveDialogDescription>
-                Add a title and description to your wishlist.
+                Edit a title and description for your wishlist.
               </ResponsiveDialogDescription>
             </ResponsiveDialogHeader>
             <div className="flex flex-col gap-4 p-4 pb-0 md:p-0">
@@ -88,7 +126,7 @@ export function EditWishlistButton({ wishlist }: Props) {
             </div>
             <ResponsiveDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
-              <form.FormSubmitButton>Create wishlist</form.FormSubmitButton>
+              <form.FormSubmitButton>Update wishlist</form.FormSubmitButton>
             </ResponsiveDialogFooter>
           </form.Form>
         </form.AppForm>

@@ -6,10 +6,9 @@ export function getCacheInvalidationSubject(userId: string) {
   return `cache-invalidation.${userId}`;
 }
 
-const invalidationType = ['wishlists'] as const;
-
 export const cacheInvalidationSchema = z.union([
-  z.object({ type: z.enum(invalidationType) }),
+  z.object({ type: z.literal('wishlists') }),
+  z.object({ type: z.literal('wishlist-data'), wishlistId: z.string() }),
 ]);
 
 export function invalidateCache(

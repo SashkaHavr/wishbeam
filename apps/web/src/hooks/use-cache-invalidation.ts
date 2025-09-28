@@ -10,10 +10,14 @@ export function useCacheInvalidation() {
     trpc.cache.invalidations.subscriptionOptions(void 0, {
       onData: (data) => {
         switch (data.type) {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           case 'wishlists':
             void queryClient.invalidateQueries({
               queryKey: trpc.wishlist.getOwned.queryKey(),
+            });
+            break;
+          case 'wishlist-data':
+            void queryClient.invalidateQueries({
+              queryKey: trpc.wishlist.getById.queryKey({ id: data.wishlistId }),
             });
             break;
         }
