@@ -1,9 +1,8 @@
 import type { Locale } from 'use-intl';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouteContext } from '@tanstack/react-router';
 
 import { isLocale, locales } from '@wishbeam/intl';
 
-import { useLocaleFromRoute } from '~/hooks/route-context';
 import {
   Select,
   SelectContent,
@@ -18,7 +17,10 @@ const localeToText: Record<Locale, string> = {
 };
 
 export function LocaleSelect({ className }: { className?: string }) {
-  const locale = useLocaleFromRoute();
+  const locale = useRouteContext({
+    from: '/{-$locale}',
+    select: (s) => s.intl.locale,
+  });
   const navigate = useNavigate({ from: '/{-$locale}' });
   return (
     <Select
@@ -30,7 +32,7 @@ export function LocaleSelect({ className }: { className?: string }) {
       }}
     >
       <SelectTrigger className={className}>
-        {locale && <SelectValue>{localeToText[locale]}</SelectValue>}
+        <SelectValue>{localeToText[locale]}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

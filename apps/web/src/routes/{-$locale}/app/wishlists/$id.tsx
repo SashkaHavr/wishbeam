@@ -7,12 +7,13 @@ import { useTRPC } from '~/lib/trpc';
 import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
 
 export const Route = createFileRoute('/{-$locale}/app/wishlists/$id')({
-  beforeLoad: async ({ context, params }) => {
-    const data = await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.wishlist.getById.queryKey({ id: params.id }),
-      queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
-    });
-    if (!data.wishlist) {
+  loader: async ({ context, params }) => {
+    try {
+      await context.queryClient.ensureQueryData({
+        queryKey: context.trpc.wishlist.getById.queryKey({ id: params.id }),
+        queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
+      });
+    } catch {
       throw notFound();
     }
   },
@@ -25,7 +26,7 @@ function RouteComponent() {
   const data = useSuspenseQuery(
     trpc.wishlist.getById.queryOptions({ id: wishlistId }),
   );
-  const wishlist = data.data.wishlist!;
+  const wishlist = data.data.wishlist;
 
   return (
     <div className="flex flex-col gap-4 pt-6 pb-4">

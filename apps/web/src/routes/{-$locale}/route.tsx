@@ -3,7 +3,6 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 import { defaultLocale, getIntlContext, isLocale } from '@wishbeam/intl';
 
-import { IntlProvider } from '~/lib/intl';
 import { getAcceptLanguageHeaderServerFn } from '~/lib/intl-server';
 
 export const Route = createFileRoute('/{-$locale}')({
@@ -46,9 +45,5 @@ export const Route = createFileRoute('/{-$locale}')({
 });
 
 function RouteComponent() {
-  return (
-    <IntlProvider>
-      <Outlet />
-    </IntlProvider>
-  );
+  return <Outlet />;
 }

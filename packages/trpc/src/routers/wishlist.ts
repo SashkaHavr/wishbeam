@@ -28,11 +28,17 @@ export const wishlistRouter = router({
     }),
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .output(z.object({ wishlist: wishlistOutputSchema.optional() }))
+    .output(z.object({ wishlist: wishlistOutputSchema }))
     .query(async ({ input, ctx }) => {
       const wishlist = await db.query.wishlist.findFirst({
         where: { id: input.id, wishlistOwners: { userId: ctx.userId } },
       });
+      if (!wishlist) {
+        throw new TRPCError({
+          code: 'UNPROCESSABLE_CONTENT',
+          message: 'Wishlist not found',
+        });
+      }
       return { wishlist };
     }),
   create: protectedProcedure

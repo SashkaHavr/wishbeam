@@ -4,17 +4,15 @@ import type { ReactNode } from 'react';
 import {
   createRootRouteWithContext,
   HeadContent,
-  isMatch,
   Outlet,
   Scripts,
-  useRouterState,
+  useRouteContext,
 } from '@tanstack/react-router';
 import { ThemeProvider } from 'next-themes';
 
-import { defaultLocale } from '@wishbeam/intl';
-
 import type { TRPCRouteContext } from '~/lib/trpc';
 import { getAuthContext } from '~/lib/auth';
+import { IntlProvider } from '~/lib/intl';
 import indexCss from '../index.css?url';
 
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
@@ -48,18 +46,16 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
 function RootComponent() {
   return (
     <RootDocument>
-      <ThemeProvider attribute="class">
-        <Outlet />
-      </ThemeProvider>
+      <Outlet />
     </RootDocument>
   );
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  const matches = useRouterState({ select: (s) => s.matches }).filter((m) =>
-    isMatch(m, 'context.intl.locale'),
-  );
-  const locale = matches[0]?.context.intl.locale ?? defaultLocale;
+  const locale = useRouteContext({
+    from: '/{-$locale}',
+    select: (s) => s.intl.locale,
+  });
 
   return (
     <html suppressHydrationWarning lang={locale}>
@@ -67,7 +63,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <ThemeProvider attribute="class">
+          <IntlProvider>{children}</IntlProvider>
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>
