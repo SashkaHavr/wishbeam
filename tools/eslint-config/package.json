@@ -13,18 +13,18 @@
   },
   "prettier": "@wishbeam/prettier-config",
   "devDependencies": {
-    "@eslint/compat": "^1.3.2",
-    "@eslint/js": "^9.35.0",
-    "@tanstack/eslint-plugin-query": "^5.89.0",
-    "@tanstack/eslint-plugin-router": "^1.131.2",
+    "@eslint/compat": "^1.4.0",
+    "@eslint/js": "^9.36.0",
+    "@tanstack/eslint-plugin-query": "^5.90.2",
+    "@tanstack/eslint-plugin-router": "^1.132.0",
     "@types/node": "catalog:",
     "@wishbeam/prettier-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
-    "eslint": "^9.35.0",
+    "eslint": "^9.36.0",
     "eslint-plugin-react-compiler": "latest",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-react-refresh": "^0.4.22",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.44.0"
+    "typescript-eslint": "^8.44.1"
   }
 }

@@ -16,6 +16,7 @@ export const authServerFnMiddleware = createMiddleware({
 
 export const getSessionServerFn = createServerFn()
   .middleware([authServerFnMiddleware])
-  .handler(({ context: { auth, headers } }) => {
-    return auth.getSession({ headers });
+  .handler(async ({ context: { auth, headers } }) => {
+    const session = await auth.getSession({ headers });
+    return session ? { session: session.session, user: session.user } : null;
   });

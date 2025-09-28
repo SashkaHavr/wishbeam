@@ -44,7 +44,7 @@
     "class-variance-authority": "catalog:tailwind",
     "clsx": "catalog:tailwind",
     "lucide-react": "catalog:",
-    "motion": "^12.23.15",
+    "motion": "^12.23.22",
     "next-themes": "catalog:",
     "react": "catalog:react",
     "react-dom": "catalog:react",
