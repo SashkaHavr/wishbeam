@@ -2,7 +2,7 @@ import type React from 'react';
 import type { NavLinkProps } from 'utils/nav-links';
 import { useState } from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { Link, useMatchRoute } from '@tanstack/react-router';
+import { Link, useRouterState } from '@tanstack/react-router';
 import {
   EllipsisVerticalIcon,
   LogOutIcon,
@@ -15,6 +15,7 @@ import {
 import { useTheme } from 'next-themes';
 import { navLinks } from 'utils/nav-links';
 
+import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
 import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
@@ -234,15 +235,23 @@ function ProfileButton({
   );
 }
 
-function ProfileButtonWithPopover({ open }: { open?: boolean }) {
+function ProfileButtonWithPopover({
+  open,
+  onLinkClick,
+}: {
+  open?: boolean;
+  onLinkClick?: () => void;
+}) {
   const signout = useSignout();
+  const mobile = useNotMatchesBreakpoint('md');
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
         <ProfileButton label="Profile" endIcon={<EllipsisVerticalIcon />} />
       </PopoverTrigger>
-      <PopoverContent side="right" className="p-1">
+      <PopoverContent side={mobile ? 'top' : 'right'} className="p-1">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">
           <ProfileAvatar label="Profile" />
           {open && <span className="truncate font-medium">Profile</span>}
@@ -257,7 +266,13 @@ function ProfileButtonWithPopover({ open }: { open?: boolean }) {
               className="w-full justify-start"
               asChild
             >
-              <Link to={item.to}>
+              <Link
+                to={item.to}
+                onClick={() => {
+                  setPopoverOpen(false);
+                  onLinkClick?.();
+                }}
+              >
                 <item.icon />
                 <span>{item.label}</span>
               </Link>
@@ -322,14 +337,21 @@ export function MobileNav({
   ...props
 }: React.ComponentProps<'div'>) {
   const [open, setOpen] = useState(false);
-  const matchRoute = useMatchRoute();
+  const closeNav = () => setOpen(false);
+  const routerState = useRouterState();
   const matchedLink = [
     ...navLinks.main,
     ...navLinks.bottom,
     ...navLinks.profileMenu,
   ]
-    .filter((link) => matchRoute({ to: link.to }))
-    .pop();
+    .map(
+      (link) =>
+        [
+          link,
+          routerState.matches.findLastIndex((m) => m.fullPath === link.to),
+        ] as const,
+    )
+    .sort((a, b) => b[1] - a[1])[0]?.[0];
 
   return (
     <div
@@ -340,7 +362,9 @@ export function MobileNav({
       {...props}
     >
       {matchedLink && (
-        <span className="text-lg font-medium">{matchedLink.label}</span>
+        <Link to={matchedLink.to} className="text-lg font-bold">
+          {matchedLink.label}
+        </Link>
       )}
       <div className="grow" />
       <Sheet open={open} onOpenChange={setOpen}>
@@ -352,7 +376,7 @@ export function MobileNav({
         <SheetContent side="right" className="w-64.25 px-2">
           <SheetHeader>
             <SheetTitle>
-              <Logo withName />
+              <Logo withName onClick={closeNav} />
             </SheetTitle>
             <VisuallyHidden>
               <SheetDescription>Navigation menu</SheetDescription>
@@ -360,18 +384,18 @@ export function MobileNav({
           </SheetHeader>
           <SidebarGroup>
             {navLinks.main.map((link) => (
-              <SidebarLink key={link.to} {...link} />
+              <SidebarLink key={link.to} onClick={closeNav} {...link} />
             ))}
           </SidebarGroup>
           <SheetFooter className="p-0 py-4">
             <SidebarGroup>
               {navLinks.bottom.map((link) => (
-                <SidebarLink key={link.to} {...link} />
+                <SidebarLink key={link.to} onClick={closeNav} {...link} />
               ))}
               <ThemeSwitcher desktopOpen={true} />
             </SidebarGroup>
             <SidebarGroup>
-              <ProfileButtonWithPopover open={open} />
+              <ProfileButtonWithPopover open={open} onLinkClick={closeNav} />
             </SidebarGroup>
           </SheetFooter>
         </SheetContent>

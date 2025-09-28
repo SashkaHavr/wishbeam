@@ -26,11 +26,11 @@ const mainLinks = [
 ] satisfies NavLinkProps[];
 
 const bottomLinks = [
-  { to: '/{-$locale}', label: 'Settings', icon: SettingsIcon },
+  { to: '/{-$locale}/app/settings', label: 'Settings', icon: SettingsIcon },
 ] satisfies NavLinkProps[];
 
 const profileMenuLinks = [
-  { to: '/{-$locale}', label: 'Account', icon: CircleUserIcon },
+  { to: '/{-$locale}/app/account', label: 'Account', icon: CircleUserIcon },
 ] satisfies NavLinkProps[];
 
 export const navLinks = {

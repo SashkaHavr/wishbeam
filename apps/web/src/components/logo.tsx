@@ -1,3 +1,4 @@
+import type React from 'react';
 import { Link } from '@tanstack/react-router';
 import { Gift } from 'lucide-react';
 
@@ -7,11 +8,11 @@ export function Logo({
   withName,
   size = 'lg',
   className,
+  ...props
 }: {
   withName?: boolean;
   size?: 'md' | 'lg';
-  className?: string;
-}) {
+} & Omit<React.ComponentProps<typeof Link>, 'to' | 'aria-label'>) {
   return (
     <Link
       to="/{-$locale}"
@@ -20,6 +21,7 @@ export function Logo({
         'flex items-center gap-2 font-medium text-secondary-foreground',
         className,
       )}
+      {...props}
     >
       <div
         className={cn(
