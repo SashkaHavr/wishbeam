@@ -1,9 +1,9 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
-import { ErrorComponent } from './components/error-component';
-import { NotFoundComponent } from './components/not-found-component';
-import { PendingComponent } from './components/pending-component';
+import { ErrorComponent } from './components/router-default/error-component';
+import { NotFoundComponent } from './components/router-default/not-found-component';
+import { PendingComponent } from './components/router-default/pending-component';
 import { createTRPCRouteContext, TRPCProvider } from './lib/trpc';
 import { routeTree } from './routeTree.gen';
 

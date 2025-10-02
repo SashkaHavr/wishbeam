@@ -4,7 +4,7 @@ import {
 } from '@tanstack/react-router';
 import { useTranslations } from 'use-intl';
 
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 export function ErrorComponent({ error }: { error: Error }) {
   const t = useTranslations();

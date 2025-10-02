@@ -1,6 +1,6 @@
 import { useTranslations } from 'use-intl';
 
-import { LoadingSpinner } from './ui/loading-spinner';
+import { LoadingSpinner } from '../ui/loading-spinner';
 
 export function PendingComponent() {
   const t = useTranslations();

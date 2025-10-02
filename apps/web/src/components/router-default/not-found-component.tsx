@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslations } from 'use-intl';
 
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 export function NotFoundComponent() {
   const t = useTranslations();
