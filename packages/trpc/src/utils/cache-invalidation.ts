@@ -6,7 +6,7 @@ export function getCacheInvalidationSubject(userId: string) {
   return `cache-invalidation.${userId}`;
 }
 
-export const cacheInvalidationSchema = z.union([
+export const cacheInvalidationSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('wishlists') }),
   z.object({ type: z.literal('wishlist-data'), wishlistId: z.string() }),
 ]);
