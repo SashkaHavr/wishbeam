@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { PlusIcon } from 'lucide-react';
 
 import { wishlistSchema } from '@wishbeam/utils/schemas';
 
@@ -14,13 +13,15 @@ import {
   ResponsiveDialogTitle,
 } from '~/components/responsive-dialog';
 import { useTRPC } from '~/lib/trpc';
-import { AppDialogClose, AppDialogTrigger } from '../app-dialog';
+import { AppDialogClose } from '../app-dialog';
 import { useAppForm } from '../form/use-app-form';
 
-export function CreateWishlistButton({
+export function CreateWishlistDialog({
   defaultTitle = '',
+  children,
 }: {
   defaultTitle?: string;
+  children?: React.ReactNode;
 }) {
   const trpc = useTRPC();
   const createWishlist = useMutation(
@@ -54,10 +55,7 @@ export function CreateWishlistButton({
 
   return (
     <ResponsiveDialog open={open} onOpenChange={setOpen}>
-      <AppDialogTrigger size="lg" variant="outline">
-        <PlusIcon />
-        <span>Create new wishlist</span>
-      </AppDialogTrigger>
+      {children}
       <ResponsiveDialogContent>
         <form.AppForm>
           <form.Form className="flex w-full flex-col gap-4">

@@ -1,8 +1,20 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { CircleSlash2Icon, GiftIcon, PlusIcon } from 'lucide-react';
 
-import { CreateWishlistButton } from '~/components/app/create-wishlist-button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '~/components/ui/empty';
+
+import { AppDialogTrigger } from '~/components/app-dialog';
+import { CreateWishlistDialog } from '~/components/app/create-wishlist-dialog';
 import { WishlistCard } from '~/components/app/wishlist-card';
+import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
 import { wishlistsGetOwnedServerFn } from '~/lib/trpc-server';
 
@@ -20,16 +32,46 @@ function RouteComponent() {
   const trpc = useTRPC();
   const wishlists = useSuspenseQuery(trpc.wishlist.getOwned.queryOptions());
 
+  if (wishlists.data.wishlists.length === 0) {
+    return (
+      <div className="grid h-full grid-rows-1 items-center justify-items-center pb-20">
+        <Empty className="row-[1]">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <CircleSlash2Icon />
+            </EmptyMedia>
+            <EmptyTitle>No Wishlists Yet</EmptyTitle>
+            <EmptyDescription>
+              You haven&apos;t created any wishlists yet. Get started by
+              creating your first wishlist.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <CreateWishlistDialog>
+              <AppDialogTrigger className="mx-4 w-full">
+                <GiftIcon />
+                <span>Create Wishlist</span>
+              </AppDialogTrigger>
+            </CreateWishlistDialog>
+          </EmptyContent>
+        </Empty>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid w-full grid-cols-[minmax(0,_1fr)_minmax(0,_768px)_minmax(0,_1fr)] px-4 pt-6 pb-4">
-      <div className="col-[1]" />
-      <div className="col-[2] flex flex-col gap-4">
+    <PageLayout>
+      <div className="flex flex-col gap-4">
         {wishlists.data.wishlists.map((wishlist) => (
           <WishlistCard key={wishlist.id} wishlist={wishlist} />
         ))}
-        <CreateWishlistButton />
+        <CreateWishlistDialog>
+          <AppDialogTrigger size="lg" variant="outline">
+            <PlusIcon />
+            <span>Create new wishlist</span>
+          </AppDialogTrigger>
+        </CreateWishlistDialog>
       </div>
-      <div className="col-[3]" />
-    </div>
+    </PageLayout>
   );
 }

@@ -41,6 +41,13 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@utility grid-cols-limited-md {
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, var(--breakpoint-md))
+    minmax(0, 1fr);
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
