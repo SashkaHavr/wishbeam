@@ -21,7 +21,7 @@ import { wishlistsGetOwnedServerFn } from '~/lib/trpc-server';
 export const Route = createFileRoute('/app/wishlists/')({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.wishlist.getOwned.queryKey(),
+      queryKey: context.trpc.ownedWishlist.getAll.queryKey(),
       queryFn: () => wishlistsGetOwnedServerFn(),
     });
   },
@@ -30,7 +30,7 @@ export const Route = createFileRoute('/app/wishlists/')({
 
 function RouteComponent() {
   const trpc = useTRPC();
-  const wishlists = useSuspenseQuery(trpc.wishlist.getOwned.queryOptions());
+  const wishlists = useSuspenseQuery(trpc.ownedWishlist.getAll.queryOptions());
 
   if (wishlists.data.wishlists.length === 0) {
     return (

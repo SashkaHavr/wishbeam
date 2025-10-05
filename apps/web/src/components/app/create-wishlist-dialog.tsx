@@ -25,15 +25,17 @@ export function CreateWishlistDialog({
 }) {
   const trpc = useTRPC();
   const createWishlist = useMutation(
-    trpc.wishlist.create.mutationOptions({
+    trpc.ownedWishlist.create.mutationOptions({
       onSuccess: (data, variables, onMutateResult, context) => {
-        context.client.setQueryData(trpc.wishlist.getOwned.queryKey(), (old) =>
-          old
-            ? { wishlists: [...old.wishlists, data.newWishlist] }
-            : { wishlists: [data.newWishlist] },
+        context.client.setQueryData(
+          trpc.ownedWishlist.getAll.queryKey(),
+          (old) =>
+            old
+              ? { wishlists: [...old.wishlists, data.newWishlist] }
+              : { wishlists: [data.newWishlist] },
         );
         void context.client.invalidateQueries({
-          queryKey: trpc.wishlist.getOwned.queryKey(),
+          queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
       },
     }),

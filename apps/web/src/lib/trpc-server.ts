@@ -17,12 +17,12 @@ export const trpcServerFnMiddleware = createMiddleware({
 export const wishlistsGetOwnedServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .handler(async ({ context }) => {
-    return context.trpc.wishlist.getOwned();
+    return context.trpc.ownedWishlist.getAll();
   });
 
 export const wishlistGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .validator(z.object({ id: z.string() }))
   .handler(async ({ context, data }) => {
-    return context.trpc.wishlist.getById(data);
+    return context.trpc.ownedWishlist.getById(data);
   });

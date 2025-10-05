@@ -10,14 +10,16 @@ export function useCacheInvalidation() {
     trpc.cache.invalidations.subscriptionOptions(void 0, {
       onData: (data) => {
         switch (data.type) {
-          case 'wishlists':
+          case 'wishlists.getAll':
             void queryClient.invalidateQueries({
-              queryKey: trpc.wishlist.getOwned.queryKey(),
+              queryKey: trpc.ownedWishlist.getAll.queryKey(),
             });
             break;
-          case 'wishlist-data':
+          case 'wishlists.getById':
             void queryClient.invalidateQueries({
-              queryKey: trpc.wishlist.getById.queryKey({ id: data.wishlistId }),
+              queryKey: trpc.ownedWishlist.getById.queryKey({
+                id: data.wishlistId,
+              }),
             });
             break;
         }

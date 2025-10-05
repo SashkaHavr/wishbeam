@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 export function NotFoundComponent() {
   const t = useTranslations();
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 pb-20">
+    <div className="flex flex-col items-center justify-center gap-4 pt-20">
       <p className="text-lg font-semibold">{t('routeComponents.notFound')}</p>
       <Button asChild variant="link">
         <Link to="/">{t('routeComponents.returnToHomePage')}</Link>

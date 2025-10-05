@@ -1,7 +1,8 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { EditIcon } from 'lucide-react';
+import { EditIcon, TrashIcon } from 'lucide-react';
 
+import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
@@ -13,8 +14,16 @@ import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
 export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
     try {
+      console.dir(
+        context.queryClient.getQueryData(
+          context.trpc.ownedWishlist.getById.queryKey({ id: params.id }),
+        ),
+        { depth: null },
+      );
       await context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlist.getById.queryKey({ id: params.id }),
+        queryKey: context.trpc.ownedWishlist.getById.queryKey({
+          id: params.id,
+        }),
         queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
       });
     } catch {
@@ -28,9 +37,56 @@ function RouteComponent() {
   const trpc = useTRPC();
   const wishlistId = Route.useParams({ select: (state) => state.id });
   const data = useSuspenseQuery(
-    trpc.wishlist.getById.queryOptions({ id: wishlistId }),
+    trpc.ownedWishlist.getById.queryOptions({ id: wishlistId }),
   );
   const wishlist = data.data.wishlist;
+  const navigate = Route.useNavigate();
+
+  const deleteWishlistMutation = useMutation(
+    trpc.ownedWishlist.delete.mutationOptions({
+      onMutate: async (values, context) => {
+        await context.client.cancelQueries({
+          queryKey: trpc.ownedWishlist.getAll.queryKey(),
+        });
+
+        const previous = {
+          wishlists: context.client.getQueryData(
+            trpc.ownedWishlist.getAll.queryKey(),
+          ),
+        };
+        context.client.setQueryData(
+          trpc.ownedWishlist.getAll.queryKey(),
+          (old) => {
+            if (!old) return old;
+            return {
+              wishlists: old.wishlists.filter(
+                (wishlist) => wishlist.id !== values.id,
+              ),
+            };
+          },
+        );
+
+        await navigate({ to: '/app/wishlists' });
+
+        return { previous };
+      },
+      onError: (err, values, onMutateResult, context) => {
+        if (!onMutateResult) return;
+        context.client.setQueryData(
+          trpc.ownedWishlist.getAll.queryKey(),
+          onMutateResult.previous.wishlists,
+        );
+      },
+      onSettled: async (data, error, values, onMutateResult, context) => {
+        void context.client.invalidateQueries({
+          queryKey: trpc.ownedWishlist.getAll.queryKey(),
+        });
+        await context.client.resetQueries({
+          queryKey: trpc.ownedWishlist.getById.queryKey({ id: values.id }),
+        });
+      },
+    }),
+  );
 
   return (
     <PageLayout>
@@ -43,11 +99,20 @@ function RouteComponent() {
             </p>
           </div>
           <div className="grow" />
-          <UpdateWishlistDialog wishlist={wishlist}>
-            <AppDialogTrigger variant="outline">
-              <EditIcon />
-            </AppDialogTrigger>
-          </UpdateWishlistDialog>
+          <div className="flex gap-1">
+            <UpdateWishlistDialog wishlist={wishlist}>
+              <AppDialogTrigger variant="outline" size="icon">
+                <EditIcon />
+              </AppDialogTrigger>
+            </UpdateWishlistDialog>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => deleteWishlistMutation.mutate({ id: wishlist.id })}
+            >
+              <TrashIcon />
+            </Button>
+          </div>
         </div>
         <div className="px-2">
           <Separator />
