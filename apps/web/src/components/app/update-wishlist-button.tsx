@@ -1,28 +1,28 @@
 import { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { EditIcon } from 'lucide-react';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistSchema } from '@wishbeam/utils/schemas';
 
 import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-  ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-} from '~/components/responsive-dialog';
+  AppDialog,
+  AppDialogClose,
+  AppDialogContent,
+  AppDialogDescription,
+  AppDialogFooter,
+  AppDialogHeader,
+  AppDialogTitle,
+} from '~/components/app-dialog';
 import { useTRPC } from '~/lib/trpc';
-import { AppDialogClose, AppDialogTrigger } from '../app-dialog';
 import { useAppForm } from '../form/use-app-form';
 
 interface Props {
   wishlist: TRPCOutput['wishlist']['getById']['wishlist'];
+  children: React.ReactNode;
 }
 
-export function UpdateWishlistButton({ wishlist }: Props) {
+export function UpdateWishlistDialog({ wishlist, children }: Props) {
   const trpc = useTRPC();
   const updateWishlist = useMutation(
     trpc.wishlist.update.mutationOptions({
@@ -93,19 +93,17 @@ export function UpdateWishlistButton({ wishlist }: Props) {
   });
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={setOpen}>
-      <AppDialogTrigger size="icon" variant="outline">
-        <EditIcon />
-      </AppDialogTrigger>
-      <ResponsiveDialogContent>
+    <AppDialog open={open} onOpenChange={setOpen}>
+      {children}
+      <AppDialogContent>
         <form.AppForm>
           <form.Form className="flex w-full flex-col gap-4">
-            <ResponsiveDialogHeader>
-              <ResponsiveDialogTitle>Update wishlist</ResponsiveDialogTitle>
-              <ResponsiveDialogDescription>
+            <AppDialogHeader>
+              <AppDialogTitle>Update wishlist</AppDialogTitle>
+              <AppDialogDescription>
                 Edit a title and description for your wishlist.
-              </ResponsiveDialogDescription>
-            </ResponsiveDialogHeader>
+              </AppDialogDescription>
+            </AppDialogHeader>
             <div className="flex flex-col gap-4 p-4 pb-0 md:p-0">
               <form.AppField name="title">
                 {(field) => (
@@ -124,13 +122,13 @@ export function UpdateWishlistButton({ wishlist }: Props) {
                 )}
               </form.AppField>
             </div>
-            <ResponsiveDialogFooter>
+            <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <form.FormSubmitButton>Update wishlist</form.FormSubmitButton>
-            </ResponsiveDialogFooter>
+            </AppDialogFooter>
           </form.Form>
         </form.AppForm>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 }

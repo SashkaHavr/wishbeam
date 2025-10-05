@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 
 import { wishlistSchema } from '@wishbeam/utils/schemas';
 
 import {
-  ResponsiveDialog,
-  ResponsiveDialogContent,
-  ResponsiveDialogDescription,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-} from '~/components/responsive-dialog';
+  AppDialog,
+  AppDialogClose,
+  AppDialogContent,
+  AppDialogDescription,
+  AppDialogFooter,
+  AppDialogHeader,
+  AppDialogTitle,
+} from '~/components/app-dialog';
 import { useTRPC } from '~/lib/trpc';
-import { AppDialogClose } from '../app-dialog';
 import { useAppForm } from '../form/use-app-form';
 
 export function CreateWishlistDialog({
@@ -21,7 +21,7 @@ export function CreateWishlistDialog({
   children,
 }: {
   defaultTitle?: string;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   const trpc = useTRPC();
   const createWishlist = useMutation(
@@ -54,17 +54,17 @@ export function CreateWishlistDialog({
   });
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+    <AppDialog open={open} onOpenChange={setOpen}>
       {children}
-      <ResponsiveDialogContent>
+      <AppDialogContent>
         <form.AppForm>
           <form.Form className="flex w-full flex-col gap-4">
-            <ResponsiveDialogHeader>
-              <ResponsiveDialogTitle>Create new wishlist</ResponsiveDialogTitle>
-              <ResponsiveDialogDescription>
+            <AppDialogHeader>
+              <AppDialogTitle>Create new wishlist</AppDialogTitle>
+              <AppDialogDescription>
                 Add a title and description to your wishlist.
-              </ResponsiveDialogDescription>
-            </ResponsiveDialogHeader>
+              </AppDialogDescription>
+            </AppDialogHeader>
             <div className="flex flex-col gap-4 p-4 pb-0 md:p-0">
               <form.AppField name="title">
                 {(field) => (
@@ -83,13 +83,13 @@ export function CreateWishlistDialog({
                 )}
               </form.AppField>
             </div>
-            <ResponsiveDialogFooter>
+            <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <form.FormSubmitButton>Create wishlist</form.FormSubmitButton>
-            </ResponsiveDialogFooter>
+            </AppDialogFooter>
           </form.Form>
         </form.AppForm>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 }

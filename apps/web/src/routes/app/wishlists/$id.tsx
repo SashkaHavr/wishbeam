@@ -1,9 +1,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
+import { EditIcon } from 'lucide-react';
 
 import { Separator } from '~/components/ui/separator';
 
-import { UpdateWishlistButton } from '~/components/app/update-wishlist-button';
+import { AppDialogTrigger } from '~/components/app-dialog';
+import { UpdateWishlistDialog } from '~/components/app/update-wishlist-button';
 import { useTRPC } from '~/lib/trpc';
 import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
 
@@ -39,7 +41,11 @@ function RouteComponent() {
           </p>
         </div>
         <div className="grow" />
-        <UpdateWishlistButton wishlist={wishlist} />
+        <UpdateWishlistDialog wishlist={wishlist}>
+          <AppDialogTrigger variant="outline">
+            <EditIcon />
+          </AppDialogTrigger>
+        </UpdateWishlistDialog>
       </div>
       <div className="px-2">
         <Separator />
