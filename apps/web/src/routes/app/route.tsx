@@ -1,33 +1,34 @@
-import { isServer } from '@tanstack/react-query';
 import {
   createFileRoute,
   Outlet,
   redirect,
   useRouter,
 } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import { getCookie as getCookieServer } from '@tanstack/react-start/server';
-import { getCookie, setCookie } from 'utils/cookie';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import { getCookie } from '@tanstack/react-start/server';
 
 import { AppNav } from '~/components/app-nav';
 import { useCacheInvalidation } from '~/hooks/use-cache-invalidation';
+import { getClientCookie, setClientCookie } from '~/utils/cookie';
 
 const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
 
-const getDesktopSidebarOpenServerFn = createServerFn().handler(() => {
-  return getCookieServer(desktopSidebarOpenCookieName);
-});
+const getDesktopSidebarOpen = createIsomorphicFn()
+  .server(() => {
+    return getCookie(desktopSidebarOpenCookieName);
+  })
+  .client(() => {
+    return getClientCookie(desktopSidebarOpenCookieName);
+  });
 
-export const Route = createFileRoute('/{-$locale}/app')({
-  beforeLoad: async ({ context }) => {
+export const Route = createFileRoute('/app')({
+  beforeLoad: ({ context }) => {
     if (!context.auth.user) {
-      throw redirect({ to: '/{-$locale}' });
+      throw redirect({ to: '/' });
     }
     return {
       desktopSidebarOpen: JSON.parse(
-        (isServer
-          ? await getDesktopSidebarOpenServerFn()
-          : getCookie(desktopSidebarOpenCookieName)) ?? 'true',
+        getDesktopSidebarOpen() ?? 'true',
       ) as boolean,
     };
   },
@@ -46,7 +47,7 @@ function RouteComponent() {
     <AppNav
       desktopSidebarOpen={desktopSidebarOpen}
       onDesktopSidebarOpenChange={(open) => {
-        setCookie(desktopSidebarOpenCookieName, JSON.stringify(open));
+        setClientCookie(desktopSidebarOpenCookieName, JSON.stringify(open));
         void router.invalidate();
       }}
     >

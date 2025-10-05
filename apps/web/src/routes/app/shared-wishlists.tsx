@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/{-$locale}/app/shared-wishlists')({
+export const Route = createFileRoute('/app/shared-wishlists')({
   component: RouteComponent,
 });
 

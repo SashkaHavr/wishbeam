@@ -1,9 +1,9 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/{-$locale}/(public)')({
+export const Route = createFileRoute('/(public)')({
   beforeLoad: ({ context }) => {
     if (context.auth.user) {
-      throw redirect({ to: '/{-$locale}/app' });
+      throw redirect({ to: '/app' });
     }
   },
   component: RouteComponent,

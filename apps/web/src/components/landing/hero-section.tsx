@@ -72,7 +72,7 @@ export function HeroSection() {
               >
                 <div className="mt-8">
                   <Button size="lg" asChild>
-                    <Link to="/{-$locale}/login">
+                    <Link to="/login">
                       <ListTodo className="relative size-4" />
                       <span className="text-nowrap">Create your wishlist</span>
                     </Link>

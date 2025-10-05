@@ -6,7 +6,7 @@ import { IntlProvider } from '~/lib/intl';
 
 export function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   const locale = useRouteContext({
-    from: '/{-$locale}',
+    from: '__root__',
     select: (s) => s.intl.locale,
   });
 

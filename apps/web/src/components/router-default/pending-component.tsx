@@ -7,7 +7,7 @@ export function PendingComponent() {
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-1 pb-20">
       <LoadingSpinner />
-      <p className="text-lg">{t('defaultComponents.loading')}</p>
+      <p className="text-lg">{t('routeComponents.loading')}</p>
     </div>
   );
 }

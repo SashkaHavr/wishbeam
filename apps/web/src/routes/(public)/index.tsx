@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { HeroSection } from '~/components/landing/hero-section';
 
-export const Route = createFileRoute('/{-$locale}/(public)/')({
+export const Route = createFileRoute('/(public)/')({
   component: RouteComponent,
 });
 

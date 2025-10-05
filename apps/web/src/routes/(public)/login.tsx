@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { LoginForm } from '~/components/login-form';
 
-export const Route = createFileRoute('/{-$locale}/(public)/login')({
+export const Route = createFileRoute('/(public)/login')({
   component: RouteComponent,
 });
 

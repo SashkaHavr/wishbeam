@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { NavLinkProps } from 'utils/nav-links';
 import { useState } from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link, useRouterState } from '@tanstack/react-router';
@@ -13,12 +12,13 @@ import {
   SunIcon,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { navLinks } from 'utils/nav-links';
 
+import type { NavLinkProps } from '~/utils/nav-links';
 import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
 import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
+import { navLinks } from '~/utils/nav-links';
 import { Logo } from './logo';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
@@ -249,7 +249,11 @@ function ProfileButtonWithPopover({
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <ProfileButton label="Profile" endIcon={<EllipsisVerticalIcon />} />
+        <ProfileButton
+          label="Profile"
+          endIcon={<EllipsisVerticalIcon />}
+          open={open}
+        />
       </PopoverTrigger>
       <PopoverContent side={mobile ? 'top' : 'right'} className="p-1">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">

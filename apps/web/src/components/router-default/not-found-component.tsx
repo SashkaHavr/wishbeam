@@ -7,9 +7,9 @@ export function NotFoundComponent() {
   const t = useTranslations();
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-4 pb-20">
-      <p className="text-lg font-semibold">{t('defaultComponents.notFound')}</p>
+      <p className="text-lg font-semibold">{t('routeComponents.notFound')}</p>
       <Button asChild variant="link">
-        <Link to="/{-$locale}">{t('defaultComponents.returnToHomePage')}</Link>
+        <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
       </Button>
     </div>
   );

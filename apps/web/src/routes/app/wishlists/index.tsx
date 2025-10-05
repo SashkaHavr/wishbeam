@@ -6,7 +6,7 @@ import { WishlistCard } from '~/components/app/wishlist-card';
 import { useTRPC } from '~/lib/trpc';
 import { wishlistsGetOwnedServerFn } from '~/lib/trpc-server';
 
-export const Route = createFileRoute('/{-$locale}/app/wishlists/')({
+export const Route = createFileRoute('/app/wishlists/')({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       queryKey: context.trpc.wishlist.getOwned.queryKey(),

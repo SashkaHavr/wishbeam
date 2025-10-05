@@ -11,87 +11,70 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
-import { Route as Char123LocaleChar125AppRouteRouteImport } from './routes/{-$locale}/app/route'
-import { Route as Char123LocaleChar125publicRouteRouteImport } from './routes/{-$locale}/(public)/route'
-import { Route as Char123LocaleChar125AppIndexRouteImport } from './routes/{-$locale}/app/index'
-import { Route as Char123LocaleChar125publicIndexRouteImport } from './routes/{-$locale}/(public)/index'
-import { Route as Char123LocaleChar125AppSharedWishlistsRouteImport } from './routes/{-$locale}/app/shared-wishlists'
-import { Route as Char123LocaleChar125AppSettingsRouteImport } from './routes/{-$locale}/app/settings'
-import { Route as Char123LocaleChar125AppAccountRouteImport } from './routes/{-$locale}/app/account'
-import { Route as Char123LocaleChar125publicLoginRouteImport } from './routes/{-$locale}/(public)/login'
-import { Route as Char123LocaleChar125AppWishlistsIndexRouteImport } from './routes/{-$locale}/app/wishlists/index'
-import { Route as Char123LocaleChar125AppWishlistsIdRouteImport } from './routes/{-$locale}/app/wishlists/$id'
+import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as AppSharedWishlistsRouteImport } from './routes/app/shared-wishlists'
+import { Route as AppSettingsRouteImport } from './routes/app/settings'
+import { Route as AppAccountRouteImport } from './routes/app/account'
+import { Route as publicLoginRouteImport } from './routes/(public)/login'
+import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
+import { Route as AppWishlistsIdRouteImport } from './routes/app/wishlists/$id'
 import { ServerRoute as TrpcSplatServerRouteImport } from './routes/trpc.$'
 import { ServerRoute as AuthSplatServerRouteImport } from './routes/auth.$'
 
 const rootServerRouteImport = createServerRootRoute()
 
-const Char123LocaleChar125RouteRoute =
-  Char123LocaleChar125RouteRouteImport.update({
-    id: '/{-$locale}',
-    path: '/{-$locale}',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char123LocaleChar125AppRouteRoute =
-  Char123LocaleChar125AppRouteRouteImport.update({
-    id: '/app',
-    path: '/app',
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const Char123LocaleChar125publicRouteRoute =
-  Char123LocaleChar125publicRouteRouteImport.update({
-    id: '/(public)',
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const Char123LocaleChar125AppIndexRoute =
-  Char123LocaleChar125AppIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
-const Char123LocaleChar125publicIndexRoute =
-  Char123LocaleChar125publicIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => Char123LocaleChar125publicRouteRoute,
-  } as any)
-const Char123LocaleChar125AppSharedWishlistsRoute =
-  Char123LocaleChar125AppSharedWishlistsRouteImport.update({
-    id: '/shared-wishlists',
-    path: '/shared-wishlists',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
-const Char123LocaleChar125AppSettingsRoute =
-  Char123LocaleChar125AppSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
-const Char123LocaleChar125AppAccountRoute =
-  Char123LocaleChar125AppAccountRouteImport.update({
-    id: '/account',
-    path: '/account',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
-const Char123LocaleChar125publicLoginRoute =
-  Char123LocaleChar125publicLoginRouteImport.update({
-    id: '/login',
-    path: '/login',
-    getParentRoute: () => Char123LocaleChar125publicRouteRoute,
-  } as any)
-const Char123LocaleChar125AppWishlistsIndexRoute =
-  Char123LocaleChar125AppWishlistsIndexRouteImport.update({
-    id: '/wishlists/',
-    path: '/wishlists/',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
-const Char123LocaleChar125AppWishlistsIdRoute =
-  Char123LocaleChar125AppWishlistsIdRouteImport.update({
-    id: '/wishlists/$id',
-    path: '/wishlists/$id',
-    getParentRoute: () => Char123LocaleChar125AppRouteRoute,
-  } as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const publicRouteRoute = publicRouteRouteImport.update({
+  id: '/(public)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const publicIndexRoute = publicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const AppSharedWishlistsRoute = AppSharedWishlistsRouteImport.update({
+  id: '/shared-wishlists',
+  path: '/shared-wishlists',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppAccountRoute = AppAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const publicLoginRoute = publicLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const AppWishlistsIndexRoute = AppWishlistsIndexRouteImport.update({
+  id: '/wishlists/',
+  path: '/wishlists/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppWishlistsIdRoute = AppWishlistsIdRouteImport.update({
+  id: '/wishlists/$id',
+  path: '/wishlists/$id',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const TrpcSplatServerRoute = TrpcSplatServerRouteImport.update({
   id: '/trpc/$',
   path: '/trpc/$',
@@ -104,81 +87,78 @@ const AuthSplatServerRoute = AuthSplatServerRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/': typeof Char123LocaleChar125publicIndexRoute
-  '/{-$locale}/app': typeof Char123LocaleChar125AppRouteRouteWithChildren
-  '/{-$locale}/login': typeof Char123LocaleChar125publicLoginRoute
-  '/{-$locale}/app/account': typeof Char123LocaleChar125AppAccountRoute
-  '/{-$locale}/app/settings': typeof Char123LocaleChar125AppSettingsRoute
-  '/{-$locale}/app/shared-wishlists': typeof Char123LocaleChar125AppSharedWishlistsRoute
-  '/{-$locale}/app/': typeof Char123LocaleChar125AppIndexRoute
-  '/{-$locale}/app/wishlists/$id': typeof Char123LocaleChar125AppWishlistsIdRoute
-  '/{-$locale}/app/wishlists': typeof Char123LocaleChar125AppWishlistsIndexRoute
+  '/': typeof publicIndexRoute
+  '/app': typeof AppRouteRouteWithChildren
+  '/login': typeof publicLoginRoute
+  '/app/account': typeof AppAccountRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
+  '/app/': typeof AppIndexRoute
+  '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/wishlists': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/{-$locale}/login': typeof Char123LocaleChar125publicLoginRoute
-  '/{-$locale}/app/account': typeof Char123LocaleChar125AppAccountRoute
-  '/{-$locale}/app/settings': typeof Char123LocaleChar125AppSettingsRoute
-  '/{-$locale}/app/shared-wishlists': typeof Char123LocaleChar125AppSharedWishlistsRoute
-  '/{-$locale}': typeof Char123LocaleChar125publicIndexRoute
-  '/{-$locale}/app': typeof Char123LocaleChar125AppIndexRoute
-  '/{-$locale}/app/wishlists/$id': typeof Char123LocaleChar125AppWishlistsIdRoute
-  '/{-$locale}/app/wishlists': typeof Char123LocaleChar125AppWishlistsIndexRoute
+  '/login': typeof publicLoginRoute
+  '/app/account': typeof AppAccountRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
+  '/': typeof publicIndexRoute
+  '/app': typeof AppIndexRoute
+  '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/wishlists': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/(public)': typeof Char123LocaleChar125publicRouteRouteWithChildren
-  '/{-$locale}/app': typeof Char123LocaleChar125AppRouteRouteWithChildren
-  '/{-$locale}/(public)/login': typeof Char123LocaleChar125publicLoginRoute
-  '/{-$locale}/app/account': typeof Char123LocaleChar125AppAccountRoute
-  '/{-$locale}/app/settings': typeof Char123LocaleChar125AppSettingsRoute
-  '/{-$locale}/app/shared-wishlists': typeof Char123LocaleChar125AppSharedWishlistsRoute
-  '/{-$locale}/(public)/': typeof Char123LocaleChar125publicIndexRoute
-  '/{-$locale}/app/': typeof Char123LocaleChar125AppIndexRoute
-  '/{-$locale}/app/wishlists/$id': typeof Char123LocaleChar125AppWishlistsIdRoute
-  '/{-$locale}/app/wishlists/': typeof Char123LocaleChar125AppWishlistsIndexRoute
+  '/(public)': typeof publicRouteRouteWithChildren
+  '/app': typeof AppRouteRouteWithChildren
+  '/(public)/login': typeof publicLoginRoute
+  '/app/account': typeof AppAccountRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
+  '/(public)/': typeof publicIndexRoute
+  '/app/': typeof AppIndexRoute
+  '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/wishlists/': typeof AppWishlistsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/{-$locale}'
-    | '/{-$locale}/'
-    | '/{-$locale}/app'
-    | '/{-$locale}/login'
-    | '/{-$locale}/app/account'
-    | '/{-$locale}/app/settings'
-    | '/{-$locale}/app/shared-wishlists'
-    | '/{-$locale}/app/'
-    | '/{-$locale}/app/wishlists/$id'
-    | '/{-$locale}/app/wishlists'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/app/account'
+    | '/app/settings'
+    | '/app/shared-wishlists'
+    | '/app/'
+    | '/app/wishlists/$id'
+    | '/app/wishlists'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/{-$locale}/login'
-    | '/{-$locale}/app/account'
-    | '/{-$locale}/app/settings'
-    | '/{-$locale}/app/shared-wishlists'
-    | '/{-$locale}'
-    | '/{-$locale}/app'
-    | '/{-$locale}/app/wishlists/$id'
-    | '/{-$locale}/app/wishlists'
+    | '/login'
+    | '/app/account'
+    | '/app/settings'
+    | '/app/shared-wishlists'
+    | '/'
+    | '/app'
+    | '/app/wishlists/$id'
+    | '/app/wishlists'
   id:
     | '__root__'
-    | '/{-$locale}'
-    | '/{-$locale}/(public)'
-    | '/{-$locale}/app'
-    | '/{-$locale}/(public)/login'
-    | '/{-$locale}/app/account'
-    | '/{-$locale}/app/settings'
-    | '/{-$locale}/app/shared-wishlists'
-    | '/{-$locale}/(public)/'
-    | '/{-$locale}/app/'
-    | '/{-$locale}/app/wishlists/$id'
-    | '/{-$locale}/app/wishlists/'
+    | '/(public)'
+    | '/app'
+    | '/(public)/login'
+    | '/app/account'
+    | '/app/settings'
+    | '/app/shared-wishlists'
+    | '/(public)/'
+    | '/app/'
+    | '/app/wishlists/$id'
+    | '/app/wishlists/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
+  publicRouteRoute: typeof publicRouteRouteWithChildren
+  AppRouteRoute: typeof AppRouteRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/auth/$': typeof AuthSplatServerRoute
@@ -208,82 +188,75 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/{-$locale}': {
-      id: '/{-$locale}'
-      path: '/{-$locale}'
-      fullPath: '/{-$locale}'
-      preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/{-$locale}/app': {
-      id: '/{-$locale}/app'
-      path: '/app'
-      fullPath: '/{-$locale}/app'
-      preLoaderRoute: typeof Char123LocaleChar125AppRouteRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
-    '/{-$locale}/(public)': {
-      id: '/{-$locale}/(public)'
+    '/(public)': {
+      id: '/(public)'
       path: '/'
-      fullPath: '/{-$locale}/'
-      preLoaderRoute: typeof Char123LocaleChar125publicRouteRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
+      fullPath: '/'
+      preLoaderRoute: typeof publicRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/{-$locale}/app/': {
-      id: '/{-$locale}/app/'
+    '/app/': {
+      id: '/app/'
       path: '/'
-      fullPath: '/{-$locale}/app/'
-      preLoaderRoute: typeof Char123LocaleChar125AppIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/{-$locale}/(public)/': {
-      id: '/{-$locale}/(public)/'
+    '/(public)/': {
+      id: '/(public)/'
       path: '/'
-      fullPath: '/{-$locale}/'
-      preLoaderRoute: typeof Char123LocaleChar125publicIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125publicRouteRoute
+      fullPath: '/'
+      preLoaderRoute: typeof publicIndexRouteImport
+      parentRoute: typeof publicRouteRoute
     }
-    '/{-$locale}/app/shared-wishlists': {
-      id: '/{-$locale}/app/shared-wishlists'
+    '/app/shared-wishlists': {
+      id: '/app/shared-wishlists'
       path: '/shared-wishlists'
-      fullPath: '/{-$locale}/app/shared-wishlists'
-      preLoaderRoute: typeof Char123LocaleChar125AppSharedWishlistsRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/shared-wishlists'
+      preLoaderRoute: typeof AppSharedWishlistsRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/{-$locale}/app/settings': {
-      id: '/{-$locale}/app/settings'
+    '/app/settings': {
+      id: '/app/settings'
       path: '/settings'
-      fullPath: '/{-$locale}/app/settings'
-      preLoaderRoute: typeof Char123LocaleChar125AppSettingsRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/{-$locale}/app/account': {
-      id: '/{-$locale}/app/account'
+    '/app/account': {
+      id: '/app/account'
       path: '/account'
-      fullPath: '/{-$locale}/app/account'
-      preLoaderRoute: typeof Char123LocaleChar125AppAccountRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/account'
+      preLoaderRoute: typeof AppAccountRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/{-$locale}/(public)/login': {
-      id: '/{-$locale}/(public)/login'
+    '/(public)/login': {
+      id: '/(public)/login'
       path: '/login'
-      fullPath: '/{-$locale}/login'
-      preLoaderRoute: typeof Char123LocaleChar125publicLoginRouteImport
-      parentRoute: typeof Char123LocaleChar125publicRouteRoute
+      fullPath: '/login'
+      preLoaderRoute: typeof publicLoginRouteImport
+      parentRoute: typeof publicRouteRoute
     }
-    '/{-$locale}/app/wishlists/': {
-      id: '/{-$locale}/app/wishlists/'
+    '/app/wishlists/': {
+      id: '/app/wishlists/'
       path: '/wishlists'
-      fullPath: '/{-$locale}/app/wishlists'
-      preLoaderRoute: typeof Char123LocaleChar125AppWishlistsIndexRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/wishlists'
+      preLoaderRoute: typeof AppWishlistsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/{-$locale}/app/wishlists/$id': {
-      id: '/{-$locale}/app/wishlists/$id'
+    '/app/wishlists/$id': {
+      id: '/app/wishlists/$id'
       path: '/wishlists/$id'
-      fullPath: '/{-$locale}/app/wishlists/$id'
-      preLoaderRoute: typeof Char123LocaleChar125AppWishlistsIdRouteImport
-      parentRoute: typeof Char123LocaleChar125AppRouteRoute
+      fullPath: '/app/wishlists/$id'
+      preLoaderRoute: typeof AppWishlistsIdRouteImport
+      parentRoute: typeof AppRouteRoute
     }
   }
 }
@@ -306,69 +279,45 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
-interface Char123LocaleChar125publicRouteRouteChildren {
-  Char123LocaleChar125publicLoginRoute: typeof Char123LocaleChar125publicLoginRoute
-  Char123LocaleChar125publicIndexRoute: typeof Char123LocaleChar125publicIndexRoute
+interface publicRouteRouteChildren {
+  publicLoginRoute: typeof publicLoginRoute
+  publicIndexRoute: typeof publicIndexRoute
 }
 
-const Char123LocaleChar125publicRouteRouteChildren: Char123LocaleChar125publicRouteRouteChildren =
-  {
-    Char123LocaleChar125publicLoginRoute: Char123LocaleChar125publicLoginRoute,
-    Char123LocaleChar125publicIndexRoute: Char123LocaleChar125publicIndexRoute,
-  }
-
-const Char123LocaleChar125publicRouteRouteWithChildren =
-  Char123LocaleChar125publicRouteRoute._addFileChildren(
-    Char123LocaleChar125publicRouteRouteChildren,
-  )
-
-interface Char123LocaleChar125AppRouteRouteChildren {
-  Char123LocaleChar125AppAccountRoute: typeof Char123LocaleChar125AppAccountRoute
-  Char123LocaleChar125AppSettingsRoute: typeof Char123LocaleChar125AppSettingsRoute
-  Char123LocaleChar125AppSharedWishlistsRoute: typeof Char123LocaleChar125AppSharedWishlistsRoute
-  Char123LocaleChar125AppIndexRoute: typeof Char123LocaleChar125AppIndexRoute
-  Char123LocaleChar125AppWishlistsIdRoute: typeof Char123LocaleChar125AppWishlistsIdRoute
-  Char123LocaleChar125AppWishlistsIndexRoute: typeof Char123LocaleChar125AppWishlistsIndexRoute
+const publicRouteRouteChildren: publicRouteRouteChildren = {
+  publicLoginRoute: publicLoginRoute,
+  publicIndexRoute: publicIndexRoute,
 }
 
-const Char123LocaleChar125AppRouteRouteChildren: Char123LocaleChar125AppRouteRouteChildren =
-  {
-    Char123LocaleChar125AppAccountRoute: Char123LocaleChar125AppAccountRoute,
-    Char123LocaleChar125AppSettingsRoute: Char123LocaleChar125AppSettingsRoute,
-    Char123LocaleChar125AppSharedWishlistsRoute:
-      Char123LocaleChar125AppSharedWishlistsRoute,
-    Char123LocaleChar125AppIndexRoute: Char123LocaleChar125AppIndexRoute,
-    Char123LocaleChar125AppWishlistsIdRoute:
-      Char123LocaleChar125AppWishlistsIdRoute,
-    Char123LocaleChar125AppWishlistsIndexRoute:
-      Char123LocaleChar125AppWishlistsIndexRoute,
-  }
+const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
+  publicRouteRouteChildren,
+)
 
-const Char123LocaleChar125AppRouteRouteWithChildren =
-  Char123LocaleChar125AppRouteRoute._addFileChildren(
-    Char123LocaleChar125AppRouteRouteChildren,
-  )
-
-interface Char123LocaleChar125RouteRouteChildren {
-  Char123LocaleChar125publicRouteRoute: typeof Char123LocaleChar125publicRouteRouteWithChildren
-  Char123LocaleChar125AppRouteRoute: typeof Char123LocaleChar125AppRouteRouteWithChildren
+interface AppRouteRouteChildren {
+  AppAccountRoute: typeof AppAccountRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppSharedWishlistsRoute: typeof AppSharedWishlistsRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppWishlistsIdRoute: typeof AppWishlistsIdRoute
+  AppWishlistsIndexRoute: typeof AppWishlistsIndexRoute
 }
 
-const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
-  {
-    Char123LocaleChar125publicRouteRoute:
-      Char123LocaleChar125publicRouteRouteWithChildren,
-    Char123LocaleChar125AppRouteRoute:
-      Char123LocaleChar125AppRouteRouteWithChildren,
-  }
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppAccountRoute: AppAccountRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppSharedWishlistsRoute: AppSharedWishlistsRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppWishlistsIdRoute: AppWishlistsIdRoute,
+  AppWishlistsIndexRoute: AppWishlistsIndexRoute,
+}
 
-const Char123LocaleChar125RouteRouteWithChildren =
-  Char123LocaleChar125RouteRoute._addFileChildren(
-    Char123LocaleChar125RouteRouteChildren,
-  )
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
+  publicRouteRoute: publicRouteRouteWithChildren,
+  AppRouteRoute: AppRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

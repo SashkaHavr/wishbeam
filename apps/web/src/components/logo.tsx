@@ -15,7 +15,7 @@ export function Logo({
 } & Omit<React.ComponentProps<typeof Link>, 'to' | 'aria-label'>) {
   return (
     <Link
-      to="/{-$locale}"
+      to=""
       aria-label="home"
       className={cn(
         'flex items-center gap-2 font-medium text-secondary-foreground',

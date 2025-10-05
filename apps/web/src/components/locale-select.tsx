@@ -1,8 +1,9 @@
 import type { Locale } from 'use-intl';
-import { useNavigate, useRouteContext } from '@tanstack/react-router';
+import { useRouteContext, useRouter } from '@tanstack/react-router';
 
-import { isLocale, locales } from '@wishbeam/intl';
+import { isLocale, localeCookieName, locales } from '@wishbeam/intl';
 
+import { setClientCookie } from '~/utils/cookie';
 import {
   Select,
   SelectContent,
@@ -18,16 +19,17 @@ const localeToText: Record<Locale, string> = {
 
 export function LocaleSelect({ className }: { className?: string }) {
   const locale = useRouteContext({
-    from: '/{-$locale}',
+    from: '__root__',
     select: (s) => s.intl.locale,
   });
-  const navigate = useNavigate({ from: '/{-$locale}' });
+  const router = useRouter();
   return (
     <Select
       value={locale}
       onValueChange={(e) => {
         if (isLocale(e)) {
-          void navigate({ params: { locale: e } });
+          setClientCookie(localeCookieName, e);
+          void router.invalidate();
         }
       }}
     >

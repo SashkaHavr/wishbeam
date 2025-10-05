@@ -14,23 +14,23 @@ export interface NavLinkProps {
 
 const mainLinks = [
   {
-    to: '/{-$locale}/app/wishlists',
+    to: '/app/wishlists',
     label: 'My wishlists',
     icon: ListCheckIcon,
   },
   {
-    to: '/{-$locale}/app/shared-wishlists',
+    to: '/app/shared-wishlists',
     label: 'Shared with me wishlists',
     icon: Share2Icon,
   },
 ] satisfies NavLinkProps[];
 
 const bottomLinks = [
-  { to: '/{-$locale}/app/settings', label: 'Settings', icon: SettingsIcon },
+  { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
 ] satisfies NavLinkProps[];
 
 const profileMenuLinks = [
-  { to: '/{-$locale}/app/account', label: 'Account', icon: CircleUserIcon },
+  { to: '/app/account', label: 'Account', icon: CircleUserIcon },
 ] satisfies NavLinkProps[];
 
 export const navLinks = {

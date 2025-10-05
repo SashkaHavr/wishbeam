@@ -7,7 +7,7 @@ import { UpdateWishlistButton } from '~/components/app/update-wishlist-button';
 import { useTRPC } from '~/lib/trpc';
 import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
 
-export const Route = createFileRoute('/{-$locale}/app/wishlists/$id')({
+export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
     try {
       await context.queryClient.ensureQueryData({

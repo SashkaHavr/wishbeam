@@ -6,19 +6,28 @@ import {
   HeadContent,
   Outlet,
   Scripts,
-  useRouteContext,
 } from '@tanstack/react-router';
 import { ThemeProvider } from 'next-themes';
+
+import { setupZodLocale } from '@wishbeam/intl';
 
 import type { TRPCRouteContext } from '~/lib/trpc';
 import { getAuthContext } from '~/lib/auth';
 import { IntlProvider } from '~/lib/intl';
+import { getLocale, getMessages } from '~/lib/intl-server';
 import indexCss from '../index.css?url';
 
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
   beforeLoad: async ({ context: { queryClient } }) => {
+    const locale = getLocale();
+    await setupZodLocale(locale);
+
     return {
       auth: await getAuthContext(queryClient),
+      intl: {
+        messages: await getMessages(locale),
+        locale: locale,
+      },
     };
   },
   component: RootComponent,
@@ -52,8 +61,7 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  const locale = useRouteContext({
-    from: '/{-$locale}',
+  const locale = Route.useRouteContext({
     select: (s) => s.intl.locale,
   });
 
