@@ -1,5 +1,5 @@
 import { Button } from '../ui/button';
-import { LoadingSpinner } from '../ui/loading-spinner';
+import { Spinner } from '../ui/spinner';
 import { useFormContext } from './form-context';
 
 export function FormSubmitButton(
@@ -18,8 +18,8 @@ export function FormSubmitButton(
             type="submit"
             disabled={!canSubmit || (isDefaultValue && props.defaultInvalid)}
           >
-            {isSubmitting && <LoadingSpinner className="size-4" />}
-            <p>{props.children}</p>
+            {isSubmitting && <Spinner className="size-4" />}
+            <span>{props.children}</span>
             {isSubmitting && <div className="size-4" />}
           </Button>
         );

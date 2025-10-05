@@ -1,13 +1,9 @@
-import { useTranslations } from 'use-intl';
-
-import { LoadingSpinner } from '../ui/loading-spinner';
+import { Spinner } from '../ui/spinner';
 
 export function PendingComponent() {
-  const t = useTranslations();
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-1 pb-20">
-      <LoadingSpinner />
-      <p className="text-lg">{t('routeComponents.loading')}</p>
+    <div className="flex flex-col items-center justify-center pt-4">
+      <Spinner />
     </div>
   );
 }
