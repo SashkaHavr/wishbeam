@@ -1,6 +1,8 @@
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 import { EditIcon, TrashIcon } from 'lucide-react';
+import z from 'zod';
 
 import { Button } from '~/components/ui/button';
 import { Separator } from '~/components/ui/separator';
@@ -9,26 +11,27 @@ import { AppDialogTrigger } from '~/components/app-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-button';
 import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
-import { wishlistGetByIdServerFn } from '~/lib/trpc-server';
+import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
-export const Route = createFileRoute('/app/wishlists/$id')({
-  loader: async ({ context, params }) => {
+const wishlistGetByIdServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .validator(z.object({ id: z.string() }))
+  .handler(async ({ context, data }) => {
     try {
-      console.dir(
-        context.queryClient.getQueryData(
-          context.trpc.ownedWishlist.getById.queryKey({ id: params.id }),
-        ),
-        { depth: null },
-      );
-      await context.queryClient.ensureQueryData({
-        queryKey: context.trpc.ownedWishlist.getById.queryKey({
-          id: params.id,
-        }),
-        queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
-      });
+      return await context.trpc.ownedWishlist.getById(data);
     } catch {
       throw notFound();
     }
+  });
+
+export const Route = createFileRoute('/app/wishlists/$id')({
+  loader: async ({ context, params }) => {
+    await context.queryClient.ensureQueryData({
+      queryKey: context.trpc.ownedWishlist.getById.queryKey({
+        id: params.id,
+      }),
+      queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
+    });
   },
   component: RouteComponent,
 });

@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 import { CircleSlash2Icon, GiftIcon, PlusIcon } from 'lucide-react';
 
 import {
@@ -16,7 +17,13 @@ import { CreateWishlistDialog } from '~/components/app/create-wishlist-dialog';
 import { WishlistItem } from '~/components/app/wishlist-item';
 import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
-import { wishlistsGetOwnedServerFn } from '~/lib/trpc-server';
+import { trpcServerFnMiddleware } from '~/lib/trpc-server';
+
+const wishlistsGetOwnedServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .handler(async ({ context }) => {
+    return context.trpc.ownedWishlist.getAll();
+  });
 
 export const Route = createFileRoute('/app/wishlists/')({
   loader: async ({ context }) => {
