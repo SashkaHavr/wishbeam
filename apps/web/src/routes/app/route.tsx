@@ -11,7 +11,7 @@ import { AppNav } from '~/components/app-nav';
 import { useCacheInvalidation } from '~/hooks/use-cache-invalidation';
 import { getClientCookie, setClientCookie } from '~/utils/cookie';
 
-const desktopSidebarOpenCookieName = 'desktopSidebarOpen';
+const desktopSidebarOpenCookieName = 'desktop-sidebar-open';
 
 const getDesktopSidebarOpen = createIsomorphicFn()
   .server(() => {

@@ -12,10 +12,12 @@ export function Logo({
 }: {
   withName?: boolean;
   size?: 'md' | 'lg';
-} & Omit<React.ComponentProps<typeof Link>, 'to' | 'aria-label'>) {
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
     <Link
-      to=""
+      to="/"
       aria-label="home"
       className={cn(
         'flex items-center gap-2 font-medium text-secondary-foreground',
