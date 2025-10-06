@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistSchema } from '@wishbeam/utils/schemas';
@@ -14,7 +13,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from '~/components/app-dialog';
-import { useTRPC } from '~/lib/trpc';
+import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlist';
 import { useAppForm } from '../form/use-app-form';
 
 interface Props {
@@ -23,70 +22,7 @@ interface Props {
 }
 
 export function UpdateWishlistDialog({ wishlist, children }: Props) {
-  const trpc = useTRPC();
-  const updateWishlist = useMutation(
-    trpc.ownedWishlist.update.mutationOptions({
-      onMutate: async (values, context) => {
-        await context.client.cancelQueries({
-          queryKey: trpc.ownedWishlist.getAll.queryKey(),
-        });
-        await context.client.cancelQueries({
-          queryKey: trpc.ownedWishlist.getById.queryKey({ id: values.id }),
-        });
-
-        const previous = {
-          owned: context.client.getQueryData(
-            trpc.ownedWishlist.getAll.queryKey(),
-          ),
-          byId: context.client.getQueryData(
-            trpc.ownedWishlist.getById.queryKey({ id: values.id }),
-          ),
-        };
-
-        context.client.setQueryData(
-          trpc.ownedWishlist.getAll.queryKey(),
-          (old) => {
-            if (!old) return old;
-            return {
-              wishlists: old.wishlists.map((wishlist) =>
-                wishlist.id === values.id
-                  ? { ...wishlist, ...values.data }
-                  : wishlist,
-              ),
-            };
-          },
-        );
-        context.client.setQueryData(
-          trpc.ownedWishlist.getById.queryKey({ id: values.id }),
-          (old) => {
-            if (!old) return old;
-            return { wishlist: { ...old.wishlist, ...values.data } };
-          },
-        );
-
-        return { previous };
-      },
-      onError: (err, values, onMutateResult, context) => {
-        if (!onMutateResult) return;
-        context.client.setQueryData(
-          trpc.ownedWishlist.getAll.queryKey(),
-          onMutateResult.previous.owned,
-        );
-        context.client.setQueryData(
-          trpc.ownedWishlist.getById.queryKey({ id: values.id }),
-          onMutateResult.previous.byId,
-        );
-      },
-      onSettled: (data, error, values, onMutateResult, context) => {
-        void context.client.invalidateQueries({
-          queryKey: trpc.ownedWishlist.getAll.queryKey(),
-        });
-        void context.client.invalidateQueries({
-          queryKey: trpc.ownedWishlist.getById.queryKey({ id: values.id }),
-        });
-      },
-    }),
-  );
+  const updateWishlist = useUpdateWishlistMutation();
   const [open, setOpen] = useState(false);
 
   const form = useAppForm({

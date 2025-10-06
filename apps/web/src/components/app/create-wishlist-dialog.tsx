@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
-import { useMutation } from '@tanstack/react-query';
 
 import { wishlistSchema } from '@wishbeam/utils/schemas';
 
@@ -13,7 +12,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from '~/components/app-dialog';
-import { useTRPC } from '~/lib/trpc';
+import { useCreateWishlistMutation } from '~/hooks/mutations/wishlist';
 import { useAppForm } from '../form/use-app-form';
 
 export function CreateWishlistDialog({
@@ -23,23 +22,8 @@ export function CreateWishlistDialog({
   defaultTitle?: string;
   children: React.ReactNode;
 }) {
-  const trpc = useTRPC();
-  const createWishlist = useMutation(
-    trpc.ownedWishlist.create.mutationOptions({
-      onSuccess: (data, variables, onMutateResult, context) => {
-        context.client.setQueryData(
-          trpc.ownedWishlist.getAll.queryKey(),
-          (old) =>
-            old
-              ? { wishlists: [...old.wishlists, data.newWishlist] }
-              : { wishlists: [data.newWishlist] },
-        );
-        void context.client.invalidateQueries({
-          queryKey: trpc.ownedWishlist.getAll.queryKey(),
-        });
-      },
-    }),
-  );
+  const createWishlist = useCreateWishlistMutation();
+
   const [open, setOpen] = useState(false);
 
   const form = useAppForm({
