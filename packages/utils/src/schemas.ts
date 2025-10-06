@@ -2,5 +2,13 @@ import z from 'zod';
 
 export const wishlistSchema = z.object({
   title: z.string().min(1).max(100),
-  description: z.string().max(800),
+  description: z.string().max(500),
+});
+
+export const wishlistItemSchema = z.object({
+  title: z.string().min(1).max(100),
+  description: z.string().max(500),
+  links: z.array(z.url()),
+  approximatePrice: z.number().min(0),
+  quantity: z.number(),
 });

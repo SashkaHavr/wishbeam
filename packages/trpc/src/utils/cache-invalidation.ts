@@ -12,6 +12,11 @@ export const cacheInvalidationSchema = z.discriminatedUnion('type', [
     type: z.literal('wishlists.getById'),
     wishlistId: z.string(),
   }),
+  z.object({ type: z.literal('wishlists.getItems'), wishlistId: z.string() }),
+  z.object({
+    type: z.literal('wishlists.getItemById'),
+    wishlistItemId: z.string(),
+  }),
 ]);
 
 export function invalidateCache(

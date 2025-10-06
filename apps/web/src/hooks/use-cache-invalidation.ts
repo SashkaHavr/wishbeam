@@ -22,6 +22,20 @@ export function useCacheInvalidation() {
               }),
             });
             break;
+          case 'wishlists.getItems':
+            void queryClient.invalidateQueries({
+              queryKey: trpc.ownedWishlist.getItems.queryKey({
+                id: data.wishlistId,
+              }),
+            });
+            break;
+          case 'wishlists.getItemById':
+            void queryClient.invalidateQueries({
+              queryKey: trpc.ownedWishlist.getItemById.queryKey({
+                id: data.wishlistItemId,
+              }),
+            });
+            break;
         }
       },
     }),

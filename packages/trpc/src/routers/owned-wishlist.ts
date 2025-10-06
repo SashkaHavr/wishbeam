@@ -4,10 +4,11 @@ import z from 'zod';
 
 import { db } from '@wishbeam/db';
 import {
+  wishlistItem as wishlistItemTable,
   wishlistOwner as wishlistOwnerTable,
   wishlist as wishlistTable,
 } from '@wishbeam/db/schema';
-import { wishlistSchema } from '@wishbeam/utils/schemas';
+import { wishlistItemSchema, wishlistSchema } from '@wishbeam/utils/schemas';
 
 import { protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
@@ -16,6 +17,15 @@ const wishlistOutputSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
+});
+
+const wishlistItemOutputSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  links: z.array(z.string()),
+  approximatePrice: z.number().nullable(),
+  quantity: z.number(),
 });
 
 const ownedWishlistProcedure = protectedProcedure
@@ -33,6 +43,32 @@ const ownedWishlistProcedure = protectedProcedure
     return next({
       ctx: {
         ...ctx,
+        wishlist: wishlist,
+      },
+    });
+  });
+
+const ownedWishlistItemProcedure = protectedProcedure
+  .input(z.object({ id: z.uuidv7() }))
+  .use(async ({ input, ctx, next }) => {
+    const wishlistItem = await db.query.wishlistItem.findFirst({
+      where: {
+        id: input.id,
+        wishlist: { wishlistOwners: { userId: ctx.userId } },
+      },
+      with: { wishlist: true },
+    });
+    if (!wishlistItem) {
+      throw new TRPCError({
+        message: 'Wishlist item not found',
+        code: 'UNPROCESSABLE_CONTENT',
+      });
+    }
+    const { wishlist, ...restItem } = wishlistItem;
+    return next({
+      ctx: {
+        ...ctx,
+        wishlistItem: restItem,
         wishlist: wishlist,
       },
     });
@@ -118,6 +154,72 @@ export const ownedWishlistRouter = router({
       invalidateCache(ctx.userId, {
         type: 'wishlists.getById',
         wishlistId: ctx.wishlist.id,
+      });
+    }),
+
+  getItems: ownedWishlistProcedure
+    .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
+    .query(async ({ ctx }) => {
+      const wishlistItems = await db.query.wishlistItem.findMany({
+        where: { wishlistId: ctx.wishlist.id },
+        orderBy: { createdAt: 'asc' },
+      });
+      return { wishlistItems };
+    }),
+  createItem: ownedWishlistProcedure
+    .input(wishlistItemSchema)
+    .output(z.object({ wishlistItem: wishlistItemOutputSchema }))
+    .mutation(async ({ input, ctx }) => {
+      const wishlistItem = (
+        await db
+          .insert(wishlistItemTable)
+          .values({ ...input, wishlistId: ctx.wishlist.id })
+          .returning()
+      )[0];
+      if (!wishlistItem) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Could not create wishlist item',
+        });
+      }
+      return { wishlistItem };
+    }),
+
+  getItemById: ownedWishlistItemProcedure
+    .output(z.object({ wishlistItem: wishlistItemOutputSchema }))
+    .query(({ ctx }) => {
+      return { wishlistItem: ctx.wishlistItem };
+    }),
+  updateItem: ownedWishlistItemProcedure
+    .input(z.object({ data: wishlistItemSchema.partial() }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      await db
+        .update(wishlistItemTable)
+        .set(input.data)
+        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      invalidateCache(ctx.userId, {
+        type: 'wishlists.getItems',
+        wishlistId: ctx.wishlist.id,
+      });
+      invalidateCache(ctx.userId, {
+        type: 'wishlists.getItemById',
+        wishlistItemId: ctx.wishlistItem.id,
+      });
+    }),
+  deleteItem: ownedWishlistItemProcedure
+    .output(z.undefined())
+    .mutation(async ({ ctx }) => {
+      await db
+        .delete(wishlistItemTable)
+        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      invalidateCache(ctx.userId, {
+        type: 'wishlists.getItems',
+        wishlistId: ctx.wishlist.id,
+      });
+      invalidateCache(ctx.userId, {
+        type: 'wishlists.getItemById',
+        wishlistItemId: ctx.wishlistItem.id,
       });
     }),
 });

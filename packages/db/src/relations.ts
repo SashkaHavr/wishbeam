@@ -9,4 +9,11 @@ export const relations = defineRelations(schema, (r) => ({
       to: r.wishlistOwner.wishlistId,
     }),
   },
+  wishlistItem: {
+    wishlist: r.one.wishlist({
+      from: r.wishlistItem.wishlistId,
+      to: r.wishlist.id,
+      optional: false,
+    }),
+  },
 }));
