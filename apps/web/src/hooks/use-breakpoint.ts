@@ -24,9 +24,10 @@ export function useNotMatchesBreakpoint(breakpoint: keyof typeof screens) {
   return !isClient || !matches;
 }
 
-export function useMobileDesktop() {
-  const mobile = useNotMatchesBreakpoint('md');
-  const desktop = useMatchesBreakpoint('md');
-  // Both are true during SSR
-  return { mobile, desktop };
+export function useMobile() {
+  return useNotMatchesBreakpoint('md');
+}
+
+export function useDesktop() {
+  return useMatchesBreakpoint('md');
 }

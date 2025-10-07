@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
@@ -35,6 +35,26 @@ import {
 } from './ui/sheet';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+
+function useKeyboardShortcut({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key === 'b' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      onOpenChange(!open);
+    }
+  });
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+}
 
 function SidebarLink({
   icon: IconProp,
@@ -137,32 +157,28 @@ function SidebarHeader({
   onOpenChange,
 }: {
   open: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }) {
   return (
     <SidebarGroup className={cn(open ? 'flex-row' : 'gap-1')}>
       <Logo withName={open} className="p-0.5" />
-      {onOpenChange && (
-        <>
-          <div className="grow" />
-          <SidebarButton size="icon" onClick={() => onOpenChange(!open)}>
-            <div className="grid grid-cols-1 grid-rows-1">
-              <PanelLeftCloseIcon
-                className={cn(
-                  'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
-                  open ? 'opacity-100' : 'opacity-0',
-                )}
-              />
-              <PanelLeftOpenIcon
-                className={cn(
-                  'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
-                  open ? 'opacity-0' : 'opacity-100',
-                )}
-              />
-            </div>
-          </SidebarButton>
-        </>
-      )}
+      <div className="grow" />
+      <SidebarButton size="icon" onClick={() => onOpenChange(!open)}>
+        <div className="grid grid-cols-1 grid-rows-1">
+          <PanelLeftCloseIcon
+            className={cn(
+              'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
+              open ? 'opacity-100' : 'opacity-0',
+            )}
+          />
+          <PanelLeftOpenIcon
+            className={cn(
+              'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
+              open ? 'opacity-0' : 'opacity-100',
+            )}
+          />
+        </div>
+      </SidebarButton>
     </SidebarGroup>
   );
 }
@@ -304,9 +320,11 @@ export function Sidebar({
   onOpenChange,
   ...props
 }: React.ComponentProps<'div'> & {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
+  useKeyboardShortcut({ open, onOpenChange });
+
   return (
     <div
       className={cn(

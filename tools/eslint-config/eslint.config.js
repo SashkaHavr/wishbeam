@@ -6,9 +6,10 @@ import pluginRouter from '@tanstack/eslint-plugin-router';
 import pluginReactCompiler from 'eslint-plugin-react-compiler';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginReactRefresh from 'eslint-plugin-react-refresh';
+import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+export default defineConfig(
   includeIgnoreFile(path.join(import.meta.dirname, '../../.gitignore')),
   { ignores: ['**/*.config.*', '**/*.js'] },
   {
@@ -41,7 +42,13 @@ export default tseslint.config(
       ],
     },
   },
-  pluginReactHooks.configs['recommended-latest'],
+  {
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
+    plugins: {
+      'react-hooks': pluginReactHooks,
+    },
+    extends: ['react-hooks/recommended'],
+  },
   {
     ignores: ['src/components/ui/*.tsx'],
     extends: [pluginReactRefresh.configs.vite],
