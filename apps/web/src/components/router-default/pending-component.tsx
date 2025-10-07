@@ -1,9 +1,10 @@
+import { Empty } from '../ui/empty';
 import { Spinner } from '../ui/spinner';
 
 export function PendingComponent() {
   return (
-    <div className="flex flex-col items-center justify-center pt-4">
+    <Empty>
       <Spinner />
-    </div>
+    </Empty>
   );
 }

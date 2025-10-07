@@ -2,15 +2,31 @@ import { Link } from '@tanstack/react-router';
 import { useTranslations } from 'use-intl';
 
 import { Button } from '../ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '../ui/empty';
 
 export function NotFoundComponent() {
   const t = useTranslations();
   return (
-    <div className="flex flex-col items-center justify-center gap-4 pt-20">
-      <p className="text-lg font-semibold">{t('routeComponents.notFound')}</p>
-      <Button asChild variant="link">
-        <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
-      </Button>
-    </div>
+    <Empty>
+      <EmptyHeader>
+        <EmptyTitle>{t('routeComponents.notFound')}</EmptyTitle>
+      </EmptyHeader>
+      <EmptyDescription>
+        {t('routeComponents.notFoundDescription')}
+      </EmptyDescription>
+      <EmptyContent>
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
+          </Button>
+        </div>
+      </EmptyContent>
+    </Empty>
   );
 }

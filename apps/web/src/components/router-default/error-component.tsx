@@ -5,16 +5,31 @@ import {
 import { useTranslations } from 'use-intl';
 
 import { Button } from '../ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '../ui/empty';
 
 export function ErrorComponent({ error }: { error: Error }) {
   const t = useTranslations();
   return (
-    <div className="flex flex-col items-center justify-center gap-4 pt-20">
-      <p className="text-lg font-semibold">{t('routeComponents.error')}</p>
-      {import.meta.env.DEV && <DefaultErrorComponent error={error} />}
-      <Button asChild variant="link">
-        <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
-      </Button>
-    </div>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="default">
+          {import.meta.env.DEV && <DefaultErrorComponent error={error} />}
+        </EmptyMedia>
+        <EmptyTitle>{t('routeComponents.error')}</EmptyTitle>
+      </EmptyHeader>
+      <EmptyContent>
+        <div className="flex gap-2">
+          <Button asChild>
+            <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
+          </Button>
+        </div>
+      </EmptyContent>
+    </Empty>
   );
 }
