@@ -105,7 +105,6 @@ export const ownedWishlistRouter = router({
         });
         return wishlist;
       });
-      invalidateCache(ctx.userId, { type: 'wishlists.getAll' });
       return { newWishlist: wishlist };
     }),
 
@@ -122,9 +121,8 @@ export const ownedWishlistRouter = router({
         .update(wishlistTable)
         .set(input.data)
         .where(eq(wishlistTable.id, ctx.wishlist.id));
-      invalidateCache(ctx.userId, { type: 'wishlists.getAll' });
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getById',
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
         wishlistId: ctx.wishlist.id,
       });
     }),
@@ -150,9 +148,8 @@ export const ownedWishlistRouter = router({
             .where(eq(wishlistTable.id, ctx.wishlist.id));
         }
       });
-      invalidateCache(ctx.userId, { type: 'wishlists.getAll' });
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getById',
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
         wishlistId: ctx.wishlist.id,
       });
     }),
@@ -182,6 +179,10 @@ export const ownedWishlistRouter = router({
           message: 'Could not create wishlist item',
         });
       }
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
       return { wishlistItem };
     }),
 
@@ -198,13 +199,9 @@ export const ownedWishlistRouter = router({
         .update(wishlistItemTable)
         .set(input.data)
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getItems',
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
         wishlistId: ctx.wishlist.id,
-      });
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getItemById',
-        wishlistItemId: ctx.wishlistItem.id,
       });
     }),
   deleteItem: ownedWishlistItemProcedure
@@ -213,13 +210,9 @@ export const ownedWishlistRouter = router({
       await db
         .delete(wishlistItemTable)
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getItems',
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
         wishlistId: ctx.wishlist.id,
-      });
-      invalidateCache(ctx.userId, {
-        type: 'wishlists.getItemById',
-        wishlistItemId: ctx.wishlistItem.id,
       });
     }),
 });
