@@ -53,18 +53,20 @@ export function UpdateWishlistDialog({ wishlist, children }: Props) {
             <div className="flex flex-col gap-4 p-4 pb-0 md:p-0">
               <form.AppField name="title">
                 {(field) => (
-                  <field.FormFieldset>
-                    <field.FormLabel>Title</field.FormLabel>
+                  <field.FormField>
+                    <field.FormFieldLabel>Title</field.FormFieldLabel>
                     <field.FormInput />
-                  </field.FormFieldset>
+                    <field.FormFieldError />
+                  </field.FormField>
                 )}
               </form.AppField>
               <form.AppField name="description">
                 {(field) => (
-                  <field.FormFieldset>
-                    <field.FormLabel>Description</field.FormLabel>
+                  <field.FormField>
+                    <field.FormFieldLabel>Description</field.FormFieldLabel>
                     <field.FormTextarea />
-                  </field.FormFieldset>
+                    <field.FormFieldError />
+                  </field.FormField>
                 )}
               </form.AppField>
             </div>

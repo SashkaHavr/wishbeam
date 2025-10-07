@@ -35,13 +35,14 @@ export function LoginForm({
             <div className="flex flex-col gap-6">
               <form.AppField name="email">
                 {(field) => (
-                  <field.FormFieldset>
-                    <field.FormLabel>Email</field.FormLabel>
+                  <field.FormField>
+                    <field.FormFieldLabel>Email</field.FormFieldLabel>
                     <field.FormInput
                       placeholder="user@example.com"
                       type="email"
                     />
-                  </field.FormFieldset>
+                    <field.FormFieldError />
+                  </field.FormField>
                 )}
               </form.AppField>
               <form.FormSubmitButton className="w-full">
