@@ -7,11 +7,12 @@ import {
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import { ThemeProvider } from 'next-themes';
 
 import { setupZodLocale } from '@wishbeam/intl';
 
 import type { TRPCRouteContext } from '~/lib/trpc';
+import { getTheme } from '~/components/theme/context';
+import { ThemeProvider, ThemeScript } from '~/components/theme/provider';
 import { getAuthContext } from '~/lib/auth';
 import { IntlProvider } from '~/lib/intl';
 import { getLocale, getMessages } from '~/lib/intl-server';
@@ -28,6 +29,7 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         messages: await getMessages(locale),
         locale: locale,
       },
+      theme: getTheme(),
     };
   },
   component: RootComponent,
@@ -61,17 +63,22 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  const locale = Route.useRouteContext({
-    select: (s) => s.intl.locale,
+  const { locale, theme } = Route.useRouteContext({
+    select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
   });
 
   return (
-    <html suppressHydrationWarning lang={locale}>
+    <html
+      suppressHydrationWarning
+      lang={locale}
+      className={theme === 'system' ? undefined : theme}
+    >
       <head>
         <HeadContent />
+        <ThemeScript />
       </head>
       <body>
-        <ThemeProvider attribute="class">
+        <ThemeProvider>
           <IntlProvider>{children}</IntlProvider>
         </ThemeProvider>
         <Scripts />

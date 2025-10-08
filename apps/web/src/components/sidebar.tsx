@@ -11,7 +11,6 @@ import {
   PanelLeftOpenIcon,
   SunIcon,
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 
 import type { NavLinkProps } from '~/utils/nav-links';
 import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
@@ -20,6 +19,7 @@ import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import { navLinks } from '~/utils/nav-links';
 import { Logo } from './logo';
+import { useTheme } from './theme/context';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -33,7 +33,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from './ui/sheet';
-import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 function useKeyboardShortcut({
@@ -187,18 +186,29 @@ function ThemeSwitcher({ desktopOpen }: { desktopOpen: boolean }) {
   const theme = useTheme();
   const isClient = useIsClient();
 
-  return isClient ? (
-    <SidebarAdaptiveButton
-      open={desktopOpen}
-      label={theme.resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
-      icon={theme.resolvedTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
-      onClick={() =>
-        theme.setTheme(theme.resolvedTheme === 'light' ? 'dark' : 'light')
-      }
-      size={desktopOpen ? undefined : 'icon'}
-    />
-  ) : (
-    <Skeleton className="size-9 w-full" />
+  return (
+    <>
+      {(!isClient || theme.resolvedTheme === 'light') && (
+        <SidebarAdaptiveButton
+          className="dark:hidden"
+          open={desktopOpen}
+          label={'Dark mode'}
+          icon={<MoonIcon />}
+          onClick={() => theme.setTheme('dark')}
+          size={desktopOpen ? undefined : 'icon'}
+        />
+      )}
+      {(!isClient || theme.resolvedTheme === 'dark') && (
+        <SidebarAdaptiveButton
+          className="hidden dark:inline-flex"
+          open={desktopOpen}
+          label={'Light mode'}
+          icon={<SunIcon />}
+          onClick={() => theme.setTheme('light')}
+          size={desktopOpen ? undefined : 'icon'}
+        />
+      )}
+    </>
   );
 }
 
