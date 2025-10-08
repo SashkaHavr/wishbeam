@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 import { index, integer, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { baseTable } from '#utils/base-table.ts';
-import { oneToMany } from '#utils/foreign-keys.ts';
+import { oneToMany, oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
 import { user } from './auth';
 
 export const wishlist = pgTable('wishlist', {
@@ -23,7 +23,7 @@ export const wishlistOwner = pgTable(
 
 export const wishlistItem = pgTable('wishlist_item', {
   ...baseTable,
-  wishlistId: oneToMany(() => wishlist.id),
+  wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
   title: text().notNull(),
   description: text().notNull(),
   links: text()

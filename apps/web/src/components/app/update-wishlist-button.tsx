@@ -18,12 +18,15 @@ import { useAppForm } from '../form/use-app-form';
 
 interface Props {
   wishlist: TRPCOutput['ownedWishlist']['getById']['wishlist'];
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  state?: { open: boolean; onOpenChange: (open: boolean) => void };
 }
 
-export function UpdateWishlistDialog({ wishlist, children }: Props) {
+export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
   const updateWishlist = useUpdateWishlistMutation();
-  const [open, setOpen] = useState(false);
+  const [_open, _setOpen] = useState(false);
+  const open = state?.open ?? _open;
+  const setOpen = state?.onOpenChange ?? _setOpen;
 
   const form = useAppForm({
     defaultValues: { title: wishlist.title, description: wishlist.description },
