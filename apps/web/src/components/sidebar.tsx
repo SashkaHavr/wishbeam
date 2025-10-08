@@ -3,6 +3,7 @@ import { useEffect, useEffectEvent, useState } from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
+  ChevronLeftIcon,
   EllipsisVerticalIcon,
   LogOutIcon,
   MenuIcon,
@@ -371,32 +372,38 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
-  const matchedLink = [
+  const allLinks = [
     ...navLinks.main,
     ...navLinks.bottom,
     ...navLinks.profileMenu,
-  ]
-    .map(
-      (link) =>
-        [
-          link,
-          routerState.matches.findLastIndex((m) => m.fullPath === link.to),
-        ] as const,
-    )
-    .sort((a, b) => b[1] - a[1])[0]?.[0];
+  ];
+  const fullPath =
+    routerState.matches[routerState.matches.length - 1]?.fullPath;
+  const exactMatch = allLinks.find((link) => {
+    if (!fullPath) return false;
+    const trimmedPath = fullPath.replace(/\/+$/, '');
+    return link.to === trimmedPath;
+  });
 
   return (
     <div
       className={cn(
-        'flex w-full items-center py-2.5 pr-4 pl-8 md:hidden',
+        'flex w-full items-center px-4 py-2.5 md:hidden',
         className,
       )}
       {...props}
     >
-      {matchedLink && (
-        <Link to={matchedLink.to} className="text-lg font-bold">
-          {matchedLink.label}
-        </Link>
+      {exactMatch ? (
+        <Button variant="ghost" asChild>
+          <Link to={exactMatch.to}>{exactMatch.label}</Link>
+        </Button>
+      ) : (
+        <Button variant="ghost" asChild>
+          <Link to={'..'}>
+            <ChevronLeftIcon />
+            <span>Back</span>
+          </Link>
+        </Button>
       )}
       <div className="grow" />
       <Sheet open={open} onOpenChange={setOpen}>
