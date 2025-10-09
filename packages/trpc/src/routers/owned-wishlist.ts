@@ -29,10 +29,10 @@ const wishlistItemOutputSchema = z.object({
 });
 
 const ownedWishlistProcedure = protectedProcedure
-  .input(z.object({ id: z.uuidv7() }))
+  .input(z.object({ wishlistId: z.uuidv7() }))
   .use(async ({ input, ctx, next }) => {
     const wishlist = await db.query.wishlist.findFirst({
-      where: { id: input.id, wishlistOwners: { userId: ctx.userId } },
+      where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
     });
     if (!wishlist) {
       throw new TRPCError({

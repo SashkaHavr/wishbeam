@@ -2,10 +2,24 @@ import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { EditIcon, EllipsisIcon, Share2Icon, TrashIcon } from 'lucide-react';
+import {
+  EditIcon,
+  EllipsisIcon,
+  ExternalLinkIcon,
+  PlusIcon,
+  Share2Icon,
+  TrashIcon,
+} from 'lucide-react';
 import z from 'zod';
 
 import { Button } from '~/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +44,7 @@ import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
 const wishlistGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ id: z.string() }))
+  .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.ownedWishlist.getById(data);
@@ -39,30 +53,55 @@ const wishlistGetByIdServerFn = createServerFn()
     }
   });
 
+const wishlistGetItemsServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .validator(z.object({ wishlistId: z.string() }))
+  .handler(async ({ context, data }) => {
+    try {
+      return await context.trpc.ownedWishlist.getItems(data);
+    } catch {
+      throw notFound();
+    }
+  });
+
 export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.ownedWishlist.getById.queryKey({
-        id: params.id,
+    await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: context.trpc.ownedWishlist.getById.queryKey({
+          wishlistId: params.id,
+        }),
+        queryFn: () =>
+          wishlistGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
-      queryFn: () => wishlistGetByIdServerFn({ data: { id: params.id } }),
-    });
+      context.queryClient.ensureQueryData({
+        queryKey: context.trpc.ownedWishlist.getItems.queryKey({
+          wishlistId: params.id,
+        }),
+        queryFn: () =>
+          wishlistGetItemsServerFn({ data: { wishlistId: params.id } }),
+      }),
+    ]);
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const trpc = useTRPC();
-  const wishlistId = Route.useParams({ select: (state) => state.id });
-  const data = useSuspenseQuery(
-    trpc.ownedWishlist.getById.queryOptions({ id: wishlistId }),
-  );
-  const wishlist = data.data.wishlist;
   const navigate = useNavigate();
 
+  const wishlistId = Route.useParams({ select: (state) => state.id });
+  const dataWishlist = useSuspenseQuery(
+    trpc.ownedWishlist.getById.queryOptions({ wishlistId }),
+  );
+  const wishlist = dataWishlist.data.wishlist;
   const deleteWishlist = useDeleteWishlistMutation();
-
   const [editOpen, setEditOpen] = useState(false);
+
+  const dataWishlistItems = useSuspenseQuery(
+    trpc.ownedWishlist.getItems.queryOptions({ wishlistId }),
+  );
+  const wishlistItems = dataWishlistItems.data.wishlistItems;
 
   return (
     <PageLayout>
@@ -97,7 +136,7 @@ function RouteComponent() {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
-                      deleteWishlist.mutate({ id: wishlist.id });
+                      deleteWishlist.mutate({ wishlistId });
                       void navigate({ to: '/app/wishlists' });
                     }}
                   >
@@ -111,6 +150,46 @@ function RouteComponent() {
         </Item>
         <div className="px-2">
           <Separator />
+        </div>
+        <div className="grid grid-cols-1 gap-8 p-4 md:grid-cols-2">
+          {wishlistItems.map((wishlistItem) => (
+            <Card key={wishlistItem.id} className="">
+              <CardHeader>
+                <CardTitle>{wishlistItem.title}</CardTitle>
+                <CardDescription>{wishlistItem.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {wishlistItem.links.map((link) => (
+                  <Item size="sm" asChild>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={link}
+                      className="text-ellipsis"
+                    >
+                      <ItemContent>
+                        <ItemTitle key={link}>{link}</ItemTitle>
+                      </ItemContent>
+                      <ItemActions>
+                        <ExternalLinkIcon />
+                      </ItemActions>
+                    </a>
+                  </Item>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+          <Card className="h-40 transition-colors hover:bg-accent/50">
+            <CardHeader className="text-center">
+              <CardTitle>Add Item</CardTitle>
+              <CardDescription className="sr-only">
+                Add a new item to this wishlist
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <PlusIcon size="40px" />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </PageLayout>

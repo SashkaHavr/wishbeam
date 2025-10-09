@@ -35,7 +35,7 @@ export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
       onDynamic: wishlistSchema,
     },
     onSubmit: ({ value, formApi }) => {
-      updateWishlist.mutate({ id: wishlist.id, data: value });
+      updateWishlist.mutate({ wishlistId: wishlist.id, data: value });
       setOpen(false);
       formApi.reset();
     },
