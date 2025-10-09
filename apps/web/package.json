@@ -12,7 +12,7 @@
     "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "start": "bun exec \"NODE_ENV=production bun run .output/server/index.mjs\"",
+    "start": "cross-env NODE_ENV=production node .output/server/index.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -59,7 +59,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
     "@wishbeam/eslint-config": "workspace:*",

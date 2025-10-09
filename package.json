@@ -25,6 +25,7 @@
   "prettier": "@wishbeam/prettier-config",
   "devDependencies": {
     "@wishbeam/prettier-config": "workspace:*",
+    "cross-env": "^10.1.0",
     "turbo": "^2.5.8"
   },
   "packageManager": "pnpm@10.17.1"

@@ -1,9 +1,9 @@
-FROM oven/bun:slim AS base
+FROM node:24-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV TURBO_TELEMETRY_DISABLED=1
-RUN bun install -g pnpm
-RUN bun install -g turbo
+RUN corepack enable
+RUN pnpm add -g turbo
 
 # Generate a partial monorepo
 FROM base AS turbo
@@ -36,14 +36,15 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=turbo-db /app/out/full/ .
 
 # Run
-FROM oven/bun:slim AS runner
+FROM node:24-slim AS runner
+ENV NODE_ENV=production
+
 COPY --from=builder /app/apps/web/.output /app
 COPY --from=builder-db /app /db
 
 RUN apt-get -y update && apt-get -y install curl
 HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
 
-USER bun
+USER node
 EXPOSE 3000
-ENV NODE_ENV=production
-CMD [ "sh", "-c", "cd /db/packages/db && bun db:push && cd /app && bun run server/index.mjs" ]
+CMD [ "sh", "-c", "cd /db/packages/db && npm run db:push && cd /app && node server/index.mjs" ]

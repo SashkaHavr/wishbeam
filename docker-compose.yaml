@@ -5,9 +5,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-      db-network:
-        aliases:
-          - db-internal
+      - db-network
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
     healthcheck:
@@ -31,6 +29,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  pubsub:
+    image: nats:2
+    networks:
+      - pubsub-network
   web:
     build:
       context: .
@@ -38,8 +40,10 @@ services:
     restart: always
     networks:
       - db-network
+      - pubsub-network
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:mysecretpassword@db-internal:5432/postgres}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:mysecretpassword@db:5432/postgres}
+      PUBSUB_URL: nats://pubsub:4222
     env_file:
       - path: .env
         required: false
@@ -49,6 +53,7 @@ services:
 
 networks:
   db-network:
+  pubsub-network:
 
 volumes:
   drizzle-gateway:

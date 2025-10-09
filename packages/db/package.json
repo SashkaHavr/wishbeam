@@ -13,7 +13,7 @@
     "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:up": "bun exec \"docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres && echo 'DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres' > ./.env && pnpm db:push\"",
+    "db:up": "docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
     "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
     "lint": "eslint",
@@ -29,7 +29,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
     "@types/pg": "catalog:drizzle",
     "@wishbeam/eslint-config": "workspace:*",
     "@wishbeam/prettier-config": "workspace:*",
