@@ -13,11 +13,11 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from '~/components/app-dialog';
-import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlist';
+import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useAppForm } from '../form/use-app-form';
 
 interface Props {
-  wishlist: TRPCOutput['ownedWishlist']['getById']['wishlist'];
+  wishlist: TRPCOutput['wishlists']['owned']['getById']['wishlist'];
   children?: React.ReactNode;
   state?: { open: boolean; onOpenChange: (open: boolean) => void };
 }

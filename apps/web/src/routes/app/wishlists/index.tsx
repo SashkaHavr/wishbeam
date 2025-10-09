@@ -22,13 +22,13 @@ import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 const wishlistsGetOwnedServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .handler(async ({ context }) => {
-    return context.trpc.ownedWishlist.getAll();
+    return context.trpc.wishlists.owned.getAll();
   });
 
 export const Route = createFileRoute('/app/wishlists/')({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.ownedWishlist.getAll.queryKey(),
+      queryKey: context.trpc.wishlists.owned.getAll.queryKey(),
       queryFn: () => wishlistsGetOwnedServerFn(),
     });
   },
@@ -38,7 +38,7 @@ export const Route = createFileRoute('/app/wishlists/')({
 function RouteComponent() {
   const trpc = useTRPC();
   const { data: wishlists } = useSuspenseQuery(
-    trpc.ownedWishlist.getAll.queryOptions(void 0, {
+    trpc.wishlists.owned.getAll.queryOptions(void 0, {
       select: (data) => data.wishlists,
     }),
   );

@@ -5,13 +5,15 @@ import { createContext } from '#context.ts';
 import { createCallerFactory, publicProcedure, router } from '#init.ts';
 import { cacheRouter } from '#routers/cache.ts';
 import { configRouter } from '#routers/config.ts';
-import { ownedWishlistRouter } from '#routers/owned-wishlist.ts';
+import { ownedWishlistsRouter } from '#routers/wishlists.owned.ts';
 
 const appRouter = router({
   health: publicProcedure.query(() => 'tRPC healthy!'),
   config: configRouter,
   cache: cacheRouter,
-  ownedWishlist: ownedWishlistRouter,
+  wishlists: router({
+    owned: ownedWishlistsRouter,
+  }),
 });
 
 export function trpcHandler({ request }: { request: Request }) {

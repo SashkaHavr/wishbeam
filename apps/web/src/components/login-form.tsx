@@ -1,5 +1,5 @@
 import { revalidateLogic } from '@tanstack/react-form';
-import { z } from 'zod';
+import z from 'zod';
 
 // import { Button } from '~/components/ui/button';
 

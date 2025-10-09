@@ -12,7 +12,7 @@ import {
 } from '../ui/item';
 
 interface Props {
-  wishlist: TRPCOutput['ownedWishlist']['getAll']['wishlists'][number];
+  wishlist: TRPCOutput['wishlists']['owned']['getAll']['wishlists'][number];
 }
 
 export function WishlistItem({ wishlist }: Props) {

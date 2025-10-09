@@ -13,7 +13,7 @@ export function useCacheInvalidation() {
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           case 'wishlists':
             void queryClient.invalidateQueries({
-              queryKey: trpc.ownedWishlist.pathKey(),
+              queryKey: trpc.wishlists.pathKey(),
             });
             break;
         }

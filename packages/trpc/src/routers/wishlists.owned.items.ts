@@ -1,0 +1,109 @@
+import { TRPCError } from '@trpc/server';
+import { eq } from 'drizzle-orm';
+import z from 'zod';
+
+import { db } from '@wishbeam/db';
+import { wishlistItem as wishlistItemTable } from '@wishbeam/db/schema';
+import { wishlistItemSchema } from '@wishbeam/utils/schemas';
+
+import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
+import { invalidateCache } from '#utils/cache-invalidation.ts';
+
+const wishlistItemOutputSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  links: z.array(z.string()),
+  approximatePrice: z.number().nullable(),
+  quantity: z.number(),
+});
+
+const ownedWishlistItemProcedure = protectedProcedure
+  .input(z.object({ id: z.uuidv7() }))
+  .use(async ({ input, ctx, next }) => {
+    const wishlistItem = await db.query.wishlistItem.findFirst({
+      where: {
+        id: input.id,
+        wishlist: { wishlistOwners: { userId: ctx.userId } },
+      },
+      with: { wishlist: true },
+    });
+    if (!wishlistItem) {
+      throw new TRPCError({
+        message: 'Wishlist item not found',
+        code: 'UNPROCESSABLE_CONTENT',
+      });
+    }
+    const { wishlist, ...restItem } = wishlistItem;
+    return next({
+      ctx: {
+        ...ctx,
+        wishlistItem: restItem,
+        wishlist: wishlist,
+      },
+    });
+  });
+
+export const ownedWishlistItemsRouter = router({
+  getAll: ownedWishlistProcedure
+    .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
+    .query(async ({ ctx }) => {
+      const wishlistItems = await db.query.wishlistItem.findMany({
+        where: { wishlistId: ctx.wishlist.id },
+        orderBy: { createdAt: 'asc' },
+      });
+      return { wishlistItems };
+    }),
+  create: ownedWishlistProcedure
+    .input(wishlistItemSchema)
+    .output(z.object({ wishlistItem: wishlistItemOutputSchema }))
+    .mutation(async ({ input, ctx }) => {
+      const wishlistItem = (
+        await db
+          .insert(wishlistItemTable)
+          .values({ ...input, wishlistId: ctx.wishlist.id })
+          .returning()
+      )[0];
+      if (!wishlistItem) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Could not create wishlist item',
+        });
+      }
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
+      return { wishlistItem };
+    }),
+
+  getById: ownedWishlistItemProcedure
+    .output(z.object({ wishlistItem: wishlistItemOutputSchema }))
+    .query(({ ctx }) => {
+      return { wishlistItem: ctx.wishlistItem };
+    }),
+  update: ownedWishlistItemProcedure
+    .input(z.object({ data: wishlistItemSchema.partial() }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      await db
+        .update(wishlistItemTable)
+        .set(input.data)
+        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
+    }),
+  delete: ownedWishlistItemProcedure
+    .output(z.undefined())
+    .mutation(async ({ ctx }) => {
+      await db
+        .delete(wishlistItemTable)
+        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
+    }),
+});

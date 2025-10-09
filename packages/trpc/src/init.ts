@@ -3,6 +3,7 @@ import superjson from 'superjson';
 import z, { ZodError } from 'zod';
 
 import { auth } from '@wishbeam/auth';
+import { db } from '@wishbeam/db';
 import { envServer } from '@wishbeam/env/server';
 
 import type { Context } from '#context.ts';
@@ -81,5 +82,25 @@ export function adminProcedure(
     return next();
   });
 }
+
+export const ownedWishlistProcedure = protectedProcedure
+  .input(z.object({ wishlistId: z.uuidv7() }))
+  .use(async ({ input, ctx, next }) => {
+    const wishlist = await db.query.wishlist.findFirst({
+      where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
+    });
+    if (!wishlist) {
+      throw new TRPCError({
+        message: 'Wishlist not found',
+        code: 'UNPROCESSABLE_CONTENT',
+      });
+    }
+    return next({
+      ctx: {
+        ...ctx,
+        wishlist: wishlist,
+      },
+    });
+  });
 
 export const createCallerFactory = t.createCallerFactory;

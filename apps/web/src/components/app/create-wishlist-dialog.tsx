@@ -12,7 +12,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from '~/components/app-dialog';
-import { useCreateWishlistMutation } from '~/hooks/mutations/wishlist';
+import { useCreateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useAppForm } from '../form/use-app-form';
 
 export function CreateWishlistDialog({

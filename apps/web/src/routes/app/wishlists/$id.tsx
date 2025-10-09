@@ -38,7 +38,7 @@ import { Separator } from '~/components/ui/separator';
 
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-button';
 import { PageLayout } from '~/components/page-layout';
-import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlist';
+import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
@@ -47,7 +47,7 @@ const wishlistGetByIdServerFn = createServerFn()
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      return await context.trpc.ownedWishlist.getById(data);
+      return await context.trpc.wishlists.owned.getById(data);
     } catch {
       throw notFound();
     }
@@ -58,7 +58,7 @@ const wishlistGetItemsServerFn = createServerFn()
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      return await context.trpc.ownedWishlist.getItems(data);
+      return await context.trpc.wishlists.owned.items.getAll(data);
     } catch {
       throw notFound();
     }
@@ -68,14 +68,14 @@ export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
-        queryKey: context.trpc.ownedWishlist.getById.queryKey({
+        queryKey: context.trpc.wishlists.owned.getById.queryKey({
           wishlistId: params.id,
         }),
         queryFn: () =>
           wishlistGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
-        queryKey: context.trpc.ownedWishlist.getItems.queryKey({
+        queryKey: context.trpc.wishlists.owned.items.getAll.queryKey({
           wishlistId: params.id,
         }),
         queryFn: () =>
@@ -92,7 +92,7 @@ function RouteComponent() {
 
   const wishlistId = Route.useParams({ select: (state) => state.id });
   const { data: wishlist } = useSuspenseQuery(
-    trpc.ownedWishlist.getById.queryOptions(
+    trpc.wishlists.owned.getById.queryOptions(
       { wishlistId },
       { select: (data) => data.wishlist },
     ),
@@ -101,7 +101,7 @@ function RouteComponent() {
   const [editOpen, setEditOpen] = useState(false);
 
   const { data: wishlistItems } = useSuspenseQuery(
-    trpc.ownedWishlist.getItems.queryOptions(
+    trpc.wishlists.owned.items.getAll.queryOptions(
       { wishlistId },
       { select: (data) => data.wishlistItems },
     ),
