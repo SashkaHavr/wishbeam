@@ -1,12 +1,29 @@
-import { revalidateLogic } from '@tanstack/react-form';
+import { createFormHook, revalidateLogic } from '@tanstack/react-form';
 import z from 'zod';
-
-// import { Button } from '~/components/ui/button';
 
 import { authClient } from '~/lib/auth';
 import { cn } from '~/lib/utils';
-import { useAppForm } from './form/use-app-form';
+import {
+  FormField,
+  FormFieldError,
+  FormFieldLabel,
+  FormInput,
+} from './form/field-components';
+import { Form, FormSubmitButton } from './form/form-components';
+import { fieldContext, formContext } from './form/form-context';
 import { Logo } from './logo';
+
+const { useAppForm } = createFormHook({
+  fieldContext,
+  formContext,
+  fieldComponents: {
+    FormInput,
+    FormFieldLabel,
+    FormField,
+    FormFieldError,
+  },
+  formComponents: { FormSubmitButton, Form },
+});
 
 export function LoginForm({
   className,

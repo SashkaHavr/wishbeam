@@ -18,9 +18,8 @@ export function FormSubmitButton(
             type="submit"
             disabled={!canSubmit || (isDefaultValue && props.defaultInvalid)}
           >
-            {isSubmitting && <Spinner className="size-4" />}
+            {isSubmitting && <Spinner />}
             <span>{props.children}</span>
-            {isSubmitting && <div className="size-4" />}
           </Button>
         );
       }}

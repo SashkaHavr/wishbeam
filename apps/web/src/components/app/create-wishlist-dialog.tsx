@@ -13,7 +13,8 @@ import {
   AppDialogTitle,
 } from '~/components/app-dialog';
 import { useCreateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
-import { useAppForm } from '../form/use-app-form';
+import { useWishlistForm } from '../form/wishlist-form';
+import { WishlistFields } from '../form/wishlist-form.components';
 
 export function CreateWishlistDialog({
   defaultTitle = '',
@@ -26,7 +27,7 @@ export function CreateWishlistDialog({
 
   const [open, setOpen] = useState(false);
 
-  const form = useAppForm({
+  const form = useWishlistForm({
     defaultValues: { title: defaultTitle, description: '' },
     validationLogic: revalidateLogic(),
     validators: {
@@ -51,26 +52,7 @@ export function CreateWishlistDialog({
                 Add a title and description to your wishlist.
               </AppDialogDescription>
             </AppDialogHeader>
-            <div className="flex flex-col gap-4 p-4 pb-0 md:p-0">
-              <form.AppField name="title">
-                {(field) => (
-                  <field.FormField>
-                    <field.FormFieldLabel>Title</field.FormFieldLabel>
-                    <field.FormInput />
-                    <field.FormFieldError />
-                  </field.FormField>
-                )}
-              </form.AppField>
-              <form.AppField name="description">
-                {(field) => (
-                  <field.FormField>
-                    <field.FormFieldLabel>Description</field.FormFieldLabel>
-                    <field.FormTextarea />
-                    <field.FormFieldError />
-                  </field.FormField>
-                )}
-              </form.AppField>
-            </div>
+            <WishlistFields form={form} className="px-4 pt-4 md:p-0" />
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <form.FormSubmitButton>Create wishlist</form.FormSubmitButton>
