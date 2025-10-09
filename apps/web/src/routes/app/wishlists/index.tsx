@@ -37,9 +37,13 @@ export const Route = createFileRoute('/app/wishlists/')({
 
 function RouteComponent() {
   const trpc = useTRPC();
-  const wishlists = useSuspenseQuery(trpc.ownedWishlist.getAll.queryOptions());
+  const { data: wishlists } = useSuspenseQuery(
+    trpc.ownedWishlist.getAll.queryOptions(void 0, {
+      select: (data) => data.wishlists,
+    }),
+  );
 
-  if (wishlists.data.wishlists.length === 0) {
+  if (wishlists.length === 0) {
     return (
       <div className="grid h-full grid-rows-1 items-center justify-items-center pb-20">
         <Empty className="row-[1]">
@@ -69,7 +73,7 @@ function RouteComponent() {
   return (
     <PageLayout>
       <div className="flex flex-col gap-4">
-        {wishlists.data.wishlists.map((wishlist) => (
+        {wishlists.map((wishlist) => (
           <WishlistItem key={wishlist.id} wishlist={wishlist} />
         ))}
         <CreateWishlistDialog>

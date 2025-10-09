@@ -91,17 +91,21 @@ function RouteComponent() {
   const navigate = useNavigate();
 
   const wishlistId = Route.useParams({ select: (state) => state.id });
-  const dataWishlist = useSuspenseQuery(
-    trpc.ownedWishlist.getById.queryOptions({ wishlistId }),
+  const { data: wishlist } = useSuspenseQuery(
+    trpc.ownedWishlist.getById.queryOptions(
+      { wishlistId },
+      { select: (data) => data.wishlist },
+    ),
   );
-  const wishlist = dataWishlist.data.wishlist;
   const deleteWishlist = useDeleteWishlistMutation();
   const [editOpen, setEditOpen] = useState(false);
 
-  const dataWishlistItems = useSuspenseQuery(
-    trpc.ownedWishlist.getItems.queryOptions({ wishlistId }),
+  const { data: wishlistItems } = useSuspenseQuery(
+    trpc.ownedWishlist.getItems.queryOptions(
+      { wishlistId },
+      { select: (data) => data.wishlistItems },
+    ),
   );
-  const wishlistItems = dataWishlistItems.data.wishlistItems;
 
   return (
     <PageLayout>
