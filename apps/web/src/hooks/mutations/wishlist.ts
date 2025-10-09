@@ -6,15 +6,15 @@ export function useCreateWishlistMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.ownedWishlist.create.mutationOptions({
-      onSuccess: async (data, values, onMutateResult, context) => {
+      onSuccess: (response, input, onMutateResult, context) => {
         context.client.setQueryData(
           trpc.ownedWishlist.getAll.queryKey(),
           (old) =>
             old
-              ? { wishlists: [...old.wishlists, data.newWishlist] }
-              : { wishlists: [data.newWishlist] },
+              ? { wishlists: [...old.wishlists, response.newWishlist] }
+              : { wishlists: [response.newWishlist] },
         );
-        await context.client.invalidateQueries({
+        void context.client.invalidateQueries({
           queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
       },
@@ -26,13 +26,13 @@ export function useUpdateWishlistMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.ownedWishlist.update.mutationOptions({
-      onMutate: async (values, context) => {
+      onMutate: async (input, context) => {
         await context.client.cancelQueries({
           queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
         await context.client.cancelQueries({
           queryKey: trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
         });
 
@@ -42,7 +42,7 @@ export function useUpdateWishlistMutation() {
           ),
           byId: context.client.getQueryData(
             trpc.ownedWishlist.getById.queryKey({
-              wishlistId: values.wishlistId,
+              wishlistId: input.wishlistId,
             }),
           ),
         };
@@ -52,22 +52,22 @@ export function useUpdateWishlistMutation() {
           (old) =>
             old && {
               wishlists: old.wishlists.map((wishlist) =>
-                wishlist.id === values.wishlistId
-                  ? { ...wishlist, ...values.data }
+                wishlist.id === input.wishlistId
+                  ? { ...wishlist, ...input.data }
                   : wishlist,
               ),
             },
         );
         context.client.setQueryData(
           trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
-          (old) => old && { wishlist: { ...old.wishlist, ...values.data } },
+          (old) => old && { wishlist: { ...old.wishlist, ...input.data } },
         );
 
         return { previous };
       },
-      onError: (err, values, onMutateResult, context) => {
+      onError: (err, input, onMutateResult, context) => {
         if (!onMutateResult) return;
         context.client.setQueryData(
           trpc.ownedWishlist.getAll.queryKey(),
@@ -75,18 +75,18 @@ export function useUpdateWishlistMutation() {
         );
         context.client.setQueryData(
           trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
           onMutateResult.previous.byId,
         );
       },
-      onSettled: async (data, error, values, onMutateResult, context) => {
-        await context.client.invalidateQueries({
+      onSettled: (response, error, input, onMutateResult, context) => {
+        void context.client.invalidateQueries({
           queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
-        await context.client.invalidateQueries({
+        void context.client.invalidateQueries({
           queryKey: trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
         });
       },
@@ -99,13 +99,13 @@ export function useDeleteWishlistMutation() {
 
   return useMutation(
     trpc.ownedWishlist.delete.mutationOptions({
-      onMutate: async (values, context) => {
+      onMutate: async (input, context) => {
         await context.client.cancelQueries({
           queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
         await context.client.cancelQueries({
           queryKey: trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
         });
 
@@ -120,29 +120,29 @@ export function useDeleteWishlistMutation() {
           (old) =>
             old && {
               wishlists: old.wishlists.filter(
-                (wishlist) => wishlist.id !== values.wishlistId,
+                (wishlist) => wishlist.id !== input.wishlistId,
               ),
             },
         );
 
         return { previous };
       },
-      onError: (err, values, onMutateResult, context) => {
+      onError: (err, input, onMutateResult, context) => {
         if (!onMutateResult) return;
         context.client.setQueryData(
           trpc.ownedWishlist.getAll.queryKey(),
           onMutateResult.previous.all,
         );
       },
-      onSuccess: async (data, values, onMutateResult, context) => {
-        await context.client.resetQueries({
+      onSuccess: (response, input, onMutateResult, context) => {
+        void context.client.removeQueries({
           queryKey: trpc.ownedWishlist.getById.queryKey({
-            wishlistId: values.wishlistId,
+            wishlistId: input.wishlistId,
           }),
         });
       },
-      onSettled: async (data, error, values, onMutateResult, context) => {
-        await context.client.invalidateQueries({
+      onSettled: (response, error, input, onMutateResult, context) => {
+        void context.client.invalidateQueries({
           queryKey: trpc.ownedWishlist.getAll.queryKey(),
         });
       },
