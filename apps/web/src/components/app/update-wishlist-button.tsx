@@ -14,7 +14,9 @@ import {
   AppDialogTitle,
 } from '~/components/app-dialog';
 import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
-import { useWishlistForm } from '../form/wishlist-form';
+import { Form } from '../form/form';
+import { FormSubmitButton } from '../form/form-submit-button';
+import { useAppForm } from '../form/use-app-form';
 import { WishlistFields } from '../form/wishlist-form.components';
 
 interface Props {
@@ -29,7 +31,7 @@ export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
   const open = state?.open ?? _open;
   const setOpen = state?.onOpenChange ?? _setOpen;
 
-  const form = useWishlistForm({
+  const form = useAppForm({
     defaultValues: { title: wishlist.title, description: wishlist.description },
     validationLogic: revalidateLogic(),
     validators: {
@@ -47,7 +49,7 @@ export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
       {children}
       <AppDialogContent>
         <form.AppForm>
-          <form.Form className="flex w-full flex-col gap-4">
+          <Form className="flex w-full flex-col gap-4">
             <AppDialogHeader>
               <AppDialogTitle>Update wishlist</AppDialogTitle>
               <AppDialogDescription>
@@ -57,9 +59,9 @@ export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
             <WishlistFields form={form} className="px-4 pt-4 md:p-0" />
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
-              <form.FormSubmitButton>Update wishlist</form.FormSubmitButton>
+              <FormSubmitButton>Update wishlist</FormSubmitButton>
             </AppDialogFooter>
-          </form.Form>
+          </Form>
         </form.AppForm>
       </AppDialogContent>
     </AppDialog>

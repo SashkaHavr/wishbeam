@@ -1,29 +1,16 @@
-import { createFormHook, revalidateLogic } from '@tanstack/react-form';
+import { revalidateLogic } from '@tanstack/react-form';
 import z from 'zod';
 
 import { authClient } from '~/lib/auth';
 import { cn } from '~/lib/utils';
-import {
-  FormField,
-  FormFieldError,
-  FormFieldLabel,
-  FormInput,
-} from './form/field-components';
-import { Form, FormSubmitButton } from './form/form-components';
-import { fieldContext, formContext } from './form/form-context';
+import { Form } from './form/form';
+import { FormField } from './form/form-field';
+import { FormFieldError } from './form/form-field-error';
+import { FormFieldLabel } from './form/form-field-label';
+import { FormInput } from './form/form-input';
+import { FormSubmitButton } from './form/form-submit-button';
+import { useAppForm } from './form/use-app-form';
 import { Logo } from './logo';
-
-const { useAppForm } = createFormHook({
-  fieldContext,
-  formContext,
-  fieldComponents: {
-    FormInput,
-    FormFieldLabel,
-    FormField,
-    FormFieldError,
-  },
-  formComponents: { FormSubmitButton, Form },
-});
 
 export function LoginForm({
   className,
@@ -43,7 +30,7 @@ export function LoginForm({
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <form.AppForm>
-        <form.Form>
+        <Form>
           <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
               <Logo />
@@ -51,20 +38,15 @@ export function LoginForm({
             </div>
             <div className="flex flex-col gap-6">
               <form.AppField name="email">
-                {(field) => (
-                  <field.FormField>
-                    <field.FormFieldLabel>Email</field.FormFieldLabel>
-                    <field.FormInput
-                      placeholder="user@example.com"
-                      type="email"
-                    />
-                    <field.FormFieldError />
-                  </field.FormField>
+                {() => (
+                  <FormField>
+                    <FormFieldLabel>Email</FormFieldLabel>
+                    <FormInput placeholder="user@example.com" type="email" />
+                    <FormFieldError />
+                  </FormField>
                 )}
               </form.AppField>
-              <form.FormSubmitButton className="w-full">
-                Login
-              </form.FormSubmitButton>
+              <FormSubmitButton className="w-full">Login</FormSubmitButton>
             </div>
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
@@ -92,7 +74,7 @@ export function LoginForm({
               </Button>
             </div> */}
           </div>
-        </form.Form>
+        </Form>
       </form.AppForm>
       <div className="text-center text-xs text-balance text-muted-foreground *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
