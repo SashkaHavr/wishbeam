@@ -25,7 +25,9 @@ import {
 
 const AppDialogContext = React.createContext({ desktop: true });
 
-export function AppDialog(props: React.ComponentProps<typeof Dialog>) {
+export function AppDialog(
+  props: React.ComponentProps<typeof Dialog | typeof Drawer>,
+) {
   const desktop = useMatchesBreakpoint('md');
   const Component = desktop ? Dialog : Drawer;
   return (
@@ -36,7 +38,7 @@ export function AppDialog(props: React.ComponentProps<typeof Dialog>) {
 }
 
 export function AppDialogContent(
-  props: React.ComponentProps<typeof DialogContent>,
+  props: React.ComponentProps<typeof DialogContent | typeof DrawerContent>,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogContent : DrawerContent;
@@ -44,7 +46,7 @@ export function AppDialogContent(
 }
 
 export function AppDialogHeader(
-  props: React.ComponentProps<typeof DialogHeader>,
+  props: React.ComponentProps<typeof DialogHeader | typeof DrawerHeader>,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogHeader : DrawerHeader;
@@ -52,7 +54,7 @@ export function AppDialogHeader(
 }
 
 export function AppDialogFooter(
-  props: React.ComponentProps<typeof DialogFooter>,
+  props: React.ComponentProps<typeof DialogFooter | typeof DrawerFooter>,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogFooter : DrawerFooter;
@@ -60,7 +62,7 @@ export function AppDialogFooter(
 }
 
 export function AppDialogTitle(
-  props: React.ComponentProps<typeof DialogTitle>,
+  props: React.ComponentProps<typeof DialogTitle | typeof DrawerTitle>,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogTitle : DrawerTitle;
@@ -68,7 +70,9 @@ export function AppDialogTitle(
 }
 
 export function AppDialogDescription(
-  props: React.ComponentProps<typeof DialogDescription>,
+  props: React.ComponentProps<
+    typeof DialogDescription | typeof DrawerDescription
+  >,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogDescription : DrawerDescription;
