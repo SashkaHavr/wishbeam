@@ -14,16 +14,16 @@ const wishlistItemOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
-  approximatePrice: z.number().nullable(),
-  quantity: z.number(),
+  // approximatePrice: z.number().nullable(),
+  // quantity: z.number(),
 });
 
 const ownedWishlistItemProcedure = protectedProcedure
-  .input(z.object({ id: z.uuidv7() }))
+  .input(z.object({ wishlistItemId: z.uuidv7() }))
   .use(async ({ input, ctx, next }) => {
     const wishlistItem = await db.query.wishlistItem.findFirst({
       where: {
-        id: input.id,
+        id: input.wishlistItemId,
         wishlist: { wishlistOwners: { userId: ctx.userId } },
       },
       with: { wishlist: true },
@@ -77,11 +77,6 @@ export const ownedWishlistItemsRouter = router({
       return { wishlistItem };
     }),
 
-  getById: ownedWishlistItemProcedure
-    .output(z.object({ wishlistItem: wishlistItemOutputSchema }))
-    .query(({ ctx }) => {
-      return { wishlistItem: ctx.wishlistItem };
-    }),
   update: ownedWishlistItemProcedure
     .input(z.object({ data: wishlistItemSchema.partial() }))
     .output(z.undefined())

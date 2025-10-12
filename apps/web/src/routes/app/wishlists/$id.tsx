@@ -2,24 +2,10 @@ import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import {
-  EditIcon,
-  EllipsisIcon,
-  ExternalLinkIcon,
-  PlusIcon,
-  Share2Icon,
-  TrashIcon,
-} from 'lucide-react';
+import { EditIcon, EllipsisIcon, Share2Icon, TrashIcon } from 'lucide-react';
 import z from 'zod';
 
 import { Button } from '~/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +23,7 @@ import {
 import { Separator } from '~/components/ui/separator';
 
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-button';
+import { WishlistItems } from '~/components/app/wishlist-items';
 import { PageLayout } from '~/components/page-layout';
 import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useTRPC } from '~/lib/trpc';
@@ -152,49 +139,10 @@ function RouteComponent() {
             </DropdownMenu>
           </ItemActions>
         </Item>
-        <div className="px-2">
+        <div className="my-4 px-2">
           <Separator />
         </div>
-        <div className="grid grid-cols-1 gap-8 p-4 md:grid-cols-2">
-          {wishlistItems.map((wishlistItem) => (
-            <Card key={wishlistItem.id} className="">
-              <CardHeader>
-                <CardTitle>{wishlistItem.title}</CardTitle>
-                <CardDescription>{wishlistItem.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {wishlistItem.links.map((link) => (
-                  <Item size="sm" asChild>
-                    <a
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      href={link}
-                      className="text-ellipsis"
-                    >
-                      <ItemContent>
-                        <ItemTitle key={link}>{link}</ItemTitle>
-                      </ItemContent>
-                      <ItemActions>
-                        <ExternalLinkIcon />
-                      </ItemActions>
-                    </a>
-                  </Item>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-          <Card className="h-40 transition-colors hover:bg-accent/50">
-            <CardHeader className="text-center">
-              <CardTitle>Add Item</CardTitle>
-              <CardDescription className="sr-only">
-                Add a new item to this wishlist
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <PlusIcon size="40px" />
-            </CardContent>
-          </Card>
-        </div>
+        <WishlistItems wishlistId={wishlistId} wishlistItems={wishlistItems} />
       </div>
     </PageLayout>
   );

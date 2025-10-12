@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { index, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { baseTable } from '#utils/base-table.ts';
 import { oneToMany, oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
@@ -30,6 +30,6 @@ export const wishlistItem = pgTable('wishlist_item', {
     .array()
     .notNull()
     .default(sql`'{}'::text[]`),
-  approximatePrice: integer(),
-  quantity: integer().notNull().default(1),
+  // approximatePrice: integer(),
+  // quantity: integer().notNull().default(1),
 });

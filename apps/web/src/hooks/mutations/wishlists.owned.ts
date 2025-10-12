@@ -11,8 +11,8 @@ export function useCreateWishlistMutation() {
           trpc.wishlists.owned.getAll.queryKey(),
           (old) =>
             old
-              ? { wishlists: [...old.wishlists, response.newWishlist] }
-              : { wishlists: [response.newWishlist] },
+              ? { wishlists: [...old.wishlists, response.wishlist] }
+              : { wishlists: [response.wishlist] },
         );
         void context.client.invalidateQueries({
           queryKey: trpc.wishlists.owned.getAll.queryKey(),

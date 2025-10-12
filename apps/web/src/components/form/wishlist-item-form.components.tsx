@@ -1,0 +1,85 @@
+import { XIcon } from 'lucide-react';
+
+import { cn } from '~/lib/utils';
+import { Button } from '../ui/button';
+import { FieldContent, FieldGroup } from '../ui/field';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+} from '../ui/input-group';
+import { FormField } from './form-field';
+import { FormFieldError } from './form-field-error';
+import { FormFieldLabel } from './form-field-label';
+import { FormInput } from './form-input';
+import { FormInputGroupInput } from './form-input-group-input';
+import { FormTextarea } from './form-textarea';
+import { withForm } from './use-app-form';
+
+export const WishlistItemFields = withForm({
+  defaultValues: { title: '', description: '', links: [] as string[] },
+  props: { className: '' } as { className?: string },
+  render: function Render({ form, className }) {
+    return (
+      <div className={cn('flex flex-col gap-4', className)}>
+        <form.AppField name="title">
+          {() => (
+            <FormField>
+              <FormFieldLabel>Title</FormFieldLabel>
+              <FormInput />
+              <FormFieldError />
+            </FormField>
+          )}
+        </form.AppField>
+        <form.AppField name="description">
+          {() => (
+            <FormField>
+              <FormFieldLabel>Description</FormFieldLabel>
+              <FormTextarea />
+              <FormFieldError />
+            </FormField>
+          )}
+        </form.AppField>
+        <form.AppField name="links" mode="array">
+          {(field) => (
+            <FieldGroup className="gap-4">
+              {field.state.value.map((_, index) => (
+                <form.AppField key={index} name={`links[${index}]`}>
+                  {() => (
+                    <FormField orientation="horizontal">
+                      <FieldContent>
+                        <InputGroup>
+                          <FormInputGroupInput />
+                          <InputGroupAddon align="inline-end">
+                            <InputGroupButton
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => field.removeValue(index)}
+                              aria-label={`Remove email ${index + 1}`}
+                            >
+                              <XIcon />
+                            </InputGroupButton>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <FormFieldError />
+                      </FieldContent>
+                    </FormField>
+                  )}
+                </form.AppField>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => field.pushValue('')}
+              >
+                Add Link
+              </Button>
+            </FieldGroup>
+          )}
+        </form.AppField>
+      </div>
+    );
+  },
+});
