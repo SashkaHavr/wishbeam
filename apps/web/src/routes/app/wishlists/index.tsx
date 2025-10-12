@@ -14,7 +14,7 @@ import {
 
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { CreateWishlistDialog } from '~/components/app/create-wishlist-dialog';
-import { WishlistItem } from '~/components/app/wishlist-item';
+import { Wishlist } from '~/components/app/wishlist';
 import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
@@ -74,7 +74,7 @@ function RouteComponent() {
     <PageLayout>
       <div className="flex flex-col gap-4">
         {wishlists.map((wishlist) => (
-          <WishlistItem key={wishlist.id} wishlist={wishlist} />
+          <Wishlist key={wishlist.id} wishlist={wishlist} />
         ))}
         <CreateWishlistDialog>
           <AppDialogTrigger size="lg" variant="outline">

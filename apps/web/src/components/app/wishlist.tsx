@@ -15,7 +15,7 @@ interface Props {
   wishlist: TRPCOutput['wishlists']['owned']['getAll']['wishlists'][number];
 }
 
-export function WishlistItem({ wishlist }: Props) {
+export function Wishlist({ wishlist }: Props) {
   return (
     <Item variant="outline" asChild>
       <Link to="/app/wishlists/$id" params={{ id: wishlist.id }}>
