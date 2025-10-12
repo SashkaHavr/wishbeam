@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import {
   ChevronDown,
+  CircleSlash2Icon,
   EditIcon,
   ExternalLinkIcon,
+  GiftIcon,
   PlusIcon,
   TrashIcon,
 } from 'lucide-react';
@@ -18,6 +20,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '../ui/collapsible';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '../ui/empty';
 import {
   Item,
   ItemActions,
@@ -38,6 +48,31 @@ interface Props {
 }
 
 export function WishlistItems({ wishlistId, wishlistItems }: Props) {
+  if (wishlistItems.length === 0) {
+    return (
+      <Empty className="row-[1]">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <CircleSlash2Icon />
+          </EmptyMedia>
+          <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
+          <EmptyDescription>
+            You haven&apos;t created any wishlist items yet. Get started by
+            creating your first wishlist item.
+          </EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <CreateWishlistItemDialog wishlistId={wishlistId}>
+            <AppDialogTrigger className="mx-4 w-full">
+              <GiftIcon />
+              <span>Create Wishlist Item</span>
+            </AppDialogTrigger>
+          </CreateWishlistItemDialog>
+        </EmptyContent>
+      </Empty>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {wishlistItems.map((item) => (

@@ -1,10 +1,9 @@
 WIP
 
-- [ ] Create wishlist
-- [ ] Show list of wishlists
-- [ ] Add items to wishlist
-- [ ] Show list of items in wishlist
+- [x] Create wishlist
+- [x] Show list of wishlists
+- [x] Add items to wishlist
+- [x] Show list of items in wishlist
 - [ ] Add wishlist owner
-- [ ] Share wishlist
-- [ ] Block item
+- [ ] Share wishlist - with email and with all
 - [ ] ...

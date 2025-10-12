@@ -57,7 +57,7 @@ export function CreateWishlistItemDialog({
             <WishlistItemFields form={form} className="px-4 pt-4 md:p-0" />
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
-              <FormSubmitButton>Create wishlist</FormSubmitButton>
+              <FormSubmitButton>Create wishlist item</FormSubmitButton>
             </AppDialogFooter>
           </Form>
         </form.AppForm>
