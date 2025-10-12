@@ -2,7 +2,13 @@ import { XIcon } from 'lucide-react';
 
 import { cn } from '~/lib/utils';
 import { Button } from '../ui/button';
-import { FieldContent, FieldGroup } from '../ui/field';
+import {
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLegend,
+  FieldSet,
+} from '../ui/field';
 import {
   InputGroup,
   InputGroupAddon,
@@ -42,41 +48,47 @@ export const WishlistItemFields = withForm({
         </form.AppField>
         <form.AppField name="links" mode="array">
           {(field) => (
-            <FieldGroup className="gap-4">
-              {field.state.value.map((_, index) => (
-                <form.AppField key={index} name={`links[${index}]`}>
-                  {() => (
-                    <FormField orientation="horizontal">
-                      <FieldContent>
-                        <InputGroup>
-                          <FormInputGroupInput />
-                          <InputGroupAddon align="inline-end">
-                            <InputGroupButton
-                              type="button"
-                              variant="ghost"
-                              size="icon-xs"
-                              onClick={() => field.removeValue(index)}
-                              aria-label={`Remove email ${index + 1}`}
-                            >
-                              <XIcon />
-                            </InputGroupButton>
-                          </InputGroupAddon>
-                        </InputGroup>
-                        <FormFieldError />
-                      </FieldContent>
-                    </FormField>
-                  )}
-                </form.AppField>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => field.pushValue('')}
-              >
-                Add Link
-              </Button>
-            </FieldGroup>
+            <FieldSet className="gap-4">
+              <FieldLegend variant="label">Links</FieldLegend>
+              <FieldDescription>
+                Add links related to this item.
+              </FieldDescription>
+              <FieldGroup className="gap-4">
+                {field.state.value.map((_, index) => (
+                  <form.AppField key={index} name={`links[${index}]`}>
+                    {() => (
+                      <FormField orientation="horizontal">
+                        <FieldContent>
+                          <InputGroup>
+                            <FormInputGroupInput />
+                            <InputGroupAddon align="inline-end">
+                              <InputGroupButton
+                                type="button"
+                                variant="ghost"
+                                size="icon-xs"
+                                onClick={() => field.removeValue(index)}
+                                aria-label={`Remove email ${index + 1}`}
+                              >
+                                <XIcon />
+                              </InputGroupButton>
+                            </InputGroupAddon>
+                          </InputGroup>
+                          <FormFieldError />
+                        </FieldContent>
+                      </FormField>
+                    )}
+                  </form.AppField>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => field.pushValue('')}
+                >
+                  Add Link
+                </Button>
+              </FieldGroup>
+            </FieldSet>
           )}
         </form.AppField>
       </div>
