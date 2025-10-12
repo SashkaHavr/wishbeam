@@ -1,6 +1,7 @@
 import React, { use } from 'react';
 
 import { useMatchesBreakpoint } from '~/hooks/use-breakpoint';
+import { cn } from '~/lib/utils';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -98,4 +99,11 @@ export function AppDialogClose(props: React.ComponentProps<typeof Button>) {
       <Button {...props} />
     </Component>
   );
+}
+
+export function AppDialogMainContent({
+  className,
+  ...props
+}: React.ComponentProps<'div'> & { asChild?: boolean }) {
+  return <div className={cn('px-4 pt-4 md:p-0', className)} {...props} />;
 }

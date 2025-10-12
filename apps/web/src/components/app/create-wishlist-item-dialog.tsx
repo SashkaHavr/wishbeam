@@ -11,6 +11,7 @@ import {
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
+  AppDialogMainContent,
   AppDialogTitle,
 } from '../app-dialog';
 import { Form } from '../form/form';
@@ -54,7 +55,9 @@ export function CreateWishlistItemDialog({
                 Fill in the details for your new wishlist item.
               </AppDialogDescription>
             </AppDialogHeader>
-            <WishlistItemFields form={form} className="px-4 pt-4 md:p-0" />
+            <AppDialogMainContent>
+              <WishlistItemFields form={form} />
+            </AppDialogMainContent>
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <FormSubmitButton>Create wishlist item</FormSubmitButton>

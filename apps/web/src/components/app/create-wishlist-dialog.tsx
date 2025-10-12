@@ -10,6 +10,7 @@ import {
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
+  AppDialogMainContent,
   AppDialogTitle,
 } from '~/components/app-dialog';
 import { useCreateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
@@ -54,7 +55,9 @@ export function CreateWishlistDialog({
                 Add a title and description to your wishlist.
               </AppDialogDescription>
             </AppDialogHeader>
-            <WishlistFields form={form} className="px-4 pt-4 md:p-0" />
+            <AppDialogMainContent>
+              <WishlistFields form={form} />
+            </AppDialogMainContent>
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <FormSubmitButton>Create wishlist</FormSubmitButton>

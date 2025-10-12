@@ -1,27 +1,22 @@
-import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { EditIcon, EllipsisIcon, Share2Icon, TrashIcon } from 'lucide-react';
+import { EditIcon, Share2Icon, TrashIcon, UserPlusIcon } from 'lucide-react';
 import z from 'zod';
 
 import { Button } from '~/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemFooter,
   ItemTitle,
 } from '~/components/ui/item';
 import { Separator } from '~/components/ui/separator';
 
+import { AppDialogTrigger } from '~/components/app-dialog';
+import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
 import { WishlistItems } from '~/components/app/wishlist-items';
 import { PageLayout } from '~/components/page-layout';
@@ -51,6 +46,17 @@ const wishlistGetItemsServerFn = createServerFn()
     }
   });
 
+// const wishlistGetOwners = createServerFn()
+//   .middleware([trpcServerFnMiddleware])
+//   .validator(z.object({ wishlistId: z.string() }))
+//   .handler(async ({ context, data }) => {
+//     try {
+//       return await context.trpc.wishlists.owned.owners.getAll(data);
+//     } catch {
+//       throw notFound();
+//     }
+//   });
+
 export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
     await Promise.all([
@@ -68,6 +74,12 @@ export const Route = createFileRoute('/app/wishlists/$id')({
         queryFn: () =>
           wishlistGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
+      // context.queryClient.ensureQueryData({
+      //   queryKey: context.trpc.wishlists.owned.owners.getAll.queryKey({
+      //     wishlistId: params.id,
+      //   }),
+      //   queryFn: () => wishlistGetOwners({ data: { wishlistId: params.id } }),
+      // }),
     ]);
   },
   component: RouteComponent,
@@ -85,7 +97,6 @@ function RouteComponent() {
     ),
   );
   const deleteWishlist = useDeleteWishlistMutation();
-  const [editOpen, setEditOpen] = useState(false);
 
   const { data: wishlistItems } = useSuspenseQuery(
     trpc.wishlists.owned.items.getAll.queryOptions(
@@ -109,35 +120,35 @@ function RouteComponent() {
               <Share2Icon />
               Share
             </Button>
-            <UpdateWishlistDialog
-              wishlist={wishlist}
-              state={{ open: editOpen, onOpenChange: setEditOpen }}
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <EllipsisIcon />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                    <EditIcon />
-                    <span>Edit</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      deleteWishlist.mutate({ wishlistId });
-                      void navigate({ to: '/app/wishlists' });
-                    }}
-                  >
-                    <TrashIcon />
-                    <span>Delete</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </ItemActions>
+          <ItemFooter className="grid grid-cols-2 pt-2">
+            <UpdateWishlistDialog wishlist={wishlist}>
+              <AppDialogTrigger variant="outline">
+                <EditIcon />
+                <span>Edit</span>
+              </AppDialogTrigger>
+            </UpdateWishlistDialog>
+            {wishlist.isCreator && (
+              <UpdateOwnersDialog wishlistId={wishlist.id}>
+                <AppDialogTrigger variant="outline">
+                  <UserPlusIcon />
+                  <span>Add Owner</span>
+                </AppDialogTrigger>
+              </UpdateOwnersDialog>
+            )}
+            {wishlist.isCreator && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  deleteWishlist.mutate({ wishlistId });
+                  void navigate({ to: '/app/wishlists' });
+                }}
+              >
+                <TrashIcon />
+                <span>Delete</span>
+              </Button>
+            )}
+          </ItemFooter>
         </Item>
         <div className="my-4 px-2">
           <Separator />

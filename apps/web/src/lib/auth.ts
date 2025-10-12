@@ -64,7 +64,7 @@ export function useResetAuth() {
   return async () => {
     await authClient.getSession({ query: { disableCookieCache: true } });
 
-    await queryClient.resetQueries({ queryKey: [authBaseKey] });
+    queryClient.clear();
     await router.invalidate();
   };
 }

@@ -12,11 +12,13 @@ import { wishlistSchema } from '@wishbeam/utils/schemas';
 import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
 import { ownedWishlistItemsRouter } from './wishlists.owned.items';
+import { ownedWishlistOwnersRouter } from './wishlists.owned.owners';
 
 const wishlistOutputSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
+  isCreator: z.boolean(),
 });
 
 export const ownedWishlistsRouter = router({
@@ -26,8 +28,16 @@ export const ownedWishlistsRouter = router({
       const wishlists = await db.query.wishlist.findMany({
         where: { wishlistOwners: { userId: ctx.userId } },
         orderBy: { createdAt: 'asc' },
+        with: { wishlistOwners: true },
       });
-      return { wishlists };
+      return {
+        wishlists: wishlists.map((w) => ({
+          ...w,
+          isCreator:
+            w.wishlistOwners.find((owner) => owner.userId === ctx.userId)
+              ?.role === 'creator',
+        })),
+      };
     }),
   create: protectedProcedure
     .input(wishlistSchema)
@@ -47,16 +57,22 @@ export const ownedWishlistsRouter = router({
         await tx.insert(wishlistOwnerTable).values({
           userId: ctx.userId,
           wishlistId: wishlist.id,
+          role: 'creator',
         });
         return wishlist;
       });
-      return { wishlist };
+      return { wishlist: { ...wishlist, isCreator: true } };
     }),
 
   getById: ownedWishlistProcedure
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .query(({ ctx }) => {
-      return { wishlist: ctx.wishlist };
+      return {
+        wishlist: {
+          ...ctx.wishlist,
+          isCreator: ctx.currentOwner.role === 'creator',
+        },
+      };
     }),
   update: ownedWishlistProcedure
     .input(z.object({ data: wishlistSchema.partial() }))
@@ -74,20 +90,20 @@ export const ownedWishlistsRouter = router({
   delete: ownedWishlistProcedure
     .output(z.undefined())
     .mutation(async ({ ctx }) => {
+      const isCreator = ctx.currentOwner.role === 'creator';
       await db.transaction(async (tx) => {
         await tx
           .delete(wishlistOwnerTable)
           .where(
             and(
               eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
-              eq(wishlistOwnerTable.userId, ctx.userId),
+              !isCreator
+                ? eq(wishlistOwnerTable.userId, ctx.userId)
+                : undefined,
             ),
           );
-        const ownersLeft = await tx.$count(
-          wishlistOwnerTable,
-          eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
-        );
-        if (ownersLeft === 0) {
+
+        if (isCreator) {
           await tx
             .delete(wishlistTable)
             .where(eq(wishlistTable.id, ctx.wishlist.id));
@@ -99,5 +115,6 @@ export const ownedWishlistsRouter = router({
       });
     }),
 
+  owners: ownedWishlistOwnersRouter,
   items: ownedWishlistItemsRouter,
 });

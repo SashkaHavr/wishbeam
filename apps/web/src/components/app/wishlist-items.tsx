@@ -135,7 +135,7 @@ export function WishlistItem({
           ))}
           <div className="h-4 w-full" />
         </CollapsibleContent>
-        <ItemFooter>
+        <ItemFooter className="grid grid-cols-2">
           <UpdateWishlistItemDialog
             wishlistItem={wishlistItem}
             wishlistId={wishlistId}

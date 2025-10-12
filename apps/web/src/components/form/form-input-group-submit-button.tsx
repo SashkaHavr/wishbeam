@@ -1,11 +1,11 @@
-import { Button } from '../ui/button';
+import { InputGroupButton } from '../ui/input-group';
 import { Spinner } from '../ui/spinner';
 import { useFormContext } from './form-context';
 
-export function FormSubmitButton({
+export function FormInputGroupSubmitButton({
   children,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof InputGroupButton>) {
   const form = useFormContext();
   return (
     <form.Subscribe
@@ -15,10 +15,10 @@ export function FormSubmitButton({
     >
       {([canSubmit, isSubmitting]) => {
         return (
-          <Button type="submit" disabled={!canSubmit} {...props}>
+          <InputGroupButton type="submit" disabled={!canSubmit} {...props}>
             {isSubmitting && <Spinner />}
             <span>{children}</span>
-          </Button>
+          </InputGroupButton>
         );
       }}
     </form.Subscribe>

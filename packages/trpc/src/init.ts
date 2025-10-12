@@ -88,8 +88,12 @@ export const ownedWishlistProcedure = protectedProcedure
   .use(async ({ input, ctx, next }) => {
     const wishlist = await db.query.wishlist.findFirst({
       where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
+      with: { wishlistOwners: true },
     });
-    if (!wishlist) {
+    const currentOwner = wishlist?.wishlistOwners.find(
+      (wo) => wo.userId === ctx.userId,
+    );
+    if (!wishlist || !currentOwner) {
       throw new TRPCError({
         message: 'Wishlist not found',
         code: 'UNPROCESSABLE_CONTENT',
@@ -98,7 +102,8 @@ export const ownedWishlistProcedure = protectedProcedure
     return next({
       ctx: {
         ...ctx,
-        wishlist: wishlist,
+        wishlist,
+        currentOwner,
       },
     });
   });

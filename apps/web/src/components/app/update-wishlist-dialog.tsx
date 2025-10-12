@@ -11,6 +11,7 @@ import {
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
+  AppDialogMainContent,
   AppDialogTitle,
 } from '~/components/app-dialog';
 import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
@@ -22,14 +23,11 @@ import { WishlistFields } from '../form/wishlist-form.components';
 interface Props {
   wishlist: TRPCOutput['wishlists']['owned']['getById']['wishlist'];
   children?: React.ReactNode;
-  state?: { open: boolean; onOpenChange: (open: boolean) => void };
 }
 
-export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
+export function UpdateWishlistDialog({ wishlist, children }: Props) {
   const updateWishlist = useUpdateWishlistMutation();
-  const [_open, _setOpen] = useState(false);
-  const open = state?.open ?? _open;
-  const setOpen = state?.onOpenChange ?? _setOpen;
+  const [open, setOpen] = useState(false);
 
   const form = useAppForm({
     defaultValues: { title: wishlist.title, description: wishlist.description },
@@ -56,7 +54,9 @@ export function UpdateWishlistDialog({ wishlist, children, state }: Props) {
                 Edit a title and description for your wishlist.
               </AppDialogDescription>
             </AppDialogHeader>
-            <WishlistFields form={form} className="px-4 pt-4 md:p-0" />
+            <AppDialogMainContent>
+              <WishlistFields form={form} />
+            </AppDialogMainContent>
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <FormSubmitButton>Update wishlist</FormSubmitButton>
