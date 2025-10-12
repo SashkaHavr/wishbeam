@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   ChevronDown,
   EditIcon,
@@ -8,6 +9,7 @@ import {
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 
+import { cn } from '~/lib/utils';
 import { AppDialogTrigger } from '../app-dialog';
 import { Button } from '../ui/button';
 import {
@@ -54,18 +56,22 @@ export function WishlistItem({
 }: {
   wishlistItem: WishlistItemType;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Collapsible asChild>
-      <Item variant="outline">
-        <ItemContent>
+    <Collapsible asChild open={open} onOpenChange={setOpen}>
+      <Item className="gap-0" variant="outline">
+        <ItemContent className="mr-4 mb-4">
           <ItemTitle>{wishlistItem.title}</ItemTitle>
           <ItemDescription>{wishlistItem.description}</ItemDescription>
         </ItemContent>
-        <ItemActions>
+        <ItemActions className="mb-4">
           <CollapsibleTrigger asChild>
             <Button variant="ghost">
-              <ChevronDown />
-              <span>Show more</span>
+              <ChevronDown
+                className={cn('transition-transform', open && 'rotate-180')}
+              />
+              <span>{open ? 'Show less' : 'Show more'}</span>
             </Button>
           </CollapsibleTrigger>
         </ItemActions>
@@ -82,6 +88,7 @@ export function WishlistItem({
               </a>
             </Item>
           ))}
+          <div className="h-4 w-full" />
         </CollapsibleContent>
         <ItemFooter>
           <Button variant="outline">
