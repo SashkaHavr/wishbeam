@@ -9,6 +9,7 @@ import {
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 
+import { useDeleteWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
 import { cn } from '~/lib/utils';
 import { AppDialogTrigger } from '../app-dialog';
 import { Button } from '../ui/button';
@@ -65,6 +66,8 @@ export function WishlistItem({
 }) {
   const [open, setOpen] = useState(false);
 
+  const deleteWishlistItem = useDeleteWishlistItemMutation({ wishlistId });
+
   return (
     <Collapsible asChild open={open} onOpenChange={setOpen}>
       <Item className="gap-0" variant="outline">
@@ -107,8 +110,12 @@ export function WishlistItem({
               <span>Edit</span>
             </AppDialogTrigger>
           </UpdateWishlistItemDialog>
-
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() =>
+              deleteWishlistItem.mutate({ wishlistItemId: wishlistItem.id })
+            }
+          >
             <TrashIcon />
             <span>Delete</span>
           </Button>

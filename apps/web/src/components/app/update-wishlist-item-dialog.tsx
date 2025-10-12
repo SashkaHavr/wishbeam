@@ -30,7 +30,7 @@ export function UpdateWishlistItemDialog({
 }) {
   const [open, setOpen] = useState(false);
 
-  const updateWishlistItem = useUpdateWishlistItemMutation();
+  const updateWishlistItem = useUpdateWishlistItemMutation({ wishlistId });
 
   const form = useAppForm({
     defaultValues: {
@@ -44,7 +44,6 @@ export function UpdateWishlistItemDialog({
     },
     onSubmit: ({ value, formApi }) => {
       updateWishlistItem.mutate({
-        wishlistId,
         wishlistItemId: wishlistItem.id,
         data: value,
       });
