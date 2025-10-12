@@ -22,7 +22,7 @@ import {
 } from '~/components/ui/item';
 import { Separator } from '~/components/ui/separator';
 
-import { UpdateWishlistDialog } from '~/components/app/update-wishlist-button';
+import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
 import { WishlistItems } from '~/components/app/wishlist-items';
 import { PageLayout } from '~/components/page-layout';
 import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
