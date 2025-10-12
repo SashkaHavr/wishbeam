@@ -26,6 +26,7 @@ import {
   ItemTitle,
 } from '../ui/item';
 import { CreateWishlistItemDialog } from './create-wishlist-item-dialog';
+import { UpdateWishlistItemDialog } from './update-wishlist-item-dialog';
 
 type WishlistItemType =
   TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
@@ -39,7 +40,11 @@ export function WishlistItems({ wishlistId, wishlistItems }: Props) {
   return (
     <div className="flex flex-col gap-4">
       {wishlistItems.map((item) => (
-        <WishlistItem key={item.id} wishlistItem={item} />
+        <WishlistItem
+          key={item.id}
+          wishlistItem={item}
+          wishlistId={wishlistId}
+        />
       ))}
       <CreateWishlistItemDialog wishlistId={wishlistId}>
         <AppDialogTrigger size="lg" variant="outline">
@@ -53,8 +58,10 @@ export function WishlistItems({ wishlistId, wishlistItems }: Props) {
 
 export function WishlistItem({
   wishlistItem,
+  wishlistId,
 }: {
   wishlistItem: WishlistItemType;
+  wishlistId: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -91,10 +98,16 @@ export function WishlistItem({
           <div className="h-4 w-full" />
         </CollapsibleContent>
         <ItemFooter>
-          <Button variant="outline">
-            <EditIcon />
-            <span>Edit</span>
-          </Button>
+          <UpdateWishlistItemDialog
+            wishlistItem={wishlistItem}
+            wishlistId={wishlistId}
+          >
+            <AppDialogTrigger variant="outline">
+              <EditIcon />
+              <span>Edit</span>
+            </AppDialogTrigger>
+          </UpdateWishlistItemDialog>
+
           <Button variant="outline">
             <TrashIcon />
             <span>Delete</span>

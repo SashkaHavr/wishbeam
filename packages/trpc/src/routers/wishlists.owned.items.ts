@@ -6,7 +6,7 @@ import { db } from '@wishbeam/db';
 import { wishlistItem as wishlistItemTable } from '@wishbeam/db/schema';
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
-import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
+import { ownedWishlistProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
 
 const wishlistItemOutputSchema = z.object({
@@ -18,13 +18,16 @@ const wishlistItemOutputSchema = z.object({
   // quantity: z.number(),
 });
 
-const ownedWishlistItemProcedure = protectedProcedure
+const ownedWishlistItemProcedure = ownedWishlistProcedure
   .input(z.object({ wishlistItemId: z.uuidv7() }))
   .use(async ({ input, ctx, next }) => {
     const wishlistItem = await db.query.wishlistItem.findFirst({
       where: {
         id: input.wishlistItemId,
-        wishlist: { wishlistOwners: { userId: ctx.userId } },
+        wishlist: {
+          id: ctx.wishlist.id,
+          wishlistOwners: { userId: ctx.userId },
+        },
       },
       with: { wishlist: true },
     });

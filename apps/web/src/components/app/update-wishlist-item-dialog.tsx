@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { revalidateLogic } from '@tanstack/react-form';
 
+import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
-import { useCreateWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
+import { useUpdateWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
 import {
   AppDialog,
   AppDialogClose,
@@ -18,25 +19,35 @@ import { FormSubmitButton } from '../form/form-submit-button';
 import { useAppForm } from '../form/use-app-form';
 import { WishlistItemFields } from '../form/wishlist-item-form.components';
 
-export function CreateWishlistItemDialog({
+export function UpdateWishlistItemDialog({
   children,
   wishlistId,
+  wishlistItem,
 }: {
   children: React.ReactNode;
   wishlistId: string;
+  wishlistItem: TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
 }) {
   const [open, setOpen] = useState(false);
 
-  const createWishlistItem = useCreateWishlistItemMutation();
+  const updateWishlistItem = useUpdateWishlistItemMutation();
 
   const form = useAppForm({
-    defaultValues: { title: '', description: '', links: [] as string[] },
+    defaultValues: {
+      title: wishlistItem.title,
+      description: wishlistItem.description,
+      links: wishlistItem.links,
+    },
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: wishlistItemSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await createWishlistItem.mutateAsync({ ...value, wishlistId });
+    onSubmit: ({ value, formApi }) => {
+      updateWishlistItem.mutate({
+        wishlistId,
+        wishlistItemId: wishlistItem.id,
+        data: value,
+      });
       setOpen(false);
       formApi.reset();
     },
@@ -49,15 +60,15 @@ export function CreateWishlistItemDialog({
         <form.AppForm>
           <Form className="flex w-full flex-col gap-4">
             <AppDialogHeader>
-              <AppDialogTitle>Create new wishlist item</AppDialogTitle>
+              <AppDialogTitle>Update wishlist item</AppDialogTitle>
               <AppDialogDescription>
-                Fill in the details for your new wishlist item.
+                Update the details for your wishlist item.
               </AppDialogDescription>
             </AppDialogHeader>
             <WishlistItemFields form={form} className="px-4 pt-4 md:p-0" />
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
-              <FormSubmitButton>Create wishlist</FormSubmitButton>
+              <FormSubmitButton>Update wishlist item</FormSubmitButton>
             </AppDialogFooter>
           </Form>
         </form.AppForm>
