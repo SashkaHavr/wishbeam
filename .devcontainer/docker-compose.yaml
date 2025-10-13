@@ -13,7 +13,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:mysecretpassword@db:5432/postgres
       PUBSUB_URL: nats://pubsub:4222
-      AUTH_DEV_MAGIC_LINK: true
+      TEST_AUTH: true
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: supersecretkey
     depends_on:

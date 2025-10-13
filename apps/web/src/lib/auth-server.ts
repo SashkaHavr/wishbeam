@@ -3,6 +3,8 @@ import { getWebRequest } from '@tanstack/react-start/server';
 
 import { auth } from '@wishbeam/auth';
 
+import { trpcServerFnMiddleware } from './trpc-server';
+
 export const authServerFnMiddleware = createMiddleware({
   type: 'function',
 }).server(({ next }) => {
@@ -13,6 +15,12 @@ export const authServerFnMiddleware = createMiddleware({
     },
   });
 });
+
+export const getAuthConfigServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .handler(async ({ context: { trpc } }) => {
+    return trpc.config.authConfig();
+  });
 
 export const getSessionServerFn = createServerFn()
   .middleware([authServerFnMiddleware])

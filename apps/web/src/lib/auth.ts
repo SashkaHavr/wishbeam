@@ -5,11 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import {
-  adminClient,
-  inferAdditionalFields,
-  magicLinkClient,
-} from 'better-auth/client/plugins';
+import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
 import type { auth } from '@wishbeam/auth';
@@ -20,11 +16,7 @@ import { getSessionServerFn } from './auth-server';
 
 export const authClient = createAuthClient({
   basePath: '/auth',
-  plugins: [
-    inferAdditionalFields<typeof auth>(),
-    magicLinkClient(),
-    adminClient(permissions),
-  ],
+  plugins: [inferAdditionalFields<typeof auth>(), adminClient(permissions)],
   fetchOptions: { throw: true },
 });
 
@@ -63,10 +55,19 @@ export function useResetAuth() {
 
   return async () => {
     await authClient.getSession({ query: { disableCookieCache: true } });
-
     queryClient.clear();
     await router.invalidate();
   };
+}
+
+export function useSignout() {
+  const resetAuth = useResetAuth();
+  return useMutation({
+    mutationFn: () => authClient.signOut(),
+    onSuccess: async () => {
+      await resetAuth();
+    },
+  });
 }
 
 export function hasPermissions(
@@ -89,14 +90,4 @@ export function hasAnyRoleExceptUser(
 ) {
   const roles = getRoles(user.role);
   return roles && roles.filter((r) => r !== 'user').length > 0;
-}
-
-export function useSignout() {
-  const resetAuth = useResetAuth();
-  return useMutation({
-    mutationFn: () => authClient.signOut(),
-    onSuccess: async () => {
-      await resetAuth();
-    },
-  });
 }

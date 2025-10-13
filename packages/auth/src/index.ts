@@ -1,8 +1,9 @@
-import { betterAuth, BetterAuthError } from 'better-auth';
+import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { admin, magicLink } from 'better-auth/plugins';
+import { admin } from 'better-auth/plugins';
 
 import { db } from '@wishbeam/db';
+import { user as userTable } from '@wishbeam/db/schema';
 import { envAuth } from '@wishbeam/env/auth';
 
 import { permissions } from '#permissions.ts';
@@ -18,34 +19,36 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
   }),
-  rateLimit: {
-    customRules: {
-      '/sign-in/magic-link': {
-        window: 60,
-        max: 1,
-      },
-    },
-  },
   plugins: [
-    magicLink({
-      sendMagicLink: ({ url, email }, request) => {
-        if (!request) {
-          throw new BetterAuthError('sendMagicLink: Request is not defined');
-        }
-
-        if (envAuth.AUTH_DEV_MAGIC_LINK && /^\S+@example\.com$/.test(email)) {
-          console.log(`${email} - ${url}`);
-          return;
-        }
-      },
-    }),
     admin({
       ...permissions,
     }),
   ],
+  emailAndPassword: {
+    enabled: envAuth.TEST_AUTH,
+    disableSignUp: true,
+  },
   advanced: {
     database: {
       generateId: false,
     },
   },
 });
+
+if ((await db.$count(userTable)) === 0 && envAuth.TEST_AUTH) {
+  await Promise.all(
+    Array.from(Array(100).keys()).map((user) =>
+      auth.api
+        .createUser({
+          body: {
+            email: `user${user}@example.com`,
+            password: `password${user}`,
+            name: `Test User ${user}`,
+          },
+        })
+        .catch(() => {
+          /* user already exists */
+        }),
+    ),
+  );
+}

@@ -14,14 +14,19 @@ import type { TRPCRouteContext } from '~/lib/trpc';
 import { getTheme } from '~/components/theme/context';
 import { ThemeProvider, ThemeScript } from '~/components/theme/provider';
 import { getAuthContext } from '~/lib/auth';
+import { getAuthConfigServerFn } from '~/lib/auth-server';
 import { IntlProvider } from '~/lib/intl';
 import { getLocale, getMessages } from '~/lib/intl-server';
 import indexCss from '../index.css?url';
 
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
-  beforeLoad: async ({ context: { queryClient } }) => {
+  beforeLoad: async ({ context: { queryClient, trpc } }) => {
     const locale = getLocale();
     await setupZodLocale(locale);
+    await queryClient.ensureQueryData({
+      queryKey: trpc.config.authConfig.queryKey(),
+      queryFn: () => getAuthConfigServerFn(),
+    });
 
     return {
       auth: await getAuthContext(queryClient),

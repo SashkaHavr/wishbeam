@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 import type { NavLinkProps } from '~/utils/nav-links';
+import { useLoggedInAuth } from '~/hooks/route-context';
 import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
 import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
@@ -272,20 +273,21 @@ function ProfileButtonWithPopover({
   const signout = useSignout();
   const mobile = useNotMatchesBreakpoint('md');
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const auth = useLoggedInAuth();
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
         <ProfileButton
-          label="Profile"
+          label={auth.user.name}
           endIcon={<EllipsisVerticalIcon />}
           open={open}
         />
       </PopoverTrigger>
       <PopoverContent side={mobile ? 'top' : 'right'} className="p-1">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">
-          <ProfileAvatar label="Profile" />
-          {open && <span className="truncate font-medium">Profile</span>}
+          <ProfileAvatar label={auth.user.name} />
+          <span className="truncate font-medium">{auth.user.name}</span>
         </div>
         <Separator className="m-1" />
         <div>
