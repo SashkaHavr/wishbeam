@@ -5,10 +5,17 @@ import { baseTable } from '#utils/base-table.ts';
 import { oneToMany, oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
 import { user } from './auth';
 
+export const wishlistShareStatus = pgEnum('wishlist_share_status', [
+  'private',
+  'shared',
+  'public',
+]);
+
 export const wishlist = pgTable('wishlist', {
   ...baseTable,
   title: text().notNull(),
   description: text().notNull(),
+  shareStatus: wishlistShareStatus().notNull().default('private'),
 });
 
 export const wishlistOwnerRole = pgEnum('wishlist_owner_role', [
@@ -27,15 +34,29 @@ export const wishlistOwner = pgTable(
   (table) => [index().on(table.wishlistId), index().on(table.userId)],
 );
 
-export const wishlistItem = pgTable('wishlist_item', {
-  ...baseTable,
-  wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
-  title: text().notNull(),
-  description: text().notNull(),
-  links: text()
-    .array()
-    .notNull()
-    .default(sql`'{}'::text[]`),
-  // approximatePrice: integer(),
-  // quantity: integer().notNull().default(1),
-});
+export const wishlistItem = pgTable(
+  'wishlist_item',
+  {
+    ...baseTable,
+    wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
+    title: text().notNull(),
+    description: text().notNull(),
+    links: text()
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    // approximatePrice: integer(),
+    // quantity: integer().notNull().default(1),
+  },
+  (table) => [index().on(table.wishlistId)],
+);
+
+export const wishlistUsersSharedWith = pgTable(
+  'wishlist_users_shared_with',
+  {
+    ...baseTable,
+    wishlistId: oneToMany(() => wishlist.id),
+    userId: oneToMany(() => user.id),
+  },
+  (table) => [index().on(table.wishlistId), index().on(table.userId)],
+);

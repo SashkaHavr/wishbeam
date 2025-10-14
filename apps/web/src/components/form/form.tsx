@@ -1,9 +1,12 @@
 import { useFormContext } from './form-context';
 
-export function Form(props: React.ComponentProps<'form'>) {
+export function Form(
+  props: Omit<React.ComponentProps<'form'>, 'id' | 'onSubmit'>,
+) {
   const form = useFormContext();
   return (
     <form
+      id={form.formId}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();

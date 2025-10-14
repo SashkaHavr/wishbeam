@@ -13,12 +13,14 @@ import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
 import { ownedWishlistItemsRouter } from './wishlists.owned.items';
 import { ownedWishlistOwnersRouter } from './wishlists.owned.owners';
+import { ownedWishlistSharedWithRouter } from './wishlists.owned.sharedWith';
 
 const wishlistOutputSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  isCreator: z.boolean(),
+  currentUserIsCreator: z.boolean(),
+  shareStatus: z.enum(['private', 'shared', 'public']),
 });
 
 export const ownedWishlistsRouter = router({
@@ -33,9 +35,9 @@ export const ownedWishlistsRouter = router({
       return {
         wishlists: wishlists.map((w) => ({
           ...w,
-          isCreator:
-            w.wishlistOwners.find((owner) => owner.userId === ctx.userId)
-              ?.role === 'creator',
+          currentUserIsCreator:
+            w.wishlistOwners.find((owner) => owner.id === ctx.userId)?.role ===
+            'creator',
         })),
       };
     }),
@@ -61,7 +63,12 @@ export const ownedWishlistsRouter = router({
         });
         return wishlist;
       });
-      return { wishlist: { ...wishlist, isCreator: true } };
+      return {
+        wishlist: {
+          ...wishlist,
+          currentUserIsCreator: true,
+        },
+      };
     }),
 
   getById: ownedWishlistProcedure
@@ -70,7 +77,7 @@ export const ownedWishlistsRouter = router({
       return {
         wishlist: {
           ...ctx.wishlist,
-          isCreator: ctx.currentOwner.role === 'creator',
+          currentUserIsCreator: ctx.currentOwner.role === 'creator',
         },
       };
     }),
@@ -115,6 +122,7 @@ export const ownedWishlistsRouter = router({
       });
     }),
 
+  sharedWith: ownedWishlistSharedWithRouter,
   owners: ownedWishlistOwnersRouter,
   items: ownedWishlistItemsRouter,
 });

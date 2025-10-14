@@ -1,11 +1,16 @@
 import { Textarea } from '../ui/textarea';
-import { useFieldContext } from './form-context';
+import { getFieldId, useFieldContext } from './form-context';
 
-export function FormTextarea(props: React.ComponentProps<typeof Textarea>) {
+export function FormTextarea(
+  props: Omit<
+    React.ComponentProps<typeof Textarea>,
+    'id' | 'name' | 'value' | 'onBlur' | 'onChange' | 'aria-invalid'
+  >,
+) {
   const field = useFieldContext<string>();
   return (
     <Textarea
-      id={field.name}
+      id={getFieldId(field)}
       name={field.name}
       value={field.state.value}
       onBlur={field.handleBlur}

@@ -1,11 +1,16 @@
 import { Input } from '../ui/input';
-import { useFieldContext } from './form-context';
+import { getFieldId, useFieldContext } from './form-context';
 
-export function FormInput(props: React.ComponentProps<typeof Input>) {
+export function FormInput(
+  props: Omit<
+    React.ComponentProps<typeof Input>,
+    'id' | 'name' | 'value' | 'onBlur' | 'onChange' | 'aria-invalid'
+  >,
+) {
   const field = useFieldContext<string>();
   return (
     <Input
-      id={field.name}
+      id={getFieldId(field)}
       name={field.name}
       value={field.state.value}
       onBlur={field.handleBlur}

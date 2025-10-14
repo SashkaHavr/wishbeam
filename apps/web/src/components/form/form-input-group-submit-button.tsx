@@ -5,7 +5,7 @@ import { useFormContext } from './form-context';
 export function FormInputGroupSubmitButton({
   children,
   ...props
-}: React.ComponentProps<typeof InputGroupButton>) {
+}: Omit<React.ComponentProps<typeof InputGroupButton>, 'type' | 'disabled'>) {
   const form = useFormContext();
   return (
     <form.Subscribe

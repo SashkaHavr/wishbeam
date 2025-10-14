@@ -5,7 +5,7 @@ import { useFormContext } from './form-context';
 export function FormSubmitButton({
   children,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: Omit<React.ComponentProps<typeof Button>, 'type' | 'disabled'>) {
   const form = useFormContext();
   return (
     <form.Subscribe

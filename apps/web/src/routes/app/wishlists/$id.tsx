@@ -16,6 +16,7 @@ import {
 import { Separator } from '~/components/ui/separator';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
+import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
 import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
 import { WishlistItems } from '~/components/app/wishlist-items';
@@ -116,10 +117,12 @@ function RouteComponent() {
             <ItemDescription>{wishlist.description}</ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button>
-              <Share2Icon />
-              Share
-            </Button>
+            <ShareWishlistDialog wishlist={wishlist}>
+              <AppDialogTrigger>
+                <Share2Icon />
+                Share
+              </AppDialogTrigger>
+            </ShareWishlistDialog>
           </ItemActions>
           <ItemFooter className="grid grid-cols-2 pt-2">
             <UpdateWishlistDialog wishlist={wishlist}>
@@ -128,7 +131,7 @@ function RouteComponent() {
                 <span>Edit</span>
               </AppDialogTrigger>
             </UpdateWishlistDialog>
-            {wishlist.isCreator && (
+            {wishlist.currentUserIsCreator && (
               <UpdateOwnersDialog wishlistId={wishlist.id}>
                 <AppDialogTrigger variant="outline">
                   <UserPlusIcon />
@@ -136,7 +139,7 @@ function RouteComponent() {
                 </AppDialogTrigger>
               </UpdateOwnersDialog>
             )}
-            {wishlist.isCreator && (
+            {wishlist.currentUserIsCreator && (
               <Button
                 variant="outline"
                 onClick={() => {
