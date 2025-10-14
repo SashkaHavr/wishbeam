@@ -18,6 +18,10 @@ export function createTRPCRouteContext() {
     defaultOptions: {
       dehydrate: { serializeData: superjson.serialize },
       hydrate: { deserializeData: superjson.deserialize },
+      queries: {
+        // All queries are cached forever, since we manually invalidate them as needed
+        staleTime: Infinity,
+      },
     },
   });
   const trpcClient = createTRPCClient<TRPCRouter>({
