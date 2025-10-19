@@ -342,7 +342,7 @@ export function Sidebar({
     <div
       className={cn(
         'hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex',
-        open ? 'w-64' : 'w-17',
+        open ? 'w-64 min-w-64' : 'w-17 min-w-17',
         className,
       )}
       {...props}
