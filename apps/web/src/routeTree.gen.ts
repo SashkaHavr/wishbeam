@@ -15,11 +15,11 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
-import { Route as AppSharedWishlistsRouteImport } from './routes/app/shared-wishlists'
 import { Route as AppSettingsRouteImport } from './routes/app/settings'
 import { Route as AppAccountRouteImport } from './routes/app/account'
 import { Route as publicLoginRouteImport } from './routes/(public)/login'
 import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
+import { Route as AppSharedIndexRouteImport } from './routes/app/shared/index'
 import { Route as AppWishlistsIdRouteImport } from './routes/app/wishlists/$id'
 import { ServerRoute as TrpcSplatServerRouteImport } from './routes/trpc.$'
 import { ServerRoute as AuthSplatServerRouteImport } from './routes/auth.$'
@@ -45,11 +45,6 @@ const publicIndexRoute = publicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const AppSharedWishlistsRoute = AppSharedWishlistsRouteImport.update({
-  id: '/shared-wishlists',
-  path: '/shared-wishlists',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -68,6 +63,11 @@ const publicLoginRoute = publicLoginRouteImport.update({
 const AppWishlistsIndexRoute = AppWishlistsIndexRouteImport.update({
   id: '/wishlists/',
   path: '/wishlists/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSharedIndexRoute = AppSharedIndexRouteImport.update({
+  id: '/shared/',
+  path: '/shared/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppWishlistsIdRoute = AppWishlistsIdRouteImport.update({
@@ -92,19 +92,19 @@ export interface FileRoutesByFullPath {
   '/login': typeof publicLoginRoute
   '/app/account': typeof AppAccountRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
   '/app/': typeof AppIndexRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/shared': typeof AppSharedIndexRoute
   '/app/wishlists': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof publicLoginRoute
   '/app/account': typeof AppAccountRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
   '/': typeof publicIndexRoute
   '/app': typeof AppIndexRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/shared': typeof AppSharedIndexRoute
   '/app/wishlists': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesById {
@@ -114,10 +114,10 @@ export interface FileRoutesById {
   '/(public)/login': typeof publicLoginRoute
   '/app/account': typeof AppAccountRoute
   '/app/settings': typeof AppSettingsRoute
-  '/app/shared-wishlists': typeof AppSharedWishlistsRoute
   '/(public)/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/app/shared/': typeof AppSharedIndexRoute
   '/app/wishlists/': typeof AppWishlistsIndexRoute
 }
 export interface FileRouteTypes {
@@ -128,19 +128,19 @@ export interface FileRouteTypes {
     | '/login'
     | '/app/account'
     | '/app/settings'
-    | '/app/shared-wishlists'
     | '/app/'
     | '/app/wishlists/$id'
+    | '/app/shared'
     | '/app/wishlists'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/app/account'
     | '/app/settings'
-    | '/app/shared-wishlists'
     | '/'
     | '/app'
     | '/app/wishlists/$id'
+    | '/app/shared'
     | '/app/wishlists'
   id:
     | '__root__'
@@ -149,10 +149,10 @@ export interface FileRouteTypes {
     | '/(public)/login'
     | '/app/account'
     | '/app/settings'
-    | '/app/shared-wishlists'
     | '/(public)/'
     | '/app/'
     | '/app/wishlists/$id'
+    | '/app/shared/'
     | '/app/wishlists/'
   fileRoutesById: FileRoutesById
 }
@@ -216,13 +216,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/app/shared-wishlists': {
-      id: '/app/shared-wishlists'
-      path: '/shared-wishlists'
-      fullPath: '/app/shared-wishlists'
-      preLoaderRoute: typeof AppSharedWishlistsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
@@ -249,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlists'
       fullPath: '/app/wishlists'
       preLoaderRoute: typeof AppWishlistsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/shared/': {
+      id: '/app/shared/'
+      path: '/shared'
+      fullPath: '/app/shared'
+      preLoaderRoute: typeof AppSharedIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/wishlists/$id': {
@@ -296,18 +296,18 @@ const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppAccountRoute: typeof AppAccountRoute
   AppSettingsRoute: typeof AppSettingsRoute
-  AppSharedWishlistsRoute: typeof AppSharedWishlistsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppWishlistsIdRoute: typeof AppWishlistsIdRoute
+  AppSharedIndexRoute: typeof AppSharedIndexRoute
   AppWishlistsIndexRoute: typeof AppWishlistsIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppAccountRoute: AppAccountRoute,
   AppSettingsRoute: AppSettingsRoute,
-  AppSharedWishlistsRoute: AppSharedWishlistsRoute,
   AppIndexRoute: AppIndexRoute,
   AppWishlistsIdRoute: AppWishlistsIdRoute,
+  AppSharedIndexRoute: AppSharedIndexRoute,
   AppWishlistsIndexRoute: AppWishlistsIndexRoute,
 }
 

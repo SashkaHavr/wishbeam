@@ -1,25 +1,28 @@
+import type { LinkProps } from '@tanstack/react-router';
 import type React from 'react';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
   ChevronLeftIcon,
+  CircleUserIcon,
   EllipsisVerticalIcon,
+  ListCheckIcon,
   LogOutIcon,
   MenuIcon,
   MoonIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
+  SettingsIcon,
+  Share2Icon,
   SunIcon,
 } from 'lucide-react';
 
-import type { NavLinkProps } from '~/utils/nav-links';
 import { useLoggedInAuth } from '~/hooks/route-context';
 import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
 import { useIsClient } from '~/hooks/use-is-client';
 import { useSignout } from '~/lib/auth';
 import { cn } from '~/lib/utils';
-import { navLinks } from '~/utils/nav-links';
 import { Logo } from './logo';
 import { useTheme } from './theme/context';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -36,6 +39,33 @@ import {
   SheetTrigger,
 } from './ui/sheet';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+
+interface NavLinkProps {
+  to: LinkProps['to'];
+  label: string;
+  icon: React.ComponentType;
+}
+
+const mainLinks = [
+  {
+    to: '/app/wishlists',
+    label: 'My wishlists',
+    icon: ListCheckIcon,
+  },
+  {
+    to: '/app/shared',
+    label: 'Shared with me wishlists',
+    icon: Share2Icon,
+  },
+] satisfies NavLinkProps[];
+
+const bottomLinks = [
+  { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
+] satisfies NavLinkProps[];
+
+const profileMenuLinks = [
+  { to: '/app/account', label: 'Account', icon: CircleUserIcon },
+] satisfies NavLinkProps[];
 
 function useKeyboardShortcut({
   open,
@@ -291,7 +321,7 @@ function ProfileButtonWithPopover({
         </div>
         <Separator className="m-1" />
         <div>
-          {navLinks.profileMenu.map((item) => (
+          {profileMenuLinks.map((item) => (
             <Button
               key={item.label}
               variant="ghost"
@@ -349,13 +379,13 @@ export function Sidebar({
     >
       <SidebarHeader open={open} onOpenChange={onOpenChange} />
       <SidebarGroup>
-        {navLinks.main.map((link) => (
+        {mainLinks.map((link) => (
           <SidebarLink key={link.to} {...link} open={open} />
         ))}
       </SidebarGroup>
       <div className="grow" />
       <SidebarGroup>
-        {navLinks.bottom.map((link) => (
+        {bottomLinks.map((link) => (
           <SidebarLink key={link.to} {...link} open={open} />
         ))}
         <ThemeSwitcher desktopOpen={open} />
@@ -374,11 +404,7 @@ export function MobileNav({
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
-  const allLinks = [
-    ...navLinks.main,
-    ...navLinks.bottom,
-    ...navLinks.profileMenu,
-  ];
+  const allLinks = [...mainLinks, ...bottomLinks, ...profileMenuLinks];
   const fullPath =
     routerState.matches[routerState.matches.length - 1]?.fullPath;
   const exactMatch = allLinks.find((link) => {
@@ -424,13 +450,13 @@ export function MobileNav({
             </VisuallyHidden>
           </SheetHeader>
           <SidebarGroup>
-            {navLinks.main.map((link) => (
+            {mainLinks.map((link) => (
               <SidebarLink key={link.to} onClick={closeNav} {...link} />
             ))}
           </SidebarGroup>
           <SheetFooter className="p-0 py-4">
             <SidebarGroup>
-              {navLinks.bottom.map((link) => (
+              {bottomLinks.map((link) => (
                 <SidebarLink key={link.to} onClick={closeNav} {...link} />
               ))}
               <ThemeSwitcher desktopOpen={true} />
