@@ -8,12 +8,12 @@ import { useTRPC } from '~/lib/trpc';
 import { AddDeleteUsersByEmailForm } from '../add-delete-users-by-email-form';
 import {
   AppDialog,
+  AppDialogBody,
   AppDialogClose,
   AppDialogContent,
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
-  AppDialogMainContent,
   AppDialogTitle,
 } from '../app-dialog';
 
@@ -41,7 +41,7 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
             Add or remove owners from your wishlist.
           </AppDialogDescription>
         </AppDialogHeader>
-        <AppDialogMainContent>
+        <AppDialogBody>
           <AddDeleteUsersByEmailForm
             users={
               owners.data?.owners.filter((user) => user.role === 'owner') ?? []
@@ -51,7 +51,7 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
               deleteOwner.mutate({ email, wishlistId })
             }
           />
-        </AppDialogMainContent>
+        </AppDialogBody>
         <AppDialogFooter>
           <AppDialogClose variant="outline">Close</AppDialogClose>
         </AppDialogFooter>

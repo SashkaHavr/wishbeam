@@ -11,6 +11,7 @@ import {
 import { setupZodLocale } from '@wishbeam/intl';
 
 import type { TRPCRouteContext } from '~/lib/trpc';
+import { LoginDialogProvider } from '~/components/login';
 import { getTheme } from '~/components/theme/context';
 import { ThemeProvider, ThemeScript } from '~/components/theme/provider';
 import { getAuthContext } from '~/lib/auth';
@@ -62,7 +63,9 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <LoginDialogProvider>
+        <Outlet />
+      </LoginDialogProvider>
     </RootDocument>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { LoginForm } from '~/components/login-form';
+import { LoginCard } from '~/components/login';
 import { Logo } from '~/components/logo';
 
 export const Route = createFileRoute('/(public)/login')({
@@ -15,7 +15,7 @@ function RouteComponent() {
           className="flex items-center gap-2 self-center font-medium"
           withName
         />
-        <LoginForm />
+        <LoginCard />
       </div>
     </div>
   );

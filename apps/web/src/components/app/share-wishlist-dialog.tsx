@@ -14,12 +14,12 @@ import { getWishlistShareUrl } from '~/utils/share-url';
 import { AddDeleteUsersByEmailForm } from '../add-delete-users-by-email-form';
 import {
   AppDialog,
+  AppDialogBody,
   AppDialogClose,
   AppDialogContent,
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
-  AppDialogMainContent,
   AppDialogTitle,
 } from '../app-dialog';
 import { Collapsible, CollapsibleContent } from '../ui/collapsible';
@@ -90,7 +90,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
             Change visibility of your wishlist
           </AppDialogDescription>
         </AppDialogHeader>
-        <AppDialogMainContent>
+        <AppDialogBody>
           <RadioGroup
             value={wishlist.shareStatus}
             onValueChange={(value) =>
@@ -184,7 +184,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
               </FieldLabel>
             ))}
           </RadioGroup>
-        </AppDialogMainContent>
+        </AppDialogBody>
         <AppDialogFooter>
           <AppDialogClose variant="outline">Close</AppDialogClose>
         </AppDialogFooter>

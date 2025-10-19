@@ -5,12 +5,12 @@ import { wishlistSchema } from '@wishbeam/utils/schemas';
 
 import {
   AppDialog,
+  AppDialogBody,
   AppDialogClose,
   AppDialogContent,
   AppDialogDescription,
   AppDialogFooter,
   AppDialogHeader,
-  AppDialogMainContent,
   AppDialogTitle,
 } from '~/components/app-dialog';
 import { useCreateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
@@ -55,9 +55,9 @@ export function CreateWishlistDialog({
                 Add a title and description to your wishlist.
               </AppDialogDescription>
             </AppDialogHeader>
-            <AppDialogMainContent>
+            <AppDialogBody>
               <WishlistFields form={form} />
-            </AppDialogMainContent>
+            </AppDialogBody>
             <AppDialogFooter>
               <AppDialogClose variant="outline">Cancel</AppDialogClose>
               <FormSubmitButton>Create wishlist</FormSubmitButton>

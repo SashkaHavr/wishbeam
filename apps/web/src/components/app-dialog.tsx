@@ -101,7 +101,7 @@ export function AppDialogClose(props: React.ComponentProps<typeof Button>) {
   );
 }
 
-export function AppDialogMainContent({
+export function AppDialogBody({
   className,
   ...props
 }: React.ComponentProps<'div'> & { asChild?: boolean }) {
