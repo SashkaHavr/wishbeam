@@ -21,10 +21,16 @@ export const ThemeContext = createContext<ThemeContextData | undefined>(
 
 export function useTheme() {
   const data = use(ThemeContext);
-  if (!data) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return data;
+
+  return (
+    data ?? {
+      theme: 'system' as Theme,
+      setTheme: () => {
+        /* empty */
+      },
+      resolvedTheme: 'light' as ResolvedTheme,
+    }
+  );
 }
 
 export const getTheme = createIsomorphicFn()

@@ -72,29 +72,31 @@ export function AddDeleteUsersByEmailForm({
   });
 
   return (
-    <div className={cn('flex flex-col gap-2 p-1', className)}>
-      <div className="flex flex-col">
-        {users.map((user) => (
-          <Item className="py-1" size="sm" key={user.email}>
-            <ItemContent>
-              <ItemTitle>{user.email}</ItemTitle>
-            </ItemContent>
-            <ItemActions>
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                onClick={() =>
-                  deleteUser({
-                    email: user.email,
-                  })
-                }
-              >
-                <XIcon />
-              </Button>
-            </ItemActions>
-          </Item>
-        ))}
-      </div>
+    <div className={cn('mt-2 flex flex-col gap-2 p-1', className)}>
+      {users.length > 0 && (
+        <div className="flex flex-col">
+          {users.map((user) => (
+            <Item className="py-1" size="sm" key={user.email}>
+              <ItemContent>
+                <ItemTitle>{user.email}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={() =>
+                    deleteUser({
+                      email: user.email,
+                    })
+                  }
+                >
+                  <XIcon />
+                </Button>
+              </ItemActions>
+            </Item>
+          ))}
+        </div>
+      )}
       <form.AppForm>
         <Form className="flex w-full flex-col gap-4">
           <form.AppField name="email">

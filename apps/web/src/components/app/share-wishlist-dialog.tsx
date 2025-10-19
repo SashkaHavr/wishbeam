@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { CheckIcon, CopyIcon } from 'lucide-react';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 
@@ -7,7 +8,9 @@ import {
   useAddWishlistSharedWithMutation,
   useDeleteWishlistSharedWithMutation,
 } from '~/hooks/mutations/wishlists.owned.sharedWith';
+import { useCopyToClipboard } from '~/hooks/use-copy-to-clipboard';
 import { useTRPC } from '~/lib/trpc';
+import { getWishlistShareUrl } from '~/utils/share-url';
 import { AddDeleteUsersByEmailForm } from '../add-delete-users-by-email-form';
 import {
   AppDialog,
@@ -27,7 +30,14 @@ import {
   FieldLabel,
   FieldTitle,
 } from '../ui/field';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '../ui/input-group';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface Props {
   children?: React.ReactNode;
@@ -68,6 +78,8 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
   const deleteUser = useDeleteWishlistSharedWithMutation();
   const updateWishlist = useUpdateWishlistMutation();
 
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+
   return (
     <AppDialog>
       {children}
@@ -97,7 +109,14 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                 key={item.value}
               >
                 <Field>
-                  <Collapsible open={wishlist.shareStatus === 'shared'}>
+                  <Collapsible
+                    open={
+                      (item.value === 'shared' &&
+                        wishlist.shareStatus === 'shared') ||
+                      (item.value === 'public' &&
+                        wishlist.shareStatus === 'public')
+                    }
+                  >
                     <div className="flex">
                       <FieldContent className="grow">
                         <FieldTitle>{item.title}</FieldTitle>
@@ -126,6 +145,38 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                             })
                           }
                         />
+                      )}
+                      {item.value === 'public' && (
+                        <div className="mt-2 p-1">
+                          <InputGroup>
+                            <InputGroupInput
+                              id="public-link"
+                              value={getWishlistShareUrl(wishlist.id)}
+                              readOnly
+                            />
+                            <InputGroupAddon align="inline-end">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <InputGroupButton
+                                    aria-label="Copy"
+                                    title="Copy"
+                                    size="icon-xs"
+                                    onClick={() => {
+                                      copyToClipboard(
+                                        getWishlistShareUrl(wishlist.id),
+                                      );
+                                    }}
+                                  >
+                                    {isCopied ? <CheckIcon /> : <CopyIcon />}
+                                  </InputGroupButton>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {isCopied ? 'Copied' : 'Copy to clipboard'}
+                                </TooltipContent>
+                              </Tooltip>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </div>
                       )}
                     </CollapsibleContent>
                   </Collapsible>
