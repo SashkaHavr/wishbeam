@@ -113,15 +113,15 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                         <AddDeleteUsersByEmailForm
                           className="basis-full"
                           users={users.data?.users ?? []}
-                          addUser={async ({ email }) =>
-                            await addUser.mutateAsync({
+                          addUser={({ email }) =>
+                            addUser.mutate({
                               email,
                               wishlistId: wishlist.id,
                             })
                           }
-                          deleteUser={async ({ userId }) =>
-                            await deleteUser.mutateAsync({
-                              userId,
+                          deleteUser={({ email }) =>
+                            deleteUser.mutate({
+                              email,
                               wishlistId: wishlist.id,
                             })
                           }

@@ -1,4 +1,5 @@
 import { revalidateLogic } from '@tanstack/react-form';
+import { useRouteContext } from '@tanstack/react-router';
 import { TRPCClientError } from '@trpc/client';
 import { XIcon } from 'lucide-react';
 import z from 'zod';
@@ -17,9 +18,9 @@ import { Separator } from './ui/separator';
 
 interface Props {
   className?: string;
-  users: { id: string; email: string }[];
-  addUser: (input: { email: string }) => Promise<unknown>;
-  deleteUser: (input: { userId: string }) => void;
+  users: { email: string }[];
+  addUser: (input: { email: string }) => void;
+  deleteUser: (input: { email: string }) => void;
 }
 
 export function AddDeleteUsersByEmailForm({
@@ -28,15 +29,32 @@ export function AddDeleteUsersByEmailForm({
   addUser,
   deleteUser,
 }: Props) {
+  const trpcClient = useRouteContext({
+    from: '__root__',
+    select: (ctx) => ctx.trpcClient,
+  });
+
   const form = useAppForm({
     defaultValues: { email: '' },
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: z.object({ email: z.email() }),
+      onSubmitAsync: async ({ value }) => {
+        const exists = await trpcClient.users.exists.query({
+          email: value.email,
+        });
+        return {
+          fields: {
+            email: exists
+              ? undefined
+              : { message: 'User with this email does not exist' },
+          },
+        };
+      },
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: ({ value, formApi }) => {
       try {
-        await addUser(value);
+        addUser(value);
         formApi.reset();
       } catch (error) {
         if (error instanceof TRPCClientError) {
@@ -52,7 +70,7 @@ export function AddDeleteUsersByEmailForm({
     <div className={cn('flex flex-col gap-2', className)}>
       <div className="flex flex-col">
         {users.map((user) => (
-          <Item className="py-2" size="sm" key={user.id}>
+          <Item className="py-2" size="sm" key={user.email}>
             <ItemContent>
               <ItemTitle>{user.email}</ItemTitle>
             </ItemContent>
@@ -62,7 +80,7 @@ export function AddDeleteUsersByEmailForm({
                 variant="ghost"
                 onClick={() =>
                   deleteUser({
-                    userId: user.id,
+                    email: user.email,
                   })
                 }
               >

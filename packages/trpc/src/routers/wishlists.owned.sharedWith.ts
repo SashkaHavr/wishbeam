@@ -7,9 +7,9 @@ import { wishlistUsersSharedWith as wishlistUsersSharedWithTable } from '@wishbe
 
 import { ownedWishlistProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
+import { getUserByEmail } from '#utils/db-utils.ts';
 
 const wishlistSharedWithOutputSchema = z.object({
-  id: z.string(),
   email: z.email(),
 });
 
@@ -32,15 +32,7 @@ export const ownedWishlistSharedWithRouter = router({
     .input(z.object({ email: z.email() }))
     .output(z.object({ user: wishlistSharedWithOutputSchema }))
     .mutation(async ({ input, ctx }) => {
-      const newOwnerUser = await db.query.user.findFirst({
-        where: { email: input.email },
-      });
-      if (!newOwnerUser) {
-        throw new TRPCError({
-          message: 'User not found',
-          code: 'UNPROCESSABLE_CONTENT',
-        });
-      }
+      const newOwnerUser = await getUserByEmail(input.email);
       const existingOwner = await db.query.wishlistUsersSharedWith.findFirst({
         where: {
           wishlistId: ctx.wishlist.id,
@@ -75,9 +67,10 @@ export const ownedWishlistSharedWithRouter = router({
       return { user: { ...newSharedWithUser, email: newOwnerUser.email } };
     }),
   delete: ownedWishlistProcedure
-    .input(z.object({ userId: z.uuidv7() }))
+    .input(z.object({ email: z.email() }))
     .mutation(async ({ input, ctx }) => {
-      if (input.userId === ctx.userId) {
+      const userToDelete = await getUserByEmail(input.email);
+      if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
           message: 'You cannot remove yourself as an owner',
           code: 'UNPROCESSABLE_CONTENT',
@@ -88,7 +81,7 @@ export const ownedWishlistSharedWithRouter = router({
         .where(
           and(
             eq(wishlistUsersSharedWithTable.wishlistId, ctx.wishlist.id),
-            eq(wishlistUsersSharedWithTable.userId, input.userId),
+            eq(wishlistUsersSharedWithTable.userId, userToDelete.id),
           ),
         );
       void invalidateCache(ctx.userId, {

@@ -7,6 +7,7 @@ import { wishlistOwner as wishlistOwnerTable } from '@wishbeam/db/schema';
 
 import { ownedWishlistProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
+import { getUserByEmail } from '#utils/db-utils.ts';
 
 const creatorProcedure = ownedWishlistProcedure.use(async ({ ctx, next }) => {
   if (ctx.currentOwner.role !== 'creator') {
@@ -19,7 +20,6 @@ const creatorProcedure = ownedWishlistProcedure.use(async ({ ctx, next }) => {
 });
 
 const wishlistOwnerOutputSchema = z.object({
-  id: z.string(),
   email: z.email(),
   role: z.enum(['creator', 'owner']),
 });
@@ -44,15 +44,7 @@ export const ownedWishlistOwnersRouter = router({
     .input(z.object({ email: z.email() }))
     .output(z.object({ owner: wishlistOwnerOutputSchema }))
     .mutation(async ({ input, ctx }) => {
-      const newOwnerUser = await db.query.user.findFirst({
-        where: { email: input.email },
-      });
-      if (!newOwnerUser) {
-        throw new TRPCError({
-          message: 'User not found',
-          code: 'UNPROCESSABLE_CONTENT',
-        });
-      }
+      const newOwnerUser = await getUserByEmail(input.email);
       const existingOwner = await db.query.wishlistOwner.findFirst({
         where: {
           wishlistId: ctx.wishlist.id,
@@ -88,9 +80,10 @@ export const ownedWishlistOwnersRouter = router({
       return { owner: { ...newOwner, email: newOwnerUser.email } };
     }),
   delete: creatorProcedure
-    .input(z.object({ userId: z.uuidv7() }))
+    .input(z.object({ email: z.email() }))
     .mutation(async ({ input, ctx }) => {
-      if (input.userId === ctx.userId) {
+      const userToDelete = await getUserByEmail(input.email);
+      if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
           message: 'You cannot remove yourself as an owner',
           code: 'UNPROCESSABLE_CONTENT',
@@ -101,7 +94,7 @@ export const ownedWishlistOwnersRouter = router({
         .where(
           and(
             eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
-            eq(wishlistOwnerTable.userId, input.userId),
+            eq(wishlistOwnerTable.userId, userToDelete.id),
           ),
         );
       void invalidateCache(ctx.userId, {

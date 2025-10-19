@@ -6,16 +6,47 @@ export function useAddWishlistOwnerMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.wishlists.owned.owners.add.mutationOptions({
-      onSuccess: (response, input, onMutateResult, context) => {
+      onMutate: async (input, context) => {
+        await context.client.cancelQueries({
+          queryKey: trpc.wishlists.owned.owners.getAll.queryKey({
+            wishlistId: input.wishlistId,
+          }),
+        });
+
+        const previous = context.client.getQueryData(
+          trpc.wishlists.owned.owners.getAll.queryKey({
+            wishlistId: input.wishlistId,
+          }),
+        );
+
         context.client.setQueryData(
           trpc.wishlists.owned.owners.getAll.queryKey({
             wishlistId: input.wishlistId,
           }),
-          (old) =>
-            old
-              ? { owners: [...old.owners, response.owner] }
-              : { owners: [response.owner] },
+          (old) => {
+            return old
+              ? {
+                  owners: [
+                    ...old.owners,
+                    { email: input.email, role: 'owner' as const },
+                  ],
+                }
+              : { owners: [{ email: input.email, role: 'owner' as const }] };
+          },
         );
+
+        return { previous };
+      },
+      onError: (err, input, onMutateResult, context) => {
+        if (!onMutateResult) return;
+        context.client.setQueryData(
+          trpc.wishlists.owned.owners.getAll.queryKey({
+            wishlistId: input.wishlistId,
+          }),
+          onMutateResult.previous,
+        );
+      },
+      onSettled: (response, error, input, onMutateResult, context) => {
         void context.client.invalidateQueries({
           queryKey: trpc.wishlists.owned.owners.getAll.queryKey({
             wishlistId: input.wishlistId,
@@ -50,7 +81,7 @@ export function useDeleteWishlistOwnerMutation() {
           }),
           (old) =>
             old && {
-              owners: old.owners.filter((owner) => owner.id !== input.userId),
+              owners: old.owners.filter((owner) => owner.email !== input.email),
             },
         );
 
