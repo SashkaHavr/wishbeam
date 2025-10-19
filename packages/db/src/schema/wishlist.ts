@@ -55,8 +55,8 @@ export const wishlistUsersSharedWith = pgTable(
   'wishlist_users_shared_with',
   {
     ...baseTable,
-    wishlistId: oneToMany(() => wishlist.id),
-    userId: oneToMany(() => user.id),
+    wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
+    userId: oneToManyCascadeOnDelete(() => user.id),
   },
   (table) => [index().on(table.wishlistId), index().on(table.userId)],
 );
