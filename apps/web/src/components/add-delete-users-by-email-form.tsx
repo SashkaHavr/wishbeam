@@ -4,6 +4,7 @@ import { TRPCClientError } from '@trpc/client';
 import { XIcon } from 'lucide-react';
 import z from 'zod';
 
+import { useLoggedInAuth } from '~/hooks/route-context';
 import { cn } from '~/lib/utils';
 import { Form } from './form/form';
 import { FormField } from './form/form-field';
@@ -14,7 +15,6 @@ import { useAppForm } from './form/use-app-form';
 import { Button } from './ui/button';
 import { InputGroup, InputGroupAddon } from './ui/input-group';
 import { Item, ItemActions, ItemContent, ItemTitle } from './ui/item';
-import { Separator } from './ui/separator';
 
 interface Props {
   className?: string;
@@ -33,12 +33,19 @@ export function AddDeleteUsersByEmailForm({
     from: '__root__',
     select: (ctx) => ctx.trpcClient,
   });
+  const { user: currentUser } = useLoggedInAuth();
 
   const form = useAppForm({
     defaultValues: { email: '' },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: z.object({ email: z.email() }),
+      onDynamic: z.object({
+        email: z
+          .email()
+          .refine((email) => email !== currentUser.email, {
+            error: 'You cannot add yourself',
+          }),
+      }),
       onSubmitAsync: async ({ value }) => {
         const exists = await trpcClient.users.exists.query({
           email: value.email,
@@ -67,10 +74,10 @@ export function AddDeleteUsersByEmailForm({
   });
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col gap-2 p-1', className)}>
       <div className="flex flex-col">
         {users.map((user) => (
-          <Item className="py-2" size="sm" key={user.email}>
+          <Item className="py-1" size="sm" key={user.email}>
             <ItemContent>
               <ItemTitle>{user.email}</ItemTitle>
             </ItemContent>
@@ -90,7 +97,6 @@ export function AddDeleteUsersByEmailForm({
           </Item>
         ))}
       </div>
-      <Separator className="bg-transparent" />
       <form.AppForm>
         <Form className="flex w-full flex-col gap-4">
           <form.AppField name="email">

@@ -44,6 +44,12 @@ export const ownedWishlistOwnersRouter = router({
     .input(z.object({ email: z.email() }))
     .output(z.object({ owner: wishlistOwnerOutputSchema }))
     .mutation(async ({ input, ctx }) => {
+      if (input.email === ctx.session.user.email) {
+        throw new TRPCError({
+          message: 'You cannot add yourself as an owner',
+          code: 'UNPROCESSABLE_CONTENT',
+        });
+      }
       const newOwnerUser = await getUserByEmail(input.email);
       const existingOwner = await db.query.wishlistOwner.findFirst({
         where: {

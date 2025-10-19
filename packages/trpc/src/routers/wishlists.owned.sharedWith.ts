@@ -32,6 +32,12 @@ export const ownedWishlistSharedWithRouter = router({
     .input(z.object({ email: z.email() }))
     .output(z.object({ user: wishlistSharedWithOutputSchema }))
     .mutation(async ({ input, ctx }) => {
+      if (input.email === ctx.session.user.email) {
+        throw new TRPCError({
+          message: 'You cannot share a wishlist with yourself',
+          code: 'UNPROCESSABLE_CONTENT',
+        });
+      }
       const newOwnerUser = await getUserByEmail(input.email);
       const existingOwner = await db.query.wishlistUsersSharedWith.findFirst({
         where: {
