@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { UserIcon } from 'lucide-react';
 
-import { useAuth } from '~/hooks/route-context';
 import { authClient, useResetAuth } from '~/lib/auth';
 import { useTRPC } from '~/lib/trpc';
 import { cn } from '~/lib/utils';
@@ -17,7 +16,6 @@ import {
   AppDialogTitle,
 } from './app-dialog';
 import { Google } from './icons/brands';
-import { LoginDialogContext } from './login-context';
 import { Button } from './ui/button';
 import {
   Card,
@@ -119,9 +117,13 @@ export function LoginCard({
   );
 }
 
-export function LoginDialog(props: React.ComponentProps<typeof AppDialog>) {
+export function LoginDialog({
+  children,
+  ...props
+}: React.ComponentProps<typeof AppDialog>) {
   return (
     <AppDialog {...props}>
+      {children}
       <AppDialogContent>
         <AppDialogHeader>
           <AppDialogTitle>Log in</AppDialogTitle>
@@ -131,28 +133,9 @@ export function LoginDialog(props: React.ComponentProps<typeof AppDialog>) {
           <LoginButtons />
         </AppDialogBody>
         <AppDialogFooter>
-          <AppDialogClose />
+          <AppDialogClose variant="outline">Close</AppDialogClose>
         </AppDialogFooter>
       </AppDialogContent>
     </AppDialog>
-  );
-}
-
-export function LoginDialogProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const auth = useAuth();
-
-  return (
-    <LoginDialogContext value={{ openLoginDialog: () => setIsOpen(true) }}>
-      <LoginDialog
-        open={auth.loggedIn ? false : isOpen}
-        onOpenChange={setIsOpen}
-      />
-      {children}
-    </LoginDialogContext>
   );
 }

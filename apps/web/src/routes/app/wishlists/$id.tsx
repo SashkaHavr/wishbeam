@@ -12,6 +12,7 @@ import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
 import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
 import {
+  CreateWishlistItemButton,
   DeleteWishlistItemButton,
   UpdateWishlistItemButton,
   WishlistItem,
@@ -152,6 +153,7 @@ function RouteComponent() {
                 </ItemFooter>
               </WishlistItem>
             ))}
+            <CreateWishlistItemButton wishlistId={wishlistId} />
           </WishlistItemsList>
         )}
       </WishlistItemExpanded>
