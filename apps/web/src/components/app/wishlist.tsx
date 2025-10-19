@@ -1,8 +1,10 @@
+import type { LinkProps } from '@tanstack/react-router';
+import type React from 'react';
 import { Link } from '@tanstack/react-router';
-import { ChevronRightIcon } from 'lucide-react';
+import { ChevronRightIcon, PlusIcon } from 'lucide-react';
 
-import type { TRPCOutput } from '@wishbeam/trpc';
-
+import { cn } from '~/lib/utils';
+import { AppDialogTrigger } from '../app-dialog';
 import {
   Item,
   ItemActions,
@@ -10,15 +12,24 @@ import {
   ItemDescription,
   ItemTitle,
 } from '../ui/item';
+import { CreateWishlistDialog } from './create-wishlist-dialog';
 
-interface Props {
-  wishlist: TRPCOutput['wishlists']['owned']['getAll']['wishlists'][number];
-}
+const _wishlistPages = ['/app/wishlists/$id'] satisfies LinkProps['to'][];
 
-export function Wishlist({ wishlist }: Props) {
+export function Wishlist({
+  wishlist,
+  targetPage,
+}: {
+  wishlist: {
+    id: string;
+    title: string;
+    description: string;
+  };
+  targetPage: (typeof _wishlistPages)[number];
+}) {
   return (
     <Item variant="outline" asChild>
-      <Link to="/app/wishlists/$id" params={{ id: wishlist.id }}>
+      <Link to={targetPage} params={{ id: wishlist.id }}>
         <ItemContent>
           <ItemTitle>{wishlist.title}</ItemTitle>
           <ItemDescription>{wishlist.description}</ItemDescription>
@@ -28,5 +39,25 @@ export function Wishlist({ wishlist }: Props) {
         </ItemActions>
       </Link>
     </Item>
+  );
+}
+
+export function WishlistList({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return <div className={cn('flex flex-col gap-4', className)} {...props} />;
+}
+
+export function CreateWishlistButton(
+  props: React.ComponentProps<typeof AppDialogTrigger>,
+) {
+  return (
+    <CreateWishlistDialog>
+      <AppDialogTrigger size="lg" variant="outline" {...props}>
+        <PlusIcon />
+        <span>Create new wishlist</span>
+      </AppDialogTrigger>
+    </CreateWishlistDialog>
   );
 }

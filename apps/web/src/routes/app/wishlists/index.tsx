@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { CircleSlash2Icon, GiftIcon, PlusIcon } from 'lucide-react';
+import { CircleSlash2Icon, GiftIcon } from 'lucide-react';
 
 import {
   Empty,
@@ -14,7 +14,11 @@ import {
 
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { CreateWishlistDialog } from '~/components/app/create-wishlist-dialog';
-import { Wishlist } from '~/components/app/wishlist';
+import {
+  CreateWishlistButton,
+  Wishlist,
+  WishlistList,
+} from '~/components/app/wishlist';
 import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
@@ -45,8 +49,8 @@ function RouteComponent() {
 
   if (wishlists.length === 0) {
     return (
-      <div className="grid h-full grid-rows-1 items-center justify-items-center pb-20">
-        <Empty className="row-[1]">
+      <PageLayout>
+        <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <CircleSlash2Icon />
@@ -66,23 +70,22 @@ function RouteComponent() {
             </CreateWishlistDialog>
           </EmptyContent>
         </Empty>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
     <PageLayout>
-      <div className="flex flex-col gap-4">
+      <WishlistList>
         {wishlists.map((wishlist) => (
-          <Wishlist key={wishlist.id} wishlist={wishlist} />
+          <Wishlist
+            key={wishlist.id}
+            wishlist={wishlist}
+            targetPage="/app/wishlists/$id"
+          />
         ))}
-        <CreateWishlistDialog>
-          <AppDialogTrigger size="lg" variant="outline">
-            <PlusIcon />
-            <span>Create new wishlist</span>
-          </AppDialogTrigger>
-        </CreateWishlistDialog>
-      </div>
+        <CreateWishlistButton />
+      </WishlistList>
     </PageLayout>
   );
 }
