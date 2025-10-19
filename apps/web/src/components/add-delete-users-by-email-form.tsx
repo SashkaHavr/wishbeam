@@ -40,11 +40,9 @@ export function AddDeleteUsersByEmailForm({
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: z.object({
-        email: z
-          .email()
-          .refine((email) => email !== currentUser.email, {
-            error: 'You cannot add yourself',
-          }),
+        email: z.email().refine((email) => email !== currentUser.email, {
+          error: 'You cannot add yourself',
+        }),
       }),
       onSubmitAsync: async ({ value }) => {
         const exists = await trpcClient.users.exists.query({

@@ -13,6 +13,7 @@ catalog:
   typescript: 5.9.2
   use-intl: ^4.3.9
   zod: 4.1.9
+  uuid: ^13.0.0
 
 catalogs:
   drizzle:

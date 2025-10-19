@@ -3,6 +3,8 @@ import z from 'zod';
 import { db } from '@wishbeam/db';
 import { publish } from '@wishbeam/pubsub';
 
+import { uuidv7ToBase62 } from './zod-utils';
+
 export function getCacheInvalidationSubject(userId: string) {
   return `cache-invalidation.${userId}`;
 }
@@ -10,7 +12,7 @@ export function getCacheInvalidationSubject(userId: string) {
 export const cacheInvalidationSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal(['wishlists']),
-    wishlistId: z.string(),
+    wishlistId: uuidv7ToBase62,
   }),
 ]);
 

@@ -30,6 +30,9 @@ catalogs:
     use-intl:
       specifier: ^4.3.9
       version: 4.3.9
+    uuid:
+      specifier: ^13.0.0
+      version: 13.0.0
     zod:
       specifier: 4.1.9
       version: 4.1.9
@@ -328,7 +331,7 @@ importers:
         specifier: catalog:drizzle
         version: 8.16.3
       uuid:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.0
     devDependencies:
       '@types/node':
@@ -448,12 +451,18 @@ importers:
       '@wishbeam/utils':
         specifier: workspace:*
         version: link:../utils
+      base-x:
+        specifier: ^5.0.1
+        version: 5.0.1
       drizzle-orm:
         specifier: catalog:drizzle
         version: 1.0.0-beta.1-c0277c0(@types/pg@8.15.5)(bun-types@1.2.22(@types/react@19.2.0))(kysely@0.28.7)(pg@8.16.3)
       superjson:
         specifier: 'catalog:'
         version: 2.2.2
+      uuid:
+        specifier: 'catalog:'
+        version: 13.0.0
       zod:
         specifier: 'catalog:'
         version: 4.1.9
@@ -2547,6 +2556,9 @@ packages:
 
   bare-events@2.7.0:
     resolution: {integrity: sha512-b3N5eTW1g7vXkw+0CXh/HazGTcO5KYuu/RCNaJbDMPI6LHDi+7qe8EmxKUVe1sUbY2KZOVZFyj62x0OEz9qyAA==}
+
+  base-x@5.0.1:
+    resolution: {integrity: sha512-M7uio8Zt++eg3jPj+rHMfCC+IuygQHHCOU+IYsVtik6FWjuYpVt/+MRKcgsAMHh8mMFAwnB+Bs+mTrFiXjMzKg==}
 
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
@@ -6916,6 +6928,8 @@ snapshots:
   balanced-match@1.0.2: {}
 
   bare-events@2.7.0: {}
+
+  base-x@5.0.1: {}
 
   base64-js@1.5.1: {}
 

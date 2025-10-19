@@ -24,8 +24,10 @@
     "@wishbeam/env": "workspace:*",
     "@wishbeam/pubsub": "workspace:*",
     "@wishbeam/utils": "workspace:*",
+    "base-x": "^5.0.1",
     "drizzle-orm": "catalog:drizzle",
     "superjson": "catalog:",
+    "uuid": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

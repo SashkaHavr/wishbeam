@@ -8,9 +8,10 @@ import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
 import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
+import { base62ToUuidv7, uuidv7ToBase62 } from '#utils/zod-utils.ts';
 
 const wishlistItemOutputSchema = z.object({
-  id: z.string(),
+  id: uuidv7ToBase62,
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
@@ -19,7 +20,7 @@ const wishlistItemOutputSchema = z.object({
 });
 
 const ownedWishlistItemProcedure = protectedProcedure
-  .input(z.object({ wishlistItemId: z.uuidv7() }))
+  .input(z.object({ wishlistItemId: base62ToUuidv7 }))
   .use(async ({ input, ctx, next }) => {
     const wishlistItem = await db.query.wishlistItem.findFirst({
       where: {

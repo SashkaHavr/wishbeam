@@ -11,12 +11,13 @@ import { wishlistSchema } from '@wishbeam/utils/schemas';
 
 import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
+import { uuidv7ToBase62 } from '#utils/zod-utils.ts';
 import { ownedWishlistItemsRouter } from './wishlists.owned.items';
 import { ownedWishlistOwnersRouter } from './wishlists.owned.owners';
 import { ownedWishlistSharedWithRouter } from './wishlists.owned.sharedWith';
 
 const wishlistOutputSchema = z.object({
-  id: z.string(),
+  id: uuidv7ToBase62,
   title: z.string(),
   description: z.string(),
   currentUserIsCreator: z.boolean(),

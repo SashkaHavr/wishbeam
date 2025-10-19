@@ -7,6 +7,7 @@ import { db } from '@wishbeam/db';
 import { envServer } from '@wishbeam/env/server';
 
 import type { Context } from '#context.ts';
+import { base62ToUuidv7 } from '#utils/zod-utils.ts';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -84,7 +85,7 @@ export function adminProcedure(
 }
 
 export const ownedWishlistProcedure = protectedProcedure
-  .input(z.object({ wishlistId: z.uuidv7() }))
+  .input(z.object({ wishlistId: base62ToUuidv7 }))
   .use(async ({ input, ctx, next }) => {
     const wishlist = await db.query.wishlist.findFirst({
       where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
