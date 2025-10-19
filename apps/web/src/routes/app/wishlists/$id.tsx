@@ -5,21 +5,20 @@ import { EditIcon, Share2Icon, TrashIcon, UserPlusIcon } from 'lucide-react';
 import z from 'zod';
 
 import { Button } from '~/components/ui/button';
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemFooter,
-  ItemTitle,
-} from '~/components/ui/item';
-import { Separator } from '~/components/ui/separator';
+import { ItemActions, ItemFooter } from '~/components/ui/item';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
 import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
-import { WishlistItems } from '~/components/app/wishlist-items';
+import {
+  DeleteWishlistItemButton,
+  UpdateWishlistItemButton,
+  WishlistItem,
+  WishlistItemExpanded,
+  WishlistItemsEmpty,
+  WishlistItemsList,
+} from '~/components/app/wishlist-items';
 import { PageLayout } from '~/components/page-layout';
 import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useTRPC } from '~/lib/trpc';
@@ -47,17 +46,6 @@ const wishlistGetItemsServerFn = createServerFn()
     }
   });
 
-// const wishlistGetOwners = createServerFn()
-//   .middleware([trpcServerFnMiddleware])
-//   .validator(z.object({ wishlistId: z.string() }))
-//   .handler(async ({ context, data }) => {
-//     try {
-//       return await context.trpc.wishlists.owned.owners.getAll(data);
-//     } catch {
-//       throw notFound();
-//     }
-//   });
-
 export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {
     await Promise.all([
@@ -75,12 +63,6 @@ export const Route = createFileRoute('/app/wishlists/$id')({
         queryFn: () =>
           wishlistGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
-      // context.queryClient.ensureQueryData({
-      //   queryKey: context.trpc.wishlists.owned.owners.getAll.queryKey({
-      //     wishlistId: params.id,
-      //   }),
-      //   queryFn: () => wishlistGetOwners({ data: { wishlistId: params.id } }),
-      // }),
     ]);
   },
   component: RouteComponent,
@@ -108,56 +90,71 @@ function RouteComponent() {
 
   return (
     <PageLayout>
-      <div className="flex flex-col">
-        <Item>
-          <ItemContent>
-            <ItemTitle>
-              <h2 className="text-lg font-medium">{wishlist.title}</h2>
-            </ItemTitle>
-            <ItemDescription>{wishlist.description}</ItemDescription>
-          </ItemContent>
-          <ItemActions>
-            <ShareWishlistDialog wishlist={wishlist}>
-              <AppDialogTrigger>
-                <Share2Icon />
-                Share
-              </AppDialogTrigger>
-            </ShareWishlistDialog>
-          </ItemActions>
-          <ItemFooter className="grid grid-cols-2 pt-2">
-            <UpdateWishlistDialog wishlist={wishlist}>
-              <AppDialogTrigger variant="outline">
-                <EditIcon />
-                <span>Edit</span>
-              </AppDialogTrigger>
-            </UpdateWishlistDialog>
-            {wishlist.currentUserIsCreator && (
-              <UpdateOwnersDialog wishlistId={wishlist.id}>
-                <AppDialogTrigger variant="outline">
-                  <UserPlusIcon />
-                  <span>Add Owner</span>
+      <WishlistItemExpanded
+        wishlist={wishlist}
+        itemChildren={
+          <>
+            <ItemActions>
+              <ShareWishlistDialog wishlist={wishlist}>
+                <AppDialogTrigger>
+                  <Share2Icon />
+                  Share
                 </AppDialogTrigger>
-              </UpdateOwnersDialog>
-            )}
-            {wishlist.currentUserIsCreator && (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  deleteWishlist.mutate({ wishlistId });
-                  void navigate({ to: '/app/wishlists' });
-                }}
-              >
-                <TrashIcon />
-                <span>Delete</span>
-              </Button>
-            )}
-          </ItemFooter>
-        </Item>
-        <div className="my-4 px-2">
-          <Separator />
-        </div>
-        <WishlistItems wishlistId={wishlistId} wishlistItems={wishlistItems} />
-      </div>
+              </ShareWishlistDialog>
+            </ItemActions>
+            <ItemFooter className="grid grid-cols-2 pt-2">
+              <UpdateWishlistDialog wishlist={wishlist}>
+                <AppDialogTrigger variant="outline">
+                  <EditIcon />
+                  <span>Edit</span>
+                </AppDialogTrigger>
+              </UpdateWishlistDialog>
+              {wishlist.currentUserIsCreator && (
+                <UpdateOwnersDialog wishlistId={wishlist.id}>
+                  <AppDialogTrigger variant="outline">
+                    <UserPlusIcon />
+                    <span>Add Owner</span>
+                  </AppDialogTrigger>
+                </UpdateOwnersDialog>
+              )}
+              {wishlist.currentUserIsCreator && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    deleteWishlist.mutate({ wishlistId });
+                    void navigate({ to: '/app/wishlists' });
+                  }}
+                >
+                  <TrashIcon />
+                  <span>Delete</span>
+                </Button>
+              )}
+            </ItemFooter>
+          </>
+        }
+      >
+        {wishlistItems.length === 0 && (
+          <WishlistItemsEmpty wishlistId={wishlistId} />
+        )}
+        {wishlistItems.length > 0 && (
+          <WishlistItemsList>
+            {wishlistItems.map((wishlistItem) => (
+              <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
+                <ItemFooter className="grid grid-cols-2">
+                  <UpdateWishlistItemButton
+                    wishlistItem={wishlistItem}
+                    wishlistId={wishlistId}
+                  />
+                  <DeleteWishlistItemButton
+                    wishlistItemId={wishlistItem.id}
+                    wishlistId={wishlistId}
+                  />
+                </ItemFooter>
+              </WishlistItem>
+            ))}
+          </WishlistItemsList>
+        )}
+      </WishlistItemExpanded>
     </PageLayout>
   );
 }

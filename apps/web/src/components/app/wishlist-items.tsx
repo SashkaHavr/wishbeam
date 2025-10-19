@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   ChevronDown,
   CircleSlash2Icon,
@@ -8,8 +8,6 @@ import {
   PlusIcon,
   TrashIcon,
 } from 'lucide-react';
-
-import type { TRPCOutput } from '@wishbeam/trpc';
 
 import { useDeleteWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
 import { cn } from '~/lib/utils';
@@ -33,75 +31,73 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
-  ItemFooter,
   ItemTitle,
 } from '../ui/item';
+import { Separator } from '../ui/separator';
 import { CreateWishlistItemDialog } from './create-wishlist-item-dialog';
 import { UpdateWishlistItemDialog } from './update-wishlist-item-dialog';
 
-type WishlistItemType =
-  TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
-
-interface Props {
-  wishlistId: string;
-  wishlistItems: WishlistItemType[];
+interface WishlistItem {
+  id: string;
+  title: string;
+  description: string;
+  links: string[];
 }
 
-export function WishlistItems({ wishlistId, wishlistItems }: Props) {
-  if (wishlistItems.length === 0) {
-    return (
-      <Empty className="row-[1]">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <CircleSlash2Icon />
-          </EmptyMedia>
-          <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
-          <EmptyDescription>
-            You haven&apos;t created any wishlist items yet. Get started by
-            creating your first wishlist item.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-          <CreateWishlistItemDialog wishlistId={wishlistId}>
-            <AppDialogTrigger className="mx-4 w-full">
-              <GiftIcon />
-              <span>Create Wishlist Item</span>
-            </AppDialogTrigger>
-          </CreateWishlistItemDialog>
-        </EmptyContent>
-      </Empty>
-    );
-  }
-
+export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
   return (
-    <div className="flex flex-col gap-4">
-      {wishlistItems.map((item) => (
-        <WishlistItem
-          key={item.id}
-          wishlistItem={item}
-          wishlistId={wishlistId}
-        />
-      ))}
-      <CreateWishlistItemDialog wishlistId={wishlistId}>
-        <AppDialogTrigger size="lg" variant="outline">
-          <PlusIcon />
-          <span>Create new wishlist item</span>
-        </AppDialogTrigger>
-      </CreateWishlistItemDialog>
-    </div>
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <CircleSlash2Icon />
+        </EmptyMedia>
+        <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
+        <EmptyDescription>
+          You haven&apos;t created any wishlist items yet. Get started by
+          creating your first wishlist item.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <CreateWishlistItemDialog wishlistId={wishlistId}>
+          <AppDialogTrigger className="mx-4 w-full">
+            <GiftIcon />
+            <span>Create Wishlist Item</span>
+          </AppDialogTrigger>
+        </CreateWishlistItemDialog>
+      </EmptyContent>
+    </Empty>
   );
+}
+
+export function CreateWishlistItemButton({
+  wishlistId,
+  ...props
+}: { wishlistId: string } & React.ComponentProps<typeof AppDialogTrigger>) {
+  return (
+    <CreateWishlistItemDialog wishlistId={wishlistId}>
+      <AppDialogTrigger size="lg" variant="outline" {...props}>
+        <PlusIcon />
+        <span>Create new wishlist item</span>
+      </AppDialogTrigger>
+    </CreateWishlistItemDialog>
+  );
+}
+
+export function WishlistItemsList({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return <div className={cn('flex flex-col gap-4', className)} {...props} />;
 }
 
 export function WishlistItem({
   wishlistItem,
-  wishlistId,
+  children,
 }: {
-  wishlistItem: WishlistItemType;
-  wishlistId: string;
+  wishlistItem: WishlistItem;
+  children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-
-  const deleteWishlistItem = useDeleteWishlistItemMutation({ wishlistId });
 
   return (
     <Collapsible asChild open={open} onOpenChange={setOpen}>
@@ -135,27 +131,80 @@ export function WishlistItem({
           ))}
           <div className="h-4 w-full" />
         </CollapsibleContent>
-        <ItemFooter className="grid grid-cols-2">
-          <UpdateWishlistItemDialog
-            wishlistItem={wishlistItem}
-            wishlistId={wishlistId}
-          >
-            <AppDialogTrigger variant="outline">
-              <EditIcon />
-              <span>Edit</span>
-            </AppDialogTrigger>
-          </UpdateWishlistItemDialog>
-          <Button
-            variant="outline"
-            onClick={() =>
-              deleteWishlistItem.mutate({ wishlistItemId: wishlistItem.id })
-            }
-          >
-            <TrashIcon />
-            <span>Delete</span>
-          </Button>
-        </ItemFooter>
+        {children}
       </Item>
     </Collapsible>
+  );
+}
+
+export function UpdateWishlistItemButton({
+  wishlistItem,
+  wishlistId,
+  ...props
+}: {
+  wishlistItem: WishlistItem;
+  wishlistId: string;
+} & React.ComponentProps<typeof AppDialogTrigger>) {
+  return (
+    <UpdateWishlistItemDialog
+      wishlistItem={wishlistItem}
+      wishlistId={wishlistId}
+    >
+      <AppDialogTrigger variant="outline" {...props}>
+        <EditIcon />
+        <span>Edit</span>
+      </AppDialogTrigger>
+    </UpdateWishlistItemDialog>
+  );
+}
+
+export function DeleteWishlistItemButton({
+  wishlistItemId,
+  wishlistId,
+  ...props
+}: {
+  wishlistItemId: string;
+  wishlistId: string;
+} & React.ComponentProps<typeof Button>) {
+  const deleteWishlistItem = useDeleteWishlistItemMutation({ wishlistId });
+
+  return (
+    <Button
+      variant="outline"
+      onClick={() => deleteWishlistItem.mutate({ wishlistItemId })}
+      {...props}
+    >
+      <TrashIcon />
+      <span>Delete</span>
+    </Button>
+  );
+}
+
+export function WishlistItemExpanded({
+  wishlist,
+  itemChildren,
+  children,
+  className,
+  ...props
+}: {
+  wishlist: { id: string; title: string; description: string };
+  itemChildren?: React.ReactNode;
+} & React.ComponentProps<'div'>) {
+  return (
+    <div className={cn('flex flex-col', className)} {...props}>
+      <Item>
+        <ItemContent>
+          <ItemTitle>
+            <h2 className="text-lg font-medium">{wishlist.title}</h2>
+          </ItemTitle>
+          <ItemDescription>{wishlist.description}</ItemDescription>
+        </ItemContent>
+        {itemChildren}
+      </Item>
+      <div className="my-4 px-2">
+        <Separator />
+      </div>
+      {children}
+    </div>
   );
 }
