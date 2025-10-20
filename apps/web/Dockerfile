@@ -12,6 +12,7 @@ RUN turbo prune @wishbeam/web --docker
 FROM base AS build
 WORKDIR /app
 COPY --from=partial /app/out/json/ .
+COPY /patches /app/patches
 RUN bun install --frozen-lockfile
 COPY --from=partial /app/out/full/ .
 

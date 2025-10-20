@@ -203,6 +203,9 @@
       "name": "@wishbeam/typescript-config",
     },
   },
+  "patchedDependencies": {
+    "nitropack@2.12.6": "patches/nitropack@2.12.6.patch",
+  },
   "catalog": {
     "@t3-oss/env-core": "^0.13.8",
     "@tanstack/react-form": "^1.23.4",
