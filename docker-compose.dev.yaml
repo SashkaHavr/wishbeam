@@ -4,7 +4,7 @@ services:
       - 4983:4983
   web:
     environment:
-      AUTH_DEV_MAGIC_LINK: true
+      TEST_AUTH: true
       BETTER_AUTH_SECRET: dev-secret
       BETTER_AUTH_URL: http://localhost:5260
     ports:

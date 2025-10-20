@@ -1,50 +1,39 @@
-FROM node:24-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+FROM oven/bun:1 AS base
 ENV TURBO_TELEMETRY_DISABLED=1
-RUN corepack enable
-RUN pnpm add -g turbo
+RUN bun install -g turbo
 
 # Generate a partial monorepo
-FROM base AS turbo
+FROM base AS partial
 WORKDIR /app
 COPY . .
 RUN turbo prune @wishbeam/web --docker
 
 # Install and build
-FROM base AS builder
+FROM base AS build
 WORKDIR /app
-COPY --from=turbo /app/out/json/ .
-RUN pnpm install --frozen-lockfile --prod
-COPY --from=turbo /app/out/full/ .
+COPY --from=partial /app/out/json/ .
+RUN bun install --frozen-lockfile
+COPY --from=partial /app/out/full/ .
 
 RUN --mount=type=secret,id=TURBO_TEAM,env=TURBO_TEAM \
     --mount=type=secret,id=TURBO_TOKEN,env=TURBO_TOKEN \
     turbo build
 
-# Generate a partial monorepo for db
-FROM base AS turbo-db
-WORKDIR /app
-COPY . .
-RUN turbo prune @wishbeam/db --docker
-
-# Install and build
-FROM base AS builder-db
-WORKDIR /app
-COPY --from=turbo-db /app/out/json/ .
-RUN pnpm install --frozen-lockfile --prod
-COPY --from=turbo-db /app/out/full/ .
 
 # Run
-FROM node:24-slim AS runner
+FROM oven/bun:1 AS runner
 ENV NODE_ENV=production
 
-COPY --from=builder /app/apps/web/.output /app
-COPY --from=builder-db /app /db
+COPY --from=build /app/apps/web/package.json /app/web/
 
-RUN apt-get -y update && apt-get -y install curl
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/packages/env /app/packages/env
+COPY --from=build /app/packages/db /app/packages/db
+
+COPY --from=build /app/apps/web/.output /app/web/.output
+
 HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
 
-USER node
+USER bun
 EXPOSE 3000
-CMD [ "sh", "-c", "cd /db/packages/db && npm run db:push && cd /app && node server/index.mjs" ]
+CMD [ "sh", "-c", "cd /app/packages/db && bun run db:push && cd /app/web && bun run start" ]

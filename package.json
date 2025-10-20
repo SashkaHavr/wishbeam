@@ -1,16 +1,70 @@
 {
   "name": "wishbeam",
   "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*",
+      "tools/*"
+    ],
+    "catalog": {
+      "@t3-oss/env-core": "^0.13.8",
+      "@tanstack/react-form": "^1.23.4",
+      "@types/bun": "1.3.0",
+      "better-auth": "^1.3.18",
+      "lucide-react": "0.544.0",
+      "superjson": "^2.2.2",
+      "typescript": "5.9.2",
+      "use-intl": "^4.3.9",
+      "uuid": "^13.0.0",
+      "zod": "4.1.9"
+    },
+    "catalogs": {
+      "drizzle": {
+        "@types/pg": "^8.15.5",
+        "drizzle-kit": "1.0.0-beta.1-c0277c0",
+        "drizzle-orm": "1.0.0-beta.1-c0277c0",
+        "pg": "^8.16.3"
+      },
+      "react": {
+        "@types/react": "^19.2.0",
+        "@types/react-dom": "^19.2.0",
+        "react": "^19.2.0",
+        "react-dom": "^19.2.0",
+        "babel-plugin-react-compiler": "^1.0.0"
+      },
+      "tailwind": {
+        "@tailwindcss/vite": "^4.1.13",
+        "class-variance-authority": "0.7.1",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^3.3.1",
+        "tailwindcss": "^4.1.13",
+        "tw-animate-css": "^1.4.0"
+      },
+      "trpc": {
+        "@tanstack/react-query": "^5.90.2",
+        "@trpc/client": "^11.6.0",
+        "@trpc/server": "^11.6.0",
+        "@trpc/tanstack-react-query": "^11.6.0"
+      },
+      "vite": {
+        "@tanstack/react-router": "~1.131.50",
+        "@tanstack/react-router-ssr-query": "~1.131.50",
+        "@tanstack/react-start": "~1.131.50",
+        "@tanstack/router-plugin": "~1.131.50",
+        "@vitejs/plugin-react": "^5.0.4",
+        "vite": "^7.1.7",
+        "vite-tsconfig-paths": "^5.1.4"
+      }
+    }
+  },
   "scripts": {
     "build": "turbo build",
     "check": "turbo format:check lint typecheck",
     "clean": "turbo clean clean:root",
-    "clean:root": "git clean -xdf .turbo node_modules",
+    "clean:root": "bun exec \"rm -rf node_modules\"",
     "compose": "docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d",
-    "deps": "pnpm outdated -r",
-    "deps-w": "pnpm update -r",
-    "deps-w-major": "pnpm update -r --latest",
-    "dev": "turbo dev",
+    "deps": "bun update --interactive --recursive",
     "fix": "turbo format lint:fix typecheck",
     "format": "turbo format format:root",
     "format:check": "turbo format:check format:root:check",
@@ -19,14 +73,16 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "start": "turbo start",
-    "test": "turbo test",
     "typecheck": "turbo typecheck"
   },
   "prettier": "@wishbeam/prettier-config",
   "devDependencies": {
-    "@wishbeam/prettier-config": "workspace:*",
-    "cross-env": "^10.1.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-packagejson": "^2.5.19",
+    "prettier-plugin-sort-json": "^4.1.1",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "turbo": "^2.5.8"
   },
-  "packageManager": "pnpm@10.17.1"
+  "packageManager": "bun@1.3.0"
 }

@@ -10,7 +10,7 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
-    "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",
+    "clean": "bun exec \"rm -rf node_modules\"",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:up": "docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres",
@@ -29,10 +29,9 @@
     "uuid": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/bun": "catalog:",
     "@types/pg": "catalog:drizzle",
     "@wishbeam/eslint-config": "workspace:*",
-    "@wishbeam/prettier-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }

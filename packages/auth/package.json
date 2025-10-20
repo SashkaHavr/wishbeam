@@ -10,7 +10,7 @@
     "./permissions": "./src/permissions.ts"
   },
   "scripts": {
-    "clean": "git clean -xdf .turbo node_modules dist .tanstack .nitro .output",
+    "clean": "bun exec \"rm -rf node_modules\"",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
     "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
     "generate-db-schema": "cross-env DATABASE_URL=url pnpm dlx @better-auth/cli@latest generate --config src/index.ts",
@@ -25,9 +25,8 @@
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/bun": "catalog:",
     "@wishbeam/eslint-config": "workspace:*",
-    "@wishbeam/prettier-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }
