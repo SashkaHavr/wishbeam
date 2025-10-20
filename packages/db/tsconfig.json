@@ -1,3 +1,4 @@
 {
-  "extends": "@wishbeam/typescript-config"
+  "extends": "@wishbeam/typescript-config",
+  "exclude": ["dist"]
 }

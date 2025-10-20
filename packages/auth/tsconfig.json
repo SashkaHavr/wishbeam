@@ -1,4 +1,4 @@
 {
   "extends": "@wishbeam/typescript-config",
-  "exclude": ["./generated/**"]
+  "exclude": ["generated", "dist"]
 }
