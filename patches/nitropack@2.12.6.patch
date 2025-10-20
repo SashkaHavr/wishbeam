@@ -1,12 +1,16 @@
+diff --git a/node_modules/nitropack/.bun-tag-7c385d2ed8ca1f7f b/.bun-tag-7c385d2ed8ca1f7f
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/dist/presets/bun/runtime/bun.mjs b/dist/presets/bun/runtime/bun.mjs
-index 0d624b31996c6a693365ebf7d7e30f7bf901a096..9cd161708b44aaaa1d808a049d19f68b6f4211bb 100644
+index 0d624b31996c6a693365ebf7d7e30f7bf901a096..24209a5079c809f00cb83d1dba9c2cd0f167e063 100644
 --- a/dist/presets/bun/runtime/bun.mjs
 +++ b/dist/presets/bun/runtime/bun.mjs
-@@ -8,6 +8,7 @@ const server = Bun.serve({
+@@ -8,6 +8,8 @@ const server = Bun.serve({
    port: process.env.NITRO_PORT || process.env.PORT || 3e3,
    host: process.env.NITRO_HOST || process.env.HOST,
    websocket: import.meta._websocket ? ws.websocket : void 0,
 +  idleTimeout: 0,
++  reusePort: true,
    async fetch(req, server2) {
      if (import.meta._websocket && req.headers.get("upgrade") === "websocket") {
        return ws.handleUpgrade(req, server2);

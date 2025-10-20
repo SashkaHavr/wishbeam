@@ -13,6 +13,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "start": "bun exec \"NODE_ENV=production bun run .output/server/index.mjs\"",
+    "start-cluster": "bun exec \"NODE_ENV=production bun run ./src/cluster.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
