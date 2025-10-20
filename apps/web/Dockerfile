@@ -26,15 +26,16 @@ FROM oven/bun:1 AS runner
 ENV NODE_ENV=production
 
 COPY --from=build /app/apps/web/package.json /app/web/
-
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/packages/env /app/packages/env
-COPY --from=build /app/packages/db /app/packages/db
-
 COPY --from=build /app/apps/web/.output /app/web/.output
+
+COPY /packages/db/drizzle /app/db/drizzle
+COPY --from=build /app/packages/db/dist /app/db
+
+COPY --from=build /app/packages/auth/dist /app/auth
+
 
 HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
 
 USER bun
 EXPOSE 3000
-CMD [ "sh", "-c", "cd /app/packages/db && bun run db:push && cd /app/web && bun run start" ]
+CMD [ "sh", "-c", "cd /app/db && bun run migrate.js && cd /app/auth && bun run generate-test-users.js && cd /app/web && bun run start" ]

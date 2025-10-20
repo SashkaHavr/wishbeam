@@ -10,8 +10,10 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
-    "clean": "bun exec \"rm -rf node_modules\"",
-    "db:push": "drizzle-kit push",
+    "build": "bun build --entrypoints ./src/migrate.ts --outdir ./dist --target bun",
+    "clean": "bun exec \"rm -rf node_modules .turbo dist\"",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun run ./src/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:up": "docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",

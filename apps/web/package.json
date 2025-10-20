@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "clean": "bun exec \"rm -rf node_modules dist .tanstack .nitro .output\"",
+    "clean": "bun exec \"rm -rf node_modules dist .tanstack .nitro .output .turbo\"",
     "component": "bunx shadcn@latest add",
     "postcomponent": "bun run format",
     "dev": "bunx --bun vite",

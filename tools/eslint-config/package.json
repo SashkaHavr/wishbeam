@@ -6,7 +6,7 @@
     ".": "./eslint.config.js"
   },
   "scripts": {
-    "clean": "bun exec \"rm -rf node_modules\"",
+    "clean": "bun exec \"rm -rf node_modules .turbo\"",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
     "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
     "typecheck": "tsc --noEmit"

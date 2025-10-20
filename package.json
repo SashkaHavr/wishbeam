@@ -62,7 +62,7 @@
     "build": "turbo build",
     "check": "turbo format:check lint typecheck",
     "clean": "turbo clean clean:root",
-    "clean:root": "bun exec \"rm -rf node_modules\"",
+    "clean:root": "bun exec \"rm -rf node_modules .turbo\"",
     "compose": "docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d",
     "deps": "bun update --interactive --recursive",
     "fix": "turbo format lint:fix typecheck",

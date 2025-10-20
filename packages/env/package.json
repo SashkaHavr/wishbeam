@@ -12,7 +12,7 @@
     "./pubsub": "./src/pubsub.ts"
   },
   "scripts": {
-    "clean": "bun exec \"rm -rf node_modules\"",
+    "clean": "bun exec \"rm -rf node_modules .turbo\"",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
     "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
     "lint": "eslint",
