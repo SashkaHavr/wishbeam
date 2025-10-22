@@ -23,6 +23,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './ui/drawer';
+import { ScrollArea } from './ui/scroll-area';
 
 const AppDialogContext = React.createContext({ desktop: true });
 
@@ -38,12 +39,17 @@ export function AppDialog(
   );
 }
 
-export function AppDialogContent(
-  props: React.ComponentProps<typeof DialogContent | typeof DrawerContent>,
-) {
+export function AppDialogContent({
+  children,
+  ...props
+}: React.ComponentProps<typeof DialogContent | typeof DrawerContent>) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogContent : DrawerContent;
-  return <Component {...props} />;
+  return (
+    <Component {...props}>
+      <ScrollArea className="h-[calc(80vh-24px)]">{children}</ScrollArea>
+    </Component>
+  );
 }
 
 export function AppDialogHeader(
