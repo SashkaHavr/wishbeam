@@ -54,4 +54,4 @@ jobs:
       - name: Trigger deployment
         run: |
           curl -X 'GET' \
-          '${{ vars.DEPLOYMENT_WEBHOOK }}'
+          '${{ secrets.DEPLOYMENT_WEBHOOK }}' \
