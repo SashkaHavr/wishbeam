@@ -1,4 +1,4 @@
-FROM oven/bun:1-slim AS base
+FROM oven/bun:1 AS base
 ENV TURBO_TELEMETRY_DISABLED=1
 RUN bun install -g turbo
 
@@ -18,11 +18,15 @@ COPY --from=partial /app/out/full/ .
 
 RUN --mount=type=secret,id=TURBO_TEAM,env=TURBO_TEAM \
     --mount=type=secret,id=TURBO_TOKEN,env=TURBO_TOKEN \
-    turbo build
+    bun run build
 
 
 # Run
-FROM oven/bun:1-slim AS runner
+FROM oven/bun:1 AS runner
+
+RUN apt-get -y update && apt-get -y install curl
+HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
+
 ENV NODE_ENV=production
 
 COPY --from=build /app/apps/web/package.json /app/web/
@@ -33,9 +37,6 @@ COPY /packages/db/drizzle /app/db/drizzle
 COPY --from=build /app/packages/db/dist /app/db
 
 COPY --from=build /app/packages/auth/dist /app/auth
-
-RUN apt-get -y update && apt-get -y install curl
-HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
 
 USER bun
 EXPOSE 3000
