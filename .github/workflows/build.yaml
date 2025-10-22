@@ -55,4 +55,4 @@ jobs:
         run: |
           curl -X 'GET' \
           '${{ secrets.COOLIFY_WEBHOOK }}' \
-          -H 'Authorization: Bearer {{ secrets.COOLIFY_TOKEN }}'
+          -H 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
