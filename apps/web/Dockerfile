@@ -30,7 +30,6 @@ HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/tr
 ENV NODE_ENV=production
 
 COPY --from=build /app/apps/web/package.json /app/web/
-COPY --from=build /app/apps/web/src/cluster.ts /app/web/src/
 COPY --from=build /app/apps/web/.output /app/web/.output
 
 COPY /packages/db/drizzle /app/db/drizzle
@@ -40,4 +39,4 @@ COPY --from=build /app/packages/auth/dist /app/auth
 
 USER bun
 EXPOSE 3000
-CMD [ "sh", "-c", "cd /app/db && bun run migrate.js && cd /app/auth && bun run generate-test-users.js && cd /app/web && bun run start-cluster" ]
+CMD [ "sh", "-c", "cd /app/db && bun run migrate.js && cd /app/auth && bun run generate-test-users.js && cd /app/web && bun run start" ]
