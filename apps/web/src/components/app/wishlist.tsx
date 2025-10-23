@@ -10,6 +10,7 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemGroup,
   ItemTitle,
 } from '../ui/item';
 import { CreateWishlistDialog } from './create-wishlist-dialog';
@@ -46,7 +47,7 @@ export function WishlistList({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col gap-4', className)} {...props} />;
+  return <ItemGroup className={cn('gap-4', className)} {...props} />;
 }
 
 export function CreateWishlistButton(

@@ -14,7 +14,13 @@ import { FormInputGroupSubmitButton } from './form/form-input-group-submit-butto
 import { useAppForm } from './form/use-app-form';
 import { Button } from './ui/button';
 import { InputGroup, InputGroupAddon } from './ui/input-group';
-import { Item, ItemActions, ItemContent, ItemTitle } from './ui/item';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemTitle,
+} from './ui/item';
 
 interface Props {
   className?: string;
@@ -74,7 +80,7 @@ export function AddDeleteUsersByEmailForm({
   return (
     <div className={cn('mt-2 flex flex-col gap-2 p-1', className)}>
       {users.length > 0 && (
-        <div className="flex flex-col">
+        <ItemGroup>
           {users.map((user) => (
             <Item className="py-1" size="sm" key={user.email}>
               <ItemContent>
@@ -95,7 +101,7 @@ export function AddDeleteUsersByEmailForm({
               </ItemActions>
             </Item>
           ))}
-        </div>
+        </ItemGroup>
       )}
       <form.AppForm>
         <Form className="flex w-full flex-col gap-4">

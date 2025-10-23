@@ -25,6 +25,7 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemGroup,
   ItemTitle,
 } from '../ui/item';
 import { Separator } from '../ui/separator';
@@ -81,7 +82,7 @@ export function WishlistItemsList({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col gap-4', className)} {...props} />;
+  return <ItemGroup className={cn('gap-4', className)} {...props} />;
 }
 
 export function WishlistItem({
@@ -97,7 +98,7 @@ export function WishlistItem({
         <ItemTitle className="text-lg">{wishlistItem.title}</ItemTitle>
         <ItemDescription>{wishlistItem.description}</ItemDescription>
       </ItemContent>
-      <div className="flex basis-full flex-col gap-1">
+      <ItemGroup className="basis-full gap-1">
         {wishlistItem.links.map((link, index) => (
           <Item key={index} size="sm" asChild>
             <a href={link} target="_blank" rel="noopener noreferrer">
@@ -110,7 +111,7 @@ export function WishlistItem({
             </a>
           </Item>
         ))}
-      </div>
+      </ItemGroup>
       {children}
     </Item>
   );
