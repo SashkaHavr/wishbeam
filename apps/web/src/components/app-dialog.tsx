@@ -23,7 +23,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './ui/drawer';
-import { ScrollArea } from './ui/scroll-area';
 
 const AppDialogContext = React.createContext({ desktop: true });
 
@@ -44,11 +43,17 @@ export function AppDialogContent({
   ...props
 }: React.ComponentProps<typeof DialogContent | typeof DrawerContent>) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogContent : DrawerContent;
+  if (desktop) {
+    return (
+      <DialogContent className="max-h-[80vh] overflow-auto" {...props}>
+        {children}
+      </DialogContent>
+    );
+  }
   return (
-    <Component {...props}>
-      <ScrollArea className="h-[calc(80vh-24px)]">{children}</ScrollArea>
-    </Component>
+    <DrawerContent {...props}>
+      <div className="w-full overflow-auto">{children}</div>
+    </DrawerContent>
   );
 }
 
