@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  ChevronDown,
   CircleSlash2Icon,
   EditIcon,
   ExternalLinkIcon,
@@ -13,11 +12,6 @@ import { useDeleteWishlistItemMutation } from '~/hooks/mutations/wishlists.owned
 import { cn } from '~/lib/utils';
 import { AppDialogTrigger } from '../app-dialog';
 import { Button } from '../ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '../ui/collapsible';
 import {
   Empty,
   EmptyContent,
@@ -97,43 +91,28 @@ export function WishlistItem({
   wishlistItem: WishlistItem;
   children?: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Collapsible asChild open={open} onOpenChange={setOpen}>
-      <Item className="gap-0" variant="outline">
-        <ItemContent className="mr-4 mb-4">
-          <ItemTitle>{wishlistItem.title}</ItemTitle>
-          <ItemDescription>{wishlistItem.description}</ItemDescription>
-        </ItemContent>
-        <ItemActions className="mb-4">
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost">
-              <ChevronDown
-                className={cn('transition-transform', open && 'rotate-180')}
-              />
-              <span>{open ? 'Show less' : 'Show more'}</span>
-            </Button>
-          </CollapsibleTrigger>
-        </ItemActions>
-        <CollapsibleContent className="flex basis-full flex-col gap-1">
-          {wishlistItem.links.map((link, index) => (
-            <Item key={index} size="sm" asChild>
-              <a href={link} target="_blank" rel="noopener noreferrer">
-                <ItemContent>
-                  <ItemTitle>{link}</ItemTitle>
-                </ItemContent>
-                <ItemActions>
-                  <ExternalLinkIcon className="size-4" />
-                </ItemActions>
-              </a>
-            </Item>
-          ))}
-          <div className="h-4 w-full" />
-        </CollapsibleContent>
-        {children}
-      </Item>
-    </Collapsible>
+    <Item variant="outline" size="sm">
+      <ItemContent>
+        <ItemTitle>{wishlistItem.title}</ItemTitle>
+        <ItemDescription>{wishlistItem.description}</ItemDescription>
+      </ItemContent>
+      <div className="flex basis-full flex-col gap-1">
+        {wishlistItem.links.map((link, index) => (
+          <Item key={index} size="sm" asChild>
+            <a href={link} target="_blank" rel="noopener noreferrer">
+              <ItemContent>
+                <ItemTitle>{link}</ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <ExternalLinkIcon className="size-4" />
+              </ItemActions>
+            </a>
+          </Item>
+        ))}
+      </div>
+      {children}
+    </Item>
   );
 }
 
