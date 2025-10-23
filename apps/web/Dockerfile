@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1.3.1 AS base
 ENV TURBO_TELEMETRY_DISABLED=1
 RUN bun install -g turbo
 
@@ -22,7 +22,7 @@ RUN --mount=type=secret,id=TURBO_TEAM,env=TURBO_TEAM \
 
 
 # Run
-FROM oven/bun:1 AS runner
+FROM oven/bun:1.3.1 AS runner
 
 RUN apt-get -y update && apt-get -y install curl
 HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
