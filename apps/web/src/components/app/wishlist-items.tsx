@@ -92,9 +92,9 @@ export function WishlistItem({
   children?: React.ReactNode;
 }) {
   return (
-    <Item variant="outline" size="sm">
+    <Item variant="outline">
       <ItemContent>
-        <ItemTitle>{wishlistItem.title}</ItemTitle>
+        <ItemTitle className="text-lg">{wishlistItem.title}</ItemTitle>
         <ItemDescription>{wishlistItem.description}</ItemDescription>
       </ItemContent>
       <div className="flex basis-full flex-col gap-1">
@@ -102,7 +102,7 @@ export function WishlistItem({
           <Item key={index} size="sm" asChild>
             <a href={link} target="_blank" rel="noopener noreferrer">
               <ItemContent>
-                <ItemTitle>{link}</ItemTitle>
+                <ItemTitle>{new URL(link).hostname}</ItemTitle>
               </ItemContent>
               <ItemActions>
                 <ExternalLinkIcon className="size-4" />
