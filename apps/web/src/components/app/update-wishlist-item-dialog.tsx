@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { revalidateLogic } from '@tanstack/react-form';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
@@ -39,9 +38,8 @@ export function UpdateWishlistItemDialog({
       description: wishlistItem.description,
       links: wishlistItem.links,
     },
-    validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: wishlistItemSchema,
+      onSubmit: wishlistItemSchema,
     },
     onSubmit: ({ value, formApi }) => {
       updateWishlistItem.mutate({

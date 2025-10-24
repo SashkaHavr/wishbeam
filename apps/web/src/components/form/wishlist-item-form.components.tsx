@@ -60,14 +60,14 @@ export const WishlistItemFields = withForm({
                       <FormField orientation="horizontal">
                         <FieldContent>
                           <InputGroup>
-                            <FormInputGroupInput />
+                            <FormInputGroupInput placeholder="https://example.com/" />
                             <InputGroupAddon align="inline-end">
                               <InputGroupButton
                                 type="button"
                                 variant="ghost"
                                 size="icon-xs"
                                 onClick={() => field.removeValue(index)}
-                                aria-label={`Remove email ${index + 1}`}
+                                aria-label={`Remove link ${index + 1}`}
                               >
                                 <XIcon />
                               </InputGroupButton>
@@ -79,14 +79,26 @@ export const WishlistItemFields = withForm({
                     )}
                   </form.AppField>
                 ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => field.pushValue('')}
-                >
-                  Add Link
-                </Button>
+                {field.state.value.length < 5 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      field.pushValue('');
+                      setTimeout(() => {
+                        const newField = document.querySelector(
+                          `input[name="links[${field.state.value.length - 1}]"]`,
+                        );
+                        if (newField instanceof HTMLInputElement) {
+                          newField.focus();
+                        }
+                      }, 0);
+                    }}
+                  >
+                    Add Link
+                  </Button>
+                )}
               </FieldGroup>
             </FieldSet>
           )}

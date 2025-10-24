@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { revalidateLogic } from '@tanstack/react-form';
 
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
@@ -32,9 +31,8 @@ export function CreateWishlistItemDialog({
 
   const form = useAppForm({
     defaultValues: { title: '', description: '', links: [] as string[] },
-    validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: wishlistItemSchema,
+      onSubmit: wishlistItemSchema,
     },
     onSubmit: async ({ value, formApi }) => {
       await createWishlistItem.mutateAsync({ ...value, wishlistId });

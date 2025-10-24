@@ -9,7 +9,7 @@ export const wishlistSchema = z.object({
 export const wishlistItemSchema = z.object({
   title: z.string().nonempty().max(100),
   description: z.string().max(500),
-  links: z.array(z.url()),
+  links: z.array(z.url()).max(5),
   // approximatePrice: z.number().min(0),
   // quantity: z.number(),
 });
