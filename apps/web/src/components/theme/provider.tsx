@@ -15,6 +15,15 @@ const getSystemTheme = createIsomorphicFn()
     return (e ?? window.matchMedia(MEDIA)).matches ? 'dark' : 'light';
   });
 
+function updateMetaThemeColor() {
+  const themeColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--background')
+    .trim();
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', themeColor);
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const savedTheme = useRouteContext({
@@ -23,7 +32,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   });
   const setSavedTheme = (newTheme: ResolvedTheme) => {
     setThemeCookie(newTheme);
-    void router.invalidate();
+    void router.invalidate().then(() => {
+      updateMetaThemeColor();
+    });
   };
 
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>('light');
@@ -34,6 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const systemTheme = getSystemTheme(e);
       setSystemTheme(systemTheme);
       document.documentElement.classList.toggle('dark', systemTheme === 'dark');
+      updateMetaThemeColor();
     },
   );
 
@@ -58,8 +70,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function ThemeScript() {
   return (
     <ScriptOnce>
-      {`const isSystemTheme = !document.documentElement.classList.contains('light') && !document.documentElement.classList.contains('dark');
-      if (isSystemTheme) document.documentElement.classList.toggle("dark", window.matchMedia("(prefers-color-scheme: dark)").matches);`}
+      {`(${(() => {
+        let mode = 'light';
+        const dark = document.documentElement.classList.contains('dark');
+        const isSystemTheme =
+          !document.documentElement.classList.contains('light') && !dark;
+        if (isSystemTheme) {
+          mode = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+          document.documentElement.classList.toggle('dark', mode === 'dark');
+        } else mode = dark ? 'dark' : 'light';
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute(
+            'content',
+            getComputedStyle(document.documentElement)
+              .getPropertyValue('--background')
+              .trim(),
+          );
+      }).toString()})()`}
     </ScriptOnce>
   );
 }

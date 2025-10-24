@@ -47,6 +47,7 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+      { name: 'theme-color' },
       {
         title: 'Wishbeam',
       },
