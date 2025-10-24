@@ -30,10 +30,13 @@ export function AppDialog(
   props: React.ComponentProps<typeof Dialog | typeof Drawer>,
 ) {
   const desktop = useMatchesBreakpoint('md');
-  const Component = desktop ? Dialog : Drawer;
   return (
     <AppDialogContext value={{ desktop }}>
-      <Component {...props} />
+      {desktop ? (
+        <Dialog {...props} />
+      ) : (
+        <Drawer repositionInputs={false} {...props} />
+      )}
     </AppDialogContext>
   );
 }
