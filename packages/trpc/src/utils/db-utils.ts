@@ -14,3 +14,16 @@ export async function getUserByEmail(email: string) {
   }
   return user;
 }
+
+export async function getUserById(userId: string) {
+  const user = await db.query.user.findFirst({
+    where: { id: userId },
+  });
+  if (!user) {
+    throw new TRPCError({
+      message: 'User not found',
+      code: 'UNPROCESSABLE_CONTENT',
+    });
+  }
+  return user;
+}

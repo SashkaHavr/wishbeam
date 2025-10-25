@@ -5,7 +5,6 @@ import { createContext } from '#context.ts';
 import { createCallerFactory, publicProcedure, router } from '#init.ts';
 import { cacheRouter } from '#routers/cache.ts';
 import { configRouter } from '#routers/config.ts';
-import { usersRouter } from '#routers/users.ts';
 import { ownedWishlistsRouter } from '#routers/wishlists.owned.ts';
 import { publicWishlistsRouter } from '#routers/wishlists.public.ts';
 
@@ -17,7 +16,6 @@ const appRouter = router({
     owned: ownedWishlistsRouter,
     public: publicWishlistsRouter,
   }),
-  users: usersRouter,
 });
 
 export function trpcHandler({ request }: { request: Request }) {

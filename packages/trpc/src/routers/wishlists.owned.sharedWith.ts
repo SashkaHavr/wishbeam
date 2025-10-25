@@ -7,9 +7,11 @@ import { wishlistUsersSharedWith as wishlistUsersSharedWithTable } from '@wishbe
 
 import { ownedWishlistProcedure, router } from '#init.ts';
 import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { getUserByEmail } from '#utils/db-utils.ts';
+import { getUserByEmail, getUserById } from '#utils/db-utils.ts';
 
 const wishlistSharedWithOutputSchema = z.object({
+  id: z.uuidv7(),
+  name: z.string(),
   email: z.email(),
 });
 
@@ -25,6 +27,7 @@ export const ownedWishlistSharedWithRouter = router({
         users: users.map((owner) => ({
           id: owner.user.id,
           email: owner.user.email,
+          name: owner.user.name,
         })),
       };
     }),
@@ -70,12 +73,14 @@ export const ownedWishlistSharedWithRouter = router({
         type: 'wishlists',
         wishlistId: ctx.wishlist.id,
       });
-      return { user: { ...newSharedWithUser, email: newOwnerUser.email } };
+      return {
+        user: newOwnerUser,
+      };
     }),
   delete: ownedWishlistProcedure
-    .input(z.object({ email: z.email() }))
+    .input(z.object({ userId: z.uuidv7() }))
     .mutation(async ({ input, ctx }) => {
-      const userToDelete = await getUserByEmail(input.email);
+      const userToDelete = await getUserById(input.userId);
       if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
           message: 'You cannot remove yourself as an owner',

@@ -133,14 +133,14 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                           className="basis-full"
                           users={users.data?.users ?? []}
                           addUser={({ email }) =>
-                            addUser.mutate({
+                            addUser.mutateAsync({
                               email,
                               wishlistId: wishlist.id,
                             })
                           }
-                          deleteUser={({ email }) =>
+                          deleteUser={({ userId }) =>
                             deleteUser.mutate({
-                              email,
+                              userId,
                               wishlistId: wishlist.id,
                             })
                           }

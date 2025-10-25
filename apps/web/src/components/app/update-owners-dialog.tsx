@@ -46,9 +46,9 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
             users={
               owners.data?.owners.filter((user) => user.role === 'owner') ?? []
             }
-            addUser={({ email }) => addOwner.mutate({ email, wishlistId })}
-            deleteUser={({ email }) =>
-              deleteOwner.mutate({ email, wishlistId })
+            addUser={({ email }) => addOwner.mutateAsync({ email, wishlistId })}
+            deleteUser={({ userId }) =>
+              deleteOwner.mutate({ userId, wishlistId })
             }
           />
         </AppDialogBody>

@@ -6,48 +6,18 @@ export function useAddWishlistSharedWithMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.wishlists.owned.sharedWith.add.mutationOptions({
-      onMutate: async (input, context) => {
-        await context.client.cancelQueries({
-          queryKey: trpc.wishlists.owned.sharedWith.getAll.queryKey({
-            wishlistId: input.wishlistId,
-          }),
-        });
-
-        const previous = context.client.getQueryData(
-          trpc.wishlists.owned.sharedWith.getAll.queryKey({
-            wishlistId: input.wishlistId,
-          }),
-        );
-
+      onSuccess: (response, input, onMutateResult, context) => {
         context.client.setQueryData(
           trpc.wishlists.owned.sharedWith.getAll.queryKey({
             wishlistId: input.wishlistId,
           }),
-          (old) => {
-            return old
-              ? {
-                  users: [...old.users, { email: input.email }],
-                }
-              : { users: [{ email: input.email }] };
-          },
+          (old) =>
+            old
+              ? { users: [...old.users, response.user] }
+              : { users: [response.user] },
         );
-
-        return { previous };
-      },
-      onError: (err, input, onMutateResult, context) => {
-        if (!onMutateResult) return;
-        context.client.setQueryData(
-          trpc.wishlists.owned.sharedWith.getAll.queryKey({
-            wishlistId: input.wishlistId,
-          }),
-          onMutateResult.previous,
-        );
-      },
-      onSettled: (response, error, input, onMutateResult, context) => {
         void context.client.invalidateQueries({
-          queryKey: trpc.wishlists.owned.sharedWith.getAll.queryKey({
-            wishlistId: input.wishlistId,
-          }),
+          queryKey: trpc.wishlists.owned.sharedWith.getAll.queryKey(),
         });
       },
     }),
@@ -78,7 +48,7 @@ export function useDeleteWishlistSharedWithMutation() {
           }),
           (old) =>
             old && {
-              users: old.users.filter((user) => user.email !== input.email),
+              users: old.users.filter((user) => user.id !== input.userId),
             },
         );
 

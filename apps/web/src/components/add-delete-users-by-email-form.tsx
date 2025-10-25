@@ -1,5 +1,4 @@
 import { revalidateLogic } from '@tanstack/react-form';
-import { useRouteContext } from '@tanstack/react-router';
 import { TRPCClientError } from '@trpc/client';
 import { XIcon } from 'lucide-react';
 import z from 'zod';
@@ -24,9 +23,9 @@ import {
 
 interface Props {
   className?: string;
-  users: { email: string }[];
-  addUser: (input: { email: string }) => void;
-  deleteUser: (input: { email: string }) => void;
+  users: { id: string; name: string; email: string }[];
+  addUser: (input: { email: string }) => Promise<unknown>;
+  deleteUser: (input: { userId: string }) => void;
 }
 
 export function AddDeleteUsersByEmailForm({
@@ -35,10 +34,6 @@ export function AddDeleteUsersByEmailForm({
   addUser,
   deleteUser,
 }: Props) {
-  const trpcClient = useRouteContext({
-    from: '__root__',
-    select: (ctx) => ctx.trpcClient,
-  });
   const { user: currentUser } = useLoggedInAuth();
 
   const form = useAppForm({
@@ -50,22 +45,10 @@ export function AddDeleteUsersByEmailForm({
           error: 'You cannot add yourself',
         }),
       }),
-      onSubmitAsync: async ({ value }) => {
-        const exists = await trpcClient.users.exists.query({
-          email: value.email,
-        });
-        return {
-          fields: {
-            email: exists
-              ? undefined
-              : { message: 'User with this email does not exist' },
-          },
-        };
-      },
     },
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       try {
-        addUser(value);
+        await addUser(value);
         formApi.reset();
       } catch (error) {
         if (error instanceof TRPCClientError) {
@@ -78,7 +61,13 @@ export function AddDeleteUsersByEmailForm({
   });
 
   return (
-    <div className={cn('mt-2 flex flex-col gap-2 p-1', className)}>
+    <div
+      className={cn(
+        'flex flex-col gap-2 p-1',
+        users.length === 0 && 'mt-1',
+        className,
+      )}
+    >
       {users.length > 0 && (
         <ItemGroup>
           {users.map((user) => (
@@ -92,7 +81,7 @@ export function AddDeleteUsersByEmailForm({
                   variant="ghost"
                   onClick={() =>
                     deleteUser({
-                      email: user.email,
+                      userId: user.id,
                     })
                   }
                 >
