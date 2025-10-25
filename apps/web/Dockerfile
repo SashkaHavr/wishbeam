@@ -1,4 +1,6 @@
-FROM oven/bun:1.3.1 AS base
+FROM oven/bun:1.3.1-alpine AS bun
+
+FROM bun AS base
 ENV TURBO_TELEMETRY_DISABLED=1
 RUN bun install -g turbo
 
@@ -22,9 +24,9 @@ RUN --mount=type=secret,id=TURBO_TEAM,env=TURBO_TEAM \
 
 
 # Run
-FROM oven/bun:1.3.1 AS runner
+FROM bun AS runner
 
-RUN apt-get -y update && apt-get -y install curl
+RUN apk --no-cache add curl
 HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
 
 ENV NODE_ENV=production
