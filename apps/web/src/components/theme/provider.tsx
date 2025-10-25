@@ -17,7 +17,7 @@ const getSystemTheme = createIsomorphicFn()
 
 function updateMetaThemeColor() {
   const themeColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--background')
+    .getPropertyValue('--theme-color')
     .trim();
   document
     .querySelector('meta[name="theme-color"]')
@@ -86,7 +86,7 @@ export function ThemeScript() {
           ?.setAttribute(
             'content',
             getComputedStyle(document.documentElement)
-              .getPropertyValue('--background')
+              .getPropertyValue('--theme-color')
               .trim(),
           );
       }).toString()})()`}
