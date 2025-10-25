@@ -19,7 +19,10 @@ export function AppNav({
   const desktop = useDesktop();
   return (
     <div
-      className={cn('flex h-screen flex-col md:flex-row', className)}
+      className={cn(
+        'flex h-screen flex-col overflow-y-clip md:flex-row',
+        className,
+      )}
       {...props}
     >
       {desktop && (
