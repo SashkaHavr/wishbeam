@@ -64,6 +64,10 @@ export const ownedWishlistsRouter = router({
         });
         return wishlist;
       });
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: wishlist.id,
+      });
       return {
         wishlist: {
           ...wishlist,

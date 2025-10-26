@@ -10,14 +10,41 @@ export function useCacheInvalidation() {
     trpc.cache.invalidations.subscriptionOptions(void 0, {
       onData: (data) => {
         switch (data.type) {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           case 'wishlists':
             void queryClient.invalidateQueries({
               queryKey: trpc.wishlists.pathKey(),
             });
             break;
+          case 'locks':
+            void queryClient.invalidateQueries({
+              queryKey: trpc.wishlists.shared.pathKey(),
+            });
+            break;
         }
       },
     }),
+  );
+}
+
+export function usePublicWishlistCacheInvalidation(wishlistId: string) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  useSubscription(
+    trpc.cache.invalidationsPublic.subscriptionOptions(
+      { wishlistId },
+      {
+        onData: (data) => {
+          switch (data.type) {
+            case 'locks':
+              void queryClient.invalidateQueries({
+                queryKey: trpc.wishlists.public.items.getAll.queryKey({
+                  wishlistId: data.wishlistId,
+                }),
+              });
+              break;
+          }
+        },
+      },
+    ),
   );
 }

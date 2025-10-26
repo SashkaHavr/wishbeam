@@ -6,6 +6,7 @@ import { db } from '@wishbeam/db';
 import { wishlistItem as wishlistItemTable } from '@wishbeam/db/schema';
 
 import { protectedProcedure, router, sharedWishlistProcedure } from '#init.ts';
+import { invalidateCache } from '#utils/cache-invalidation.ts';
 import { getWishlistItemLockStatus } from '#utils/utils.ts';
 import { base62ToUuidv7, uuidv7ToBase62 } from '#utils/zod-utils.ts';
 
@@ -99,6 +100,10 @@ export const sharedWishlistItemsRouter = router({
         .set({ lockedUserId: ctx.userId, lockChangedAt: new Date() })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
+    void invalidateCache(ctx.userId, {
+      type: 'locks',
+      wishlistId: ctx.wishlist.id,
+    });
   }),
   unlock: sharedWishlistItemProcedure.mutation(async ({ ctx }) => {
     await db.transaction(async (tx) => {
@@ -125,6 +130,10 @@ export const sharedWishlistItemsRouter = router({
         .update(wishlistItemTable)
         .set({ lockedUserId: null, lockChangedAt: new Date() })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+    });
+    void invalidateCache(ctx.userId, {
+      type: 'locks',
+      wishlistId: ctx.wishlist.id,
     });
   }),
 });

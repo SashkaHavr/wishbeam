@@ -1,0 +1,1 @@
+ALTER TABLE "wishlist_item" ADD COLUMN "lock_changed_at" timestamp DEFAULT now() NOT NULL;

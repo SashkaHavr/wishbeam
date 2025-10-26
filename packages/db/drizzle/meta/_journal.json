@@ -22,6 +22,13 @@
       "when": 1761495492261,
       "tag": "0002_unusual_vector",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1761515937252,
+      "tag": "0003_rare_sage",
+      "breakpoints": true
     }
   ]
 }

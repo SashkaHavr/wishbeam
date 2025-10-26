@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { LockIcon } from 'lucide-react';
 import z from 'zod';
 
 import { ItemFooter } from '~/components/ui/item';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
+import { LockButton } from '~/components/app/lock-button';
 import {
   WishlistItem,
   WishlistItemExpanded,
@@ -15,6 +15,7 @@ import {
 } from '~/components/app/wishlist-items';
 import { LoginDialog } from '~/components/login';
 import { PageLayout } from '~/components/page-layout';
+import { usePublicWishlistCacheInvalidation } from '~/hooks/use-cache-invalidation';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
@@ -85,6 +86,8 @@ function RouteComponent() {
     ),
   );
 
+  usePublicWishlistCacheInvalidation(wishlistId);
+
   return (
     <PageLayout>
       <WishlistItemExpanded wishlist={wishlist}>
@@ -95,9 +98,8 @@ function RouteComponent() {
               <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
                 <ItemFooter className="flex">
                   <LoginDialog>
-                    <AppDialogTrigger className="grow">
-                      <LockIcon />
-                      <span>Lock item</span>
+                    <AppDialogTrigger className="grow" asChild>
+                      <LockButton lockStatus={wishlistItem.lockStatus} />
                     </AppDialogTrigger>
                   </LoginDialog>
                 </ItemFooter>

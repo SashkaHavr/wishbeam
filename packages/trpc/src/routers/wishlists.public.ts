@@ -17,6 +17,11 @@ const wishlistItemOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
+  lockStatus: z.enum([
+    'lockedByCurrentUser',
+    'lockedByAnotherUser',
+    'unlocked',
+  ]),
 });
 
 const publicWishlistProcedure = publicProcedure
