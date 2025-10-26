@@ -19,7 +19,6 @@ import { FormFieldError } from './form-field-error';
 import { FormFieldLabel } from './form-field-label';
 import { FormInput } from './form-input';
 import { FormInputGroupInput } from './form-input-group-input';
-import { FormTextarea } from './form-textarea';
 import { withForm } from './use-app-form';
 
 export const WishlistItemFields = withForm({
@@ -41,7 +40,7 @@ export const WishlistItemFields = withForm({
           {() => (
             <FormField>
               <FormFieldLabel>Description</FormFieldLabel>
-              <FormTextarea />
+              <FormInput />
               <FormFieldError />
             </FormField>
           )}
