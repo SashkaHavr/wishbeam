@@ -2,7 +2,11 @@ import { sql } from 'drizzle-orm';
 import { index, pgEnum, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { baseTable } from '#utils/base-table.ts';
-import { oneToMany, oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
+import {
+  oneToMany,
+  oneToManyCascadeOnDelete,
+  oneToManyNullable,
+} from '#utils/foreign-keys.ts';
 import { user } from './auth';
 
 export const wishlistShareStatus = pgEnum('wishlist_share_status', [
@@ -45,14 +49,23 @@ export const wishlistItem = pgTable(
       .array()
       .notNull()
       .default(sql`'{}'::text[]`),
-    // approximatePrice: integer(),
-    // quantity: integer().notNull().default(1),
+    lockedUserId: oneToManyNullable(() => user.id),
   },
   (table) => [index().on(table.wishlistId)],
 );
 
 export const wishlistUsersSharedWith = pgTable(
   'wishlist_users_shared_with',
+  {
+    ...baseTable,
+    wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
+    userId: oneToManyCascadeOnDelete(() => user.id),
+  },
+  (table) => [index().on(table.wishlistId), index().on(table.userId)],
+);
+
+export const wishlistPublicUsersSavedShare = pgTable(
+  'wishlist_public_users_saved_share',
   {
     ...baseTable,
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),

@@ -64,6 +64,22 @@ export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
   );
 }
 
+export function WishlistItemsEmptyPublic() {
+  return (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <CircleSlash2Icon />
+        </EmptyMedia>
+        <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
+        <EmptyDescription>
+          There aren't any items in this wishlist.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
+
 export function CreateWishlistItemButton({
   wishlistId,
   ...props

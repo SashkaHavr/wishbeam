@@ -15,7 +15,10 @@ import {
 } from '../ui/item';
 import { CreateWishlistDialog } from './create-wishlist-dialog';
 
-const _wishlistPages = ['/app/wishlists/$id'] satisfies LinkProps['to'][];
+const _wishlistPages = [
+  '/app/wishlists/$id',
+  '/app/shared/$id',
+] satisfies LinkProps['to'][];
 
 export function Wishlist({
   wishlist,

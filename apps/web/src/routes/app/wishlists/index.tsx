@@ -23,7 +23,7 @@ import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
-const wishlistsGetOwnedServerFn = createServerFn()
+const wishlistsOwnedGetAllServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .handler(async ({ context }) => {
     return context.trpc.wishlists.owned.getAll();
@@ -33,7 +33,7 @@ export const Route = createFileRoute('/app/wishlists/')({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       queryKey: context.trpc.wishlists.owned.getAll.queryKey(),
-      queryFn: () => wishlistsGetOwnedServerFn(),
+      queryFn: () => wishlistsOwnedGetAllServerFn(),
     });
   },
   component: RouteComponent,

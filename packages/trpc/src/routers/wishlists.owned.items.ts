@@ -32,7 +32,7 @@ const ownedWishlistItemProcedure = protectedProcedure
     if (!wishlistItem) {
       throw new TRPCError({
         message: 'Wishlist item not found',
-        code: 'UNPROCESSABLE_CONTENT',
+        code: 'NOT_FOUND',
       });
     }
     const { wishlist, ...restItem } = wishlistItem;

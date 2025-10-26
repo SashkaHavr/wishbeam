@@ -15,6 +15,13 @@
       "when": 1761259086871,
       "tag": "0001_burly_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761495492261,
+      "tag": "0002_unusual_vector",
+      "breakpoints": true
     }
   ]
 }

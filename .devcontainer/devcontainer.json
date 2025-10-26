@@ -5,7 +5,7 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   // vite dev start, drizzle studio
   "forwardPorts": [3000, 4983],
-  "postCreateCommand": "bun install && bun --filter '@wishbeam/db' db:push",
+  "postCreateCommand": "bun install && bun --filter '@wishbeam/db' db:migrate",
   "remoteUser": "root",
   "customizations": {
     "vscode": {

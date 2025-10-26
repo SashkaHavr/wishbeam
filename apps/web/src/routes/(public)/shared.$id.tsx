@@ -10,6 +10,7 @@ import { AppDialogTrigger } from '~/components/app-dialog';
 import {
   WishlistItem,
   WishlistItemExpanded,
+  WishlistItemsEmptyPublic,
   WishlistItemsList,
 } from '~/components/app/wishlist-items';
 import { LoginDialog } from '~/components/login';
@@ -17,7 +18,7 @@ import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
-const wishlistGetByIdServerFn = createServerFn()
+const wishlistPublicGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
@@ -28,7 +29,7 @@ const wishlistGetByIdServerFn = createServerFn()
     }
   });
 
-const wishlistGetItemsServerFn = createServerFn()
+const wishlistPublicGetItemsServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
@@ -52,14 +53,14 @@ export const Route = createFileRoute('/(public)/shared/$id')({
           wishlistId: params.id,
         }),
         queryFn: () =>
-          wishlistGetByIdServerFn({ data: { wishlistId: params.id } }),
+          wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.public.items.getAll.queryKey({
           wishlistId: params.id,
         }),
         queryFn: () =>
-          wishlistGetItemsServerFn({ data: { wishlistId: params.id } }),
+          wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },
@@ -87,6 +88,7 @@ function RouteComponent() {
   return (
     <PageLayout>
       <WishlistItemExpanded wishlist={wishlist}>
+        {wishlistItems.length === 0 && <WishlistItemsEmptyPublic />}
         {wishlistItems.length > 0 && (
           <WishlistItemsList>
             {wishlistItems.map((wishlistItem) => (

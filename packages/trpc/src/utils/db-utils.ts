@@ -9,7 +9,7 @@ export async function getUserByEmail(email: string) {
   if (!user) {
     throw new TRPCError({
       message: 'User not found',
-      code: 'UNPROCESSABLE_CONTENT',
+      code: 'NOT_FOUND',
     });
   }
   return user;
@@ -22,7 +22,7 @@ export async function getUserById(userId: string) {
   if (!user) {
     throw new TRPCError({
       message: 'User not found',
-      code: 'UNPROCESSABLE_CONTENT',
+      code: 'NOT_FOUND',
     });
   }
   return user;

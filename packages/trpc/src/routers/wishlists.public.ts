@@ -4,6 +4,7 @@ import z from 'zod';
 import { db } from '@wishbeam/db';
 
 import { publicProcedure, router } from '#init.ts';
+import { getWishlistItemLockStatus } from '#utils/utils.ts';
 import { base62ToUuidv7, uuidv7ToBase62 } from '#utils/zod-utils.ts';
 
 const wishlistOutputSchema = z.object({
@@ -52,7 +53,14 @@ export const publicWishlistsRouter = router({
           where: { wishlistId: ctx.wishlist.id },
           orderBy: { createdAt: 'asc' },
         });
-        return { wishlistItems };
+        return {
+          wishlistItems: wishlistItems.map((item) => ({
+            ...item,
+            lockStatus: getWishlistItemLockStatus({
+              lockUserId: item.lockedUserId,
+            }),
+          })),
+        };
       }),
   }),
 });

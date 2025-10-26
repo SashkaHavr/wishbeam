@@ -1,7 +1,7 @@
 services:
   db-studio:
     ports:
-      - 4983:4983
+      - 5261:4983
   web:
     environment:
       TEST_AUTH: true

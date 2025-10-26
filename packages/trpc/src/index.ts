@@ -7,6 +7,7 @@ import { cacheRouter } from '#routers/cache.ts';
 import { configRouter } from '#routers/config.ts';
 import { ownedWishlistsRouter } from '#routers/wishlists.owned.ts';
 import { publicWishlistsRouter } from '#routers/wishlists.public.ts';
+import { sharedWishlistsRouter } from '#routers/wishlists.shared.ts';
 
 const appRouter = router({
   health: publicProcedure.query(() => 'tRPC healthy!'),
@@ -15,6 +16,7 @@ const appRouter = router({
   wishlists: router({
     owned: ownedWishlistsRouter,
     public: publicWishlistsRouter,
+    shared: sharedWishlistsRouter,
   }),
 });
 

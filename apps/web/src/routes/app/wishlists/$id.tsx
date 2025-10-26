@@ -25,7 +25,7 @@ import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 
-const wishlistGetByIdServerFn = createServerFn()
+const wishlistOwnedGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
@@ -36,7 +36,7 @@ const wishlistGetByIdServerFn = createServerFn()
     }
   });
 
-const wishlistGetItemsServerFn = createServerFn()
+const wishlistOwnedGetItemsServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .validator(z.object({ wishlistId: z.string() }))
   .handler(async ({ context, data }) => {
@@ -55,14 +55,14 @@ export const Route = createFileRoute('/app/wishlists/$id')({
           wishlistId: params.id,
         }),
         queryFn: () =>
-          wishlistGetByIdServerFn({ data: { wishlistId: params.id } }),
+          wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.owned.items.getAll.queryKey({
           wishlistId: params.id,
         }),
         queryFn: () =>
-          wishlistGetItemsServerFn({ data: { wishlistId: params.id } }),
+          wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },
