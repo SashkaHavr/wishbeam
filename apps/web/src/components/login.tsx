@@ -46,7 +46,11 @@ export function LoginButtons() {
   });
 
   const loginGoogle = useMutation({
-    mutationFn: () => authClient.signIn.social({ provider: 'google' }),
+    mutationFn: () =>
+      authClient.signIn.social({
+        provider: 'google',
+        callbackURL: window.location.href,
+      }),
   });
 
   return (
