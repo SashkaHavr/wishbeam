@@ -88,7 +88,7 @@ export const ownedWishlistsRouter = router({
     .mutation(async ({ input, ctx }) => {
       await db
         .update(wishlistTable)
-        .set(input.data)
+        .set({ ...input.data, updatedAt: new Date() })
         .where(eq(wishlistTable.id, ctx.wishlist.id));
       void invalidateCache(ctx.userId, {
         type: 'wishlists',

@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, pgEnum, pgTable, text } from 'drizzle-orm/pg-core';
+import { index, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { baseTable } from '#utils/base-table.ts';
 import {
@@ -50,6 +50,7 @@ export const wishlistItem = pgTable(
       .notNull()
       .default(sql`'{}'::text[]`),
     lockedUserId: oneToManyNullable(() => user.id),
+    lockChangedAt: timestamp().notNull().defaultNow(),
   },
   (table) => [index().on(table.wishlistId)],
 );

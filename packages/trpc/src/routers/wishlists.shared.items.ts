@@ -96,7 +96,7 @@ export const sharedWishlistItemsRouter = router({
       }
       await tx
         .update(wishlistItemTable)
-        .set({ lockedUserId: ctx.userId })
+        .set({ lockedUserId: ctx.userId, lockChangedAt: new Date() })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
   }),
@@ -123,7 +123,7 @@ export const sharedWishlistItemsRouter = router({
       }
       await tx
         .update(wishlistItemTable)
-        .set({ lockedUserId: null })
+        .set({ lockedUserId: null, lockChangedAt: new Date() })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
   }),
