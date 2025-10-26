@@ -45,6 +45,10 @@ export function LoginButtons() {
     },
   });
 
+  const loginGoogle = useMutation({
+    mutationFn: () => authClient.signIn.social({ provider: 'google' }),
+  });
+
   return (
     <FieldGroup>
       {authConfig.data.testAuth && (
@@ -84,7 +88,11 @@ export function LoginButtons() {
       )}
       {authConfig.data.google && (
         <Field>
-          <Button variant="outline" type="button">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => loginGoogle.mutate()}
+          >
             <Google />
             Login with Google
           </Button>

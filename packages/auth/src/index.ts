@@ -18,6 +18,15 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
   }),
+  socialProviders: {
+    google:
+      envAuth.GOOGLE_CLIENT_ID && envAuth.GOOGLE_CLIENT_SECRET
+        ? {
+            clientId: envAuth.GOOGLE_CLIENT_ID,
+            clientSecret: envAuth.GOOGLE_CLIENT_SECRET,
+          }
+        : undefined,
+  },
   plugins: [
     admin({
       ...permissions,
