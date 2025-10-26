@@ -18,6 +18,7 @@ export function LockButton({
 }) {
   return (
     <Button
+      variant={lockStatus === 'unlocked' ? 'default' : 'outline'}
       disabled={lockStatus === 'lockedByAnotherUser'}
       onClick={() => {
         if (lockStatus === 'unlocked') {

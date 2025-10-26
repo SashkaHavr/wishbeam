@@ -102,14 +102,14 @@ export function WishlistItemsList({
 }
 
 export function WishlistItem({
-  wishlistItem,
   children,
-}: {
+  wishlistItem,
+  ...props
+}: Omit<React.ComponentProps<typeof Item>, 'variant'> & {
   wishlistItem: WishlistItem;
-  children?: React.ReactNode;
 }) {
   return (
-    <Item variant="outline">
+    <Item variant="outline" {...props}>
       <ItemContent>
         <ItemTitle className="text-lg">{wishlistItem.title}</ItemTitle>
         <ItemDescription>{wishlistItem.description}</ItemDescription>

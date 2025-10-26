@@ -19,6 +19,7 @@ import {
 } from '~/hooks/mutations/wishlists.shared.items';
 import { useTRPC } from '~/lib/trpc';
 import { trpcServerFnMiddleware } from '~/lib/trpc-server';
+import { cn } from '~/lib/utils';
 
 const wishlistSharedGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
@@ -92,7 +93,17 @@ function RouteComponent() {
         {wishlistItems.length > 0 && (
           <WishlistItemsList>
             {wishlistItems.map((wishlistItem) => (
-              <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
+              <WishlistItem
+                key={wishlistItem.id}
+                wishlistItem={wishlistItem}
+                className={cn(
+                  'transition-shadow',
+                  wishlistItem.lockStatus === 'lockedByAnotherUser' &&
+                    'bg-muted/50',
+                  wishlistItem.lockStatus === 'lockedByCurrentUser' &&
+                    'shadow-lg',
+                )}
+              >
                 <ItemFooter className="flex">
                   <LockButton
                     className="grow"
