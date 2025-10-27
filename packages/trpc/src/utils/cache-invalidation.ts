@@ -5,12 +5,14 @@ import { publish } from '@wishbeam/pubsub';
 
 import { uuidv7ToBase62 } from './zod-utils';
 
-export function getCacheInvalidationSubject(userId: string) {
-  return `cache-invalidation.${userId}`;
+export function getCacheInvalidationChannel(userId: string) {
+  const base62UserId = uuidv7ToBase62.parse(userId);
+  return `cache-invalidation:${base62UserId}`;
 }
 
-export function getPublicCacheInvalidationSubject(wishlistId: string) {
-  return `public-wishlist.${wishlistId}`;
+export function getPublicCacheInvalidationChannel(wishlistId: string) {
+  const base62WishlistId = uuidv7ToBase62.parse(wishlistId);
+  return `public-wishlist:${base62WishlistId}`;
 }
 
 export const cacheInvalidationSchema = z.discriminatedUnion('type', [
@@ -55,15 +57,15 @@ export async function invalidateCache(
     (id) => id !== currentUserId,
   );
   for (const userId of userIdsToNotify) {
-    publish<z.infer<typeof cacheInvalidationSchema>>({
-      subject: getCacheInvalidationSubject(userId),
+    await publish<z.infer<typeof cacheInvalidationSchema>>({
+      channel: getCacheInvalidationChannel(userId),
       message: data,
     });
   }
 
   if (data.type === 'locks') {
-    publish<z.infer<typeof cacheInvalidationSchema>>({
-      subject: getPublicCacheInvalidationSubject(data.wishlistId),
+    await publish<z.infer<typeof cacheInvalidationSchema>>({
+      channel: getPublicCacheInvalidationChannel(data.wishlistId),
       message: data,
     });
   }

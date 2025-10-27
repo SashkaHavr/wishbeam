@@ -29,10 +29,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  pubsub:
-    image: nats:2
+  redis:
+    image: redis:8
     networks:
-      - pubsub-network
+      - redis-network
   web:
     build:
       context: .
@@ -40,10 +40,10 @@ services:
     restart: always
     networks:
       - db-network
-      - pubsub-network
+      - redis-network
     environment:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:mysecretpassword@db:5432/postgres}
-      PUBSUB_URL: nats://pubsub:4222
+      REDIS_URL: redis://redis:6379
     env_file:
       - path: .env
         required: false
@@ -53,7 +53,7 @@ services:
 
 networks:
   db-network:
-  pubsub-network:
+  redis-network:
 
 volumes:
   drizzle-gateway:

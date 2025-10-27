@@ -6,8 +6,8 @@ import { subscribe } from '@wishbeam/pubsub';
 import { protectedProcedure, publicProcedure, router } from '#init.ts';
 import {
   cacheInvalidationSchema,
-  getCacheInvalidationSubject,
-  getPublicCacheInvalidationSubject,
+  getCacheInvalidationChannel,
+  getPublicCacheInvalidationChannel,
 } from '#utils/cache-invalidation.ts';
 import { base62ToUuidv7 } from '#utils/zod-utils.ts';
 
@@ -23,7 +23,7 @@ export const cacheRouter = router({
       });
     }
     for await (const message of subscribe({
-      subject: getCacheInvalidationSubject(userId),
+      channel: getCacheInvalidationChannel(userId),
       abortSignal,
       schema: cacheInvalidationSchema,
     })) {
@@ -40,7 +40,7 @@ export const cacheRouter = router({
         });
       }
       for await (const message of subscribe({
-        subject: getPublicCacheInvalidationSubject(input.wishlistId),
+        channel: getPublicCacheInvalidationChannel(input.wishlistId),
         abortSignal,
         schema: cacheInvalidationSchema,
       })) {

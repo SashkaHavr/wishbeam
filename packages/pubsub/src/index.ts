@@ -1,32 +1,40 @@
+import EventEmitter, { on } from 'events';
 import type z from 'zod';
-import { connect } from '@nats-io/transport-node';
+import { RedisClient } from 'bun';
 
 import { envPubSub } from '@wishbeam/env/pubsub';
 
-const nc = await connect({ servers: envPubSub.PUBSUB_URL });
+const subscriber = new RedisClient(envPubSub.REDIS_URL);
+const publisher = await subscriber.duplicate();
 
 export async function* subscribe<Output>({
-  subject,
+  channel,
   abortSignal,
   schema,
 }: {
-  subject: string;
+  channel: string;
   abortSignal: AbortSignal;
   schema: z.ZodSchema<Output>;
 }) {
-  const sub = nc.subscribe(subject);
-  abortSignal.onabort = () => sub.unsubscribe();
-  for await (const m of sub) {
-    yield schema.parse(m.json());
+  const ee = new EventEmitter();
+  try {
+    await subscriber.subscribe(channel, (message) => {
+      ee.emit('message', message);
+    });
+    for await (const [event] of on(ee, 'message', { signal: abortSignal })) {
+      yield schema.parse(JSON.parse(event as string));
+    }
+  } catch {
+    await subscriber.unsubscribe(channel);
   }
 }
 
-export function publish<T>({
-  subject,
+export async function publish<T>({
+  channel,
   message,
 }: {
-  subject: string;
+  channel: string;
   message: T;
 }) {
-  nc.publish(subject, JSON.stringify(message));
+  await publisher.publish(channel, JSON.stringify(message));
 }

@@ -5,6 +5,11 @@ import { defineConfig } from 'vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: ['bun'],
+    },
+  },
   server: {
     port: 3000,
     host: '127.0.0.1',
