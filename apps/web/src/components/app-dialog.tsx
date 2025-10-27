@@ -14,29 +14,27 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from './ui/drawer';
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './ui/sheet';
 
 const AppDialogContext = React.createContext({ desktop: true });
 
 export function AppDialog(
-  props: React.ComponentProps<typeof Dialog | typeof Drawer>,
+  props: React.ComponentProps<typeof Dialog | typeof Sheet>,
 ) {
   const desktop = useMatchesBreakpoint('md');
+  const Component = desktop ? Dialog : Sheet;
+
   return (
     <AppDialogContext value={{ desktop }}>
-      {desktop ? (
-        <Dialog {...props} />
-      ) : (
-        <Drawer repositionInputs={false} {...props} />
-      )}
+      <Component {...props} />
     </AppDialogContext>
   );
 }
@@ -44,8 +42,9 @@ export function AppDialog(
 export function AppDialogContent({
   children,
   ...props
-}: React.ComponentProps<typeof DialogContent | typeof DrawerContent>) {
+}: React.ComponentProps<typeof DialogContent | typeof SheetContent>) {
   const { desktop } = use(AppDialogContext);
+
   if (desktop) {
     return (
       <DialogContent className="max-h-[80vh] overflow-auto" {...props}>
@@ -54,49 +53,53 @@ export function AppDialogContent({
     );
   }
   return (
-    <DrawerContent {...props}>
-      <div className="w-full overflow-auto">{children}</div>
-    </DrawerContent>
+    <SheetContent
+      onOpenAutoFocus={(e) => e.preventDefault()}
+      {...props}
+      side="bottom"
+    >
+      <div className="max-h-[70vh] overflow-auto">{children}</div>
+    </SheetContent>
   );
 }
 
 export function AppDialogHeader(
-  props: React.ComponentProps<typeof DialogHeader | typeof DrawerHeader>,
+  props: React.ComponentProps<typeof DialogHeader | typeof SheetHeader>,
 ) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogHeader : DrawerHeader;
+  const Component = desktop ? DialogHeader : SheetHeader;
   return <Component {...props} />;
 }
 
 export function AppDialogFooter(
-  props: React.ComponentProps<typeof DialogFooter | typeof DrawerFooter>,
+  props: React.ComponentProps<typeof DialogFooter | typeof SheetFooter>,
 ) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogFooter : DrawerFooter;
+  const Component = desktop ? DialogFooter : SheetFooter;
   return <Component {...props} />;
 }
 
 export function AppDialogTitle(
-  props: React.ComponentProps<typeof DialogTitle | typeof DrawerTitle>,
+  props: React.ComponentProps<typeof DialogTitle | typeof SheetTitle>,
 ) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogTitle : DrawerTitle;
+  const Component = desktop ? DialogTitle : SheetTitle;
   return <Component {...props} />;
 }
 
 export function AppDialogDescription(
   props: React.ComponentProps<
-    typeof DialogDescription | typeof DrawerDescription
+    typeof DialogDescription | typeof SheetDescription
   >,
 ) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogDescription : DrawerDescription;
+  const Component = desktop ? DialogDescription : SheetDescription;
   return <Component {...props} />;
 }
 
 export function AppDialogTrigger(props: React.ComponentProps<typeof Button>) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogTrigger : DrawerTrigger;
+  const Component = desktop ? DialogTrigger : SheetTrigger;
 
   return (
     <Component asChild>
@@ -107,7 +110,7 @@ export function AppDialogTrigger(props: React.ComponentProps<typeof Button>) {
 
 export function AppDialogClose(props: React.ComponentProps<typeof Button>) {
   const { desktop } = use(AppDialogContext);
-  const Component = desktop ? DialogClose : DrawerClose;
+  const Component = desktop ? DialogClose : SheetClose;
   return (
     <Component asChild>
       <Button {...props} />
