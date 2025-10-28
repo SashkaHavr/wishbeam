@@ -28,7 +28,13 @@ export function CreateWishlistDialog({
 }) {
   const createWishlist = useCreateWishlistMutation();
 
-  const [open, setOpen] = useState(false);
+  const [open, _setOpen] = useState(false);
+  const setOpen = (isOpen: boolean) => {
+    _setOpen(isOpen);
+    if (!isOpen) {
+      form.reset();
+    }
+  };
 
   const form = useAppForm({
     defaultValues: { title: defaultTitle, description: '' },
@@ -36,10 +42,9 @@ export function CreateWishlistDialog({
     validators: {
       onDynamic: wishlistSchema,
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       await createWishlist.mutateAsync(value);
       setOpen(false);
-      formApi.reset();
     },
   });
 

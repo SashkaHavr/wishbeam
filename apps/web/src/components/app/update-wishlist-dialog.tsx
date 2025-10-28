@@ -27,7 +27,13 @@ interface Props {
 
 export function UpdateWishlistDialog({ wishlist, children }: Props) {
   const updateWishlist = useUpdateWishlistMutation();
-  const [open, setOpen] = useState(false);
+  const [open, _setOpen] = useState(false);
+  const setOpen = (isOpen: boolean) => {
+    _setOpen(isOpen);
+    if (!isOpen) {
+      form.reset();
+    }
+  };
 
   const form = useAppForm({
     defaultValues: { title: wishlist.title, description: wishlist.description },
@@ -35,10 +41,9 @@ export function UpdateWishlistDialog({ wishlist, children }: Props) {
     validators: {
       onDynamic: wishlistSchema,
     },
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: ({ value }) => {
       updateWishlist.mutate({ wishlistId: wishlist.id, data: value });
       setOpen(false);
-      formApi.reset();
     },
   });
 

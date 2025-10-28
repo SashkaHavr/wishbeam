@@ -26,7 +26,13 @@ export function CreateWishlistItemDialog({
   children: React.ReactNode;
   wishlistId: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, _setOpen] = useState(false);
+  const setOpen = (isOpen: boolean) => {
+    _setOpen(isOpen);
+    if (!isOpen) {
+      form.reset();
+    }
+  };
 
   const createWishlistItem = useCreateWishlistItemMutation();
 
@@ -43,7 +49,7 @@ export function CreateWishlistItemDialog({
         estimatedPrice: wishlistItemSchema.shape.estimatedPrice.unwrap(),
       }),
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       await createWishlistItem.mutateAsync({
         ...value,
         estimatedPrice:
@@ -51,7 +57,6 @@ export function CreateWishlistItemDialog({
         wishlistId,
       });
       setOpen(false);
-      formApi.reset();
     },
   });
 

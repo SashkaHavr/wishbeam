@@ -34,7 +34,13 @@ export function UpdateWishlistItemDialog({
     estimatedPrice: string | null;
   };
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, _setOpen] = useState(false);
+  const setOpen = (isOpen: boolean) => {
+    _setOpen(isOpen);
+    if (!isOpen) {
+      form.reset();
+    }
+  };
 
   const updateWishlistItem = useUpdateWishlistItemMutation({ wishlistId });
 
@@ -51,7 +57,7 @@ export function UpdateWishlistItemDialog({
         estimatedPrice: wishlistItemSchema.shape.estimatedPrice.unwrap(),
       }),
     },
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: ({ value }) => {
       updateWishlistItem.mutate({
         wishlistItemId: wishlistItem.id,
         data: {
@@ -61,7 +67,6 @@ export function UpdateWishlistItemDialog({
         },
       });
       setOpen(false);
-      formApi.reset();
     },
   });
 
