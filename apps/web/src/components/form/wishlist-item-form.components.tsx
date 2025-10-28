@@ -22,7 +22,12 @@ import { FormInputGroupInput } from './form-input-group-input';
 import { withForm } from './use-app-form';
 
 export const WishlistItemFields = withForm({
-  defaultValues: { title: '', description: '', links: [] as string[] },
+  defaultValues: {
+    title: '',
+    description: '',
+    estimatedPrice: '',
+    links: [] as string[],
+  },
   props: { className: '' } as { className?: string },
   render: function Render({ form, className }) {
     return (
@@ -40,6 +45,15 @@ export const WishlistItemFields = withForm({
           {() => (
             <FormField>
               <FormFieldLabel>Description</FormFieldLabel>
+              <FormInput />
+              <FormFieldError />
+            </FormField>
+          )}
+        </form.AppField>
+        <form.AppField name="estimatedPrice">
+          {() => (
+            <FormField>
+              <FormFieldLabel>Estimated Price</FormFieldLabel>
               <FormInput />
               <FormFieldError />
             </FormField>

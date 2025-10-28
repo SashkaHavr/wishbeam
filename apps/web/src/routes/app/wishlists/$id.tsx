@@ -4,14 +4,17 @@ import { createServerFn } from '@tanstack/react-start';
 import { EditIcon, Share2Icon, TrashIcon, UserPlusIcon } from 'lucide-react';
 import z from 'zod';
 
+import type { TRPCOutput } from '@wishbeam/trpc';
 import { Button } from '~/components/ui/button';
 import { ItemActions, ItemFooter } from '~/components/ui/item';
+import { Separator } from '~/components/ui/separator';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
 import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
 import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
 import {
+  ArchiveWishlistItemButton,
   CreateWishlistItemButton,
   DeleteWishlistItemButton,
   UpdateWishlistItemButton,
@@ -89,6 +92,13 @@ function RouteComponent() {
     ),
   );
 
+  const activeWishlistItems = wishlistItems.filter(
+    (item) => item.status === 'active',
+  );
+  const archivedWishlistItems = wishlistItems.filter(
+    (item) => item.status === 'archived',
+  );
+
   return (
     <PageLayout>
       <WishlistItemExpanded
@@ -138,25 +148,64 @@ function RouteComponent() {
           <WishlistItemsEmpty wishlistId={wishlistId} />
         )}
         {wishlistItems.length > 0 && (
-          <WishlistItemsList>
-            {wishlistItems.map((wishlistItem) => (
-              <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
-                <ItemFooter className="grid grid-cols-2">
-                  <UpdateWishlistItemButton
-                    wishlistItem={wishlistItem}
-                    wishlistId={wishlistId}
-                  />
-                  <DeleteWishlistItemButton
-                    wishlistItemId={wishlistItem.id}
-                    wishlistId={wishlistId}
-                  />
-                </ItemFooter>
-              </WishlistItem>
-            ))}
-            <CreateWishlistItemButton wishlistId={wishlistId} />
-          </WishlistItemsList>
+          <div className="flex flex-col gap-8">
+            <WishlistItemsList>
+              {activeWishlistItems.map((wishlistItem) => (
+                <WishlistItemComposed
+                  key={wishlistItem.id}
+                  wishlistId={wishlistId}
+                  wishlistItem={wishlistItem}
+                />
+              ))}
+              <CreateWishlistItemButton wishlistId={wishlistId} />
+            </WishlistItemsList>
+            {archivedWishlistItems.length > 0 && (
+              <>
+                <Separator />
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xl font-medium">Archived</h3>
+                  <WishlistItemsList>
+                    {archivedWishlistItems.map((wishlistItem) => (
+                      <WishlistItemComposed
+                        key={wishlistItem.id}
+                        wishlistId={wishlistId}
+                        wishlistItem={wishlistItem}
+                      />
+                    ))}
+                  </WishlistItemsList>
+                </div>
+              </>
+            )}
+          </div>
         )}
       </WishlistItemExpanded>
     </PageLayout>
+  );
+}
+
+function WishlistItemComposed({
+  wishlistId,
+  wishlistItem,
+}: {
+  wishlistItem: TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
+  wishlistId: string;
+}) {
+  return (
+    <WishlistItem wishlistItem={wishlistItem}>
+      <ItemFooter className="grid grid-cols-2">
+        <UpdateWishlistItemButton
+          wishlistItem={wishlistItem}
+          wishlistId={wishlistId}
+        />
+        <DeleteWishlistItemButton
+          wishlistItemId={wishlistItem.id}
+          wishlistId={wishlistId}
+        />
+        <ArchiveWishlistItemButton
+          wishlistItem={wishlistItem}
+          wishlistId={wishlistId}
+        />
+      </ItemFooter>
+    </WishlistItem>
   );
 }

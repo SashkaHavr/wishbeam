@@ -15,6 +15,7 @@ const wishlistItemOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
+  estimatedPrice: z.string().nullable(),
   lockStatus: z.enum([
     'lockedByCurrentUser',
     'lockedByAnotherUser',
@@ -28,6 +29,7 @@ const sharedWishlistItemProcedure = protectedProcedure
     const wishlistItem = await db.query.wishlistItem.findFirst({
       where: {
         id: input.wishlistItemId,
+        status: 'active',
         wishlist: {
           OR: [
             { shareStatus: 'public' },
@@ -61,7 +63,7 @@ export const sharedWishlistItemsRouter = router({
     .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
     .query(async ({ ctx }) => {
       const wishlistItems = await db.query.wishlistItem.findMany({
-        where: { wishlistId: ctx.wishlist.id },
+        where: { wishlistId: ctx.wishlist.id, status: 'active' },
         orderBy: { createdAt: 'asc' },
       });
       return {
@@ -101,7 +103,7 @@ export const sharedWishlistItemsRouter = router({
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
     void invalidateCache(ctx.userId, {
-      type: 'locks',
+      type: 'wishlists',
       wishlistId: ctx.wishlist.id,
     });
   }),
@@ -132,7 +134,7 @@ export const sharedWishlistItemsRouter = router({
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
     void invalidateCache(ctx.userId, {
-      type: 'locks',
+      type: 'wishlists',
       wishlistId: ctx.wishlist.id,
     });
   }),

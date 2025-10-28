@@ -141,3 +141,63 @@ export function useDeleteWishlistItemMutation({
     }),
   );
 }
+
+export function useSetStatusWishlistItemMutation({
+  wishlistId,
+}: {
+  wishlistId: string;
+}) {
+  const trpc = useTRPC();
+  return useMutation(
+    trpc.wishlists.owned.items.setStatus.mutationOptions({
+      onMutate: async (input, context) => {
+        await context.client.cancelQueries({
+          queryKey: trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        });
+
+        const previous = context.client.getQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        );
+
+        context.client.setQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+          (old) => {
+            return (
+              old && {
+                wishlistItems: old.wishlistItems.map((wishlistItem) =>
+                  wishlistItem.id === input.wishlistItemId
+                    ? { ...wishlistItem, status: input.status }
+                    : wishlistItem,
+                ),
+              }
+            );
+          },
+        );
+
+        return { previous };
+      },
+      onError: (err, input, onMutateResult, context) => {
+        if (!onMutateResult) return;
+        context.client.setQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+          onMutateResult.previous,
+        );
+      },
+      onSettled: (response, error, input, onMutateResult, context) => {
+        void context.client.invalidateQueries({
+          queryKey: trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        });
+      },
+    }),
+  );
+}

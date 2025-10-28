@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import z from 'zod';
 
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
@@ -30,12 +31,25 @@ export function CreateWishlistItemDialog({
   const createWishlistItem = useCreateWishlistItemMutation();
 
   const form = useAppForm({
-    defaultValues: { title: '', description: '', links: [] as string[] },
+    defaultValues: {
+      title: '',
+      description: '',
+      estimatedPrice: '',
+      links: [] as string[],
+    },
     validators: {
-      onSubmit: wishlistItemSchema,
+      onSubmit: z.object({
+        ...wishlistItemSchema.shape,
+        estimatedPrice: wishlistItemSchema.shape.estimatedPrice.unwrap(),
+      }),
     },
     onSubmit: async ({ value, formApi }) => {
-      await createWishlistItem.mutateAsync({ ...value, wishlistId });
+      await createWishlistItem.mutateAsync({
+        ...value,
+        estimatedPrice:
+          value.estimatedPrice === '' ? null : value.estimatedPrice,
+        wishlistId,
+      });
       setOpen(false);
       formApi.reset();
     },

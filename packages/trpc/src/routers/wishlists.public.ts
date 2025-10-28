@@ -12,11 +12,13 @@ const wishlistOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
 });
+
 const wishlistItemOutputSchema = z.object({
   id: uuidv7ToBase62,
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
+  estimatedPrice: z.string().nullable(),
   lockStatus: z.enum([
     'lockedByCurrentUser',
     'lockedByAnotherUser',
@@ -55,7 +57,7 @@ export const publicWishlistsRouter = router({
       .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
       .query(async ({ ctx }) => {
         const wishlistItems = await db.query.wishlistItem.findMany({
-          where: { wishlistId: ctx.wishlist.id },
+          where: { wishlistId: ctx.wishlist.id, status: 'active' },
           orderBy: { createdAt: 'asc' },
         });
         return {

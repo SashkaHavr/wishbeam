@@ -15,6 +15,8 @@ export const wishlistShareStatus = pgEnum('wishlist_share_status', [
   'public',
 ]);
 
+export const wishlistStatus = pgEnum('wishlist_status', ['active', 'archived']);
+
 export const wishlist = pgTable('wishlist', {
   ...baseTable,
   title: text().notNull(),
@@ -49,6 +51,8 @@ export const wishlistItem = pgTable(
       .array()
       .notNull()
       .default(sql`'{}'::text[]`),
+    status: wishlistStatus().notNull().default('active'),
+    estimatedPrice: text(),
     lockedUserId: oneToManyNullable(() => user.id),
     lockChangedAt: timestamp().notNull().defaultNow(),
   },

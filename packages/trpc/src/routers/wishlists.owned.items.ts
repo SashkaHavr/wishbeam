@@ -15,8 +15,8 @@ const wishlistItemOutputSchema = z.object({
   title: z.string(),
   description: z.string(),
   links: z.array(z.string()),
-  // approximatePrice: z.number().nullable(),
-  // quantity: z.number(),
+  estimatedPrice: z.string().nullable(),
+  status: z.enum(['active', 'archived']),
 });
 
 const ownedWishlistItemProcedure = protectedProcedure
@@ -96,6 +96,31 @@ export const ownedWishlistItemsRouter = router({
     .mutation(async ({ ctx }) => {
       await db
         .delete(wishlistItemTable)
+        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
+    }),
+  setStatus: ownedWishlistItemProcedure
+    .input(z.object({ status: z.enum(['active', 'archived']) }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      if (ctx.wishlistItem.status === input.status) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: `Wishlist item is already ${input.status}`,
+        });
+      }
+
+      await db
+        .update(wishlistItemTable)
+        .set({
+          status: input.status,
+          updatedAt: new Date(),
+          lockedUserId: null,
+          lockChangedAt: new Date(),
+        })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
       void invalidateCache(ctx.userId, {
         type: 'wishlists',

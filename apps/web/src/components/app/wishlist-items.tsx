@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ArchiveIcon,
   CircleSlash2Icon,
   EditIcon,
   ExternalLinkIcon,
@@ -8,7 +9,10 @@ import {
   TrashIcon,
 } from 'lucide-react';
 
-import { useDeleteWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
+import {
+  useDeleteWishlistItemMutation,
+  useSetStatusWishlistItemMutation,
+} from '~/hooks/mutations/wishlists.owned.items';
 import { cn } from '~/lib/utils';
 import { AppDialogTrigger } from '../app-dialog';
 import { Button } from '../ui/button';
@@ -37,6 +41,7 @@ interface WishlistItem {
   title: string;
   description: string;
   links: string[];
+  estimatedPrice: string | null;
 }
 
 export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
@@ -114,6 +119,11 @@ export function WishlistItem({
         <ItemTitle className="text-lg">{wishlistItem.title}</ItemTitle>
         <ItemDescription>{wishlistItem.description}</ItemDescription>
       </ItemContent>
+      <ItemActions>
+        {wishlistItem.estimatedPrice && (
+          <span className="font-medium">{`~${wishlistItem.estimatedPrice}`}</span>
+        )}
+      </ItemActions>
       <ItemGroup className="basis-full gap-1">
         {wishlistItem.links.map((link, index) => (
           <Item key={index} size="sm" asChild>
@@ -173,6 +183,48 @@ export function DeleteWishlistItemButton({
       <TrashIcon />
       <span>Delete</span>
     </Button>
+  );
+}
+
+export function ArchiveWishlistItemButton({
+  wishlistItem,
+  wishlistId,
+}: {
+  wishlistItem: { id: string; status: 'active' | 'archived' };
+  wishlistId: string;
+}) {
+  const archiveWishlistItem = useSetStatusWishlistItemMutation({ wishlistId });
+  return (
+    <>
+      {wishlistItem.status === 'active' && (
+        <Button
+          variant="outline"
+          onClick={() =>
+            archiveWishlistItem.mutate({
+              wishlistItemId: wishlistItem.id,
+              status: 'archived',
+            })
+          }
+        >
+          <ArchiveIcon />
+          <span>Archive</span>
+        </Button>
+      )}
+      {wishlistItem.status === 'archived' && (
+        <Button
+          variant="outline"
+          onClick={() =>
+            archiveWishlistItem.mutate({
+              wishlistItemId: wishlistItem.id,
+              status: 'active',
+            })
+          }
+        >
+          <ArchiveIcon />
+          <span>Activate</span>
+        </Button>
+      )}
+    </>
   );
 }
 

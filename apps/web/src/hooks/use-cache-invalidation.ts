@@ -10,14 +10,10 @@ export function useCacheInvalidation() {
     trpc.cache.invalidations.subscriptionOptions(void 0, {
       onData: (data) => {
         switch (data.type) {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           case 'wishlists':
             void queryClient.invalidateQueries({
               queryKey: trpc.wishlists.pathKey(),
-            });
-            break;
-          case 'locks':
-            void queryClient.invalidateQueries({
-              queryKey: trpc.wishlists.shared.pathKey(),
             });
             break;
         }
@@ -35,11 +31,10 @@ export function usePublicWishlistCacheInvalidation(wishlistId: string) {
       {
         onData: (data) => {
           switch (data.type) {
-            case 'locks':
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            case 'wishlists':
               void queryClient.invalidateQueries({
-                queryKey: trpc.wishlists.public.items.getAll.queryKey({
-                  wishlistId: data.wishlistId,
-                }),
+                queryKey: trpc.wishlists.pathKey(),
               });
               break;
           }

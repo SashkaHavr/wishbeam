@@ -17,7 +17,7 @@ export function getPublicCacheInvalidationChannel(wishlistId: string) {
 
 export const cacheInvalidationSchema = z.discriminatedUnion('type', [
   z.object({
-    type: z.literal(['wishlists', 'locks']),
+    type: z.literal(['wishlists']),
     wishlistId: uuidv7ToBase62,
   }),
 ]);
@@ -26,8 +26,8 @@ async function getUserIdsToNotify(
   data: z.infer<typeof cacheInvalidationSchema>,
 ): Promise<string[]> {
   switch (data.type) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     case 'wishlists':
-    case 'locks':
       return (
         await Promise.all([
           db.query.wishlistOwner.findMany({
@@ -63,10 +63,8 @@ export async function invalidateCache(
     });
   }
 
-  if (data.type === 'locks') {
-    await publish<z.infer<typeof cacheInvalidationSchema>>({
-      channel: getPublicCacheInvalidationChannel(data.wishlistId),
-      message: data,
-    });
-  }
+  await publish<z.infer<typeof cacheInvalidationSchema>>({
+    channel: getPublicCacheInvalidationChannel(data.wishlistId),
+    message: data,
+  });
 }

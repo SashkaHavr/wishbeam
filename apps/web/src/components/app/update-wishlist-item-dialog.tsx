@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import z from 'zod';
 
-import type { TRPCOutput } from '@wishbeam/trpc';
 import { wishlistItemSchema } from '@wishbeam/utils/schemas';
 
 import { useUpdateWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
@@ -26,7 +26,13 @@ export function UpdateWishlistItemDialog({
 }: {
   children: React.ReactNode;
   wishlistId: string;
-  wishlistItem: TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
+  wishlistItem: {
+    id: string;
+    title: string;
+    description: string;
+    links: string[];
+    estimatedPrice: string | null;
+  };
 }) {
   const [open, setOpen] = useState(false);
 
@@ -36,15 +42,23 @@ export function UpdateWishlistItemDialog({
     defaultValues: {
       title: wishlistItem.title,
       description: wishlistItem.description,
+      estimatedPrice: wishlistItem.estimatedPrice ?? '',
       links: wishlistItem.links,
     },
     validators: {
-      onSubmit: wishlistItemSchema,
+      onSubmit: z.object({
+        ...wishlistItemSchema.shape,
+        estimatedPrice: wishlistItemSchema.shape.estimatedPrice.unwrap(),
+      }),
     },
     onSubmit: ({ value, formApi }) => {
       updateWishlistItem.mutate({
         wishlistItemId: wishlistItem.id,
-        data: value,
+        data: {
+          ...value,
+          estimatedPrice:
+            value.estimatedPrice === '' ? null : value.estimatedPrice,
+        },
       });
       setOpen(false);
       formApi.reset();
