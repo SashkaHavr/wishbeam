@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin } from 'better-auth/plugins';
+import { redis } from 'bun';
 
 import { db } from '@wishbeam/db';
 import { envAuth } from '@wishbeam/env/auth';
@@ -18,6 +19,20 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
   }),
+  secondaryStorage: process.env.REDIS_URL
+    ? {
+        get: async (key) => {
+          return await redis.get(`auth:${key}`);
+        },
+        set: async (key, value, ttl) => {
+          await redis.set(`auth:${key}`, value);
+          if (ttl) await redis.expire(`auth:${key}`, ttl);
+        },
+        delete: async (key) => {
+          await redis.del(`auth:${key}`);
+        },
+      }
+    : undefined,
   socialProviders: {
     google:
       envAuth.GOOGLE_CLIENT_ID && envAuth.GOOGLE_CLIENT_SECRET
