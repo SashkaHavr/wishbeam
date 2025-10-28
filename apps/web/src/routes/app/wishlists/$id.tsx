@@ -1,14 +1,14 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { EditIcon, Share2Icon, TrashIcon, UserPlusIcon } from 'lucide-react';
+import { EditIcon, Share2Icon, UserPlusIcon } from 'lucide-react';
 import z from 'zod';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
-import { Button } from '~/components/ui/button';
 import { ItemActions, ItemFooter } from '~/components/ui/item';
 import { Separator } from '~/components/ui/separator';
 
+import { DeleteAlertDialog } from '~/components/alerts/delete-alert-dialog';
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
 import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
@@ -129,16 +129,12 @@ function RouteComponent() {
                 </UpdateOwnersDialog>
               )}
               {wishlist.currentUserIsCreator && (
-                <Button
-                  variant="outline"
+                <DeleteAlertDialog
                   onClick={() => {
                     deleteWishlist.mutate({ wishlistId });
                     void navigate({ to: '/app/wishlists' });
                   }}
-                >
-                  <TrashIcon />
-                  <span>Delete</span>
-                </Button>
+                />
               )}
             </ItemFooter>
           </>

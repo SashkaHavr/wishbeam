@@ -6,7 +6,6 @@ import {
   ExternalLinkIcon,
   GiftIcon,
   PlusIcon,
-  TrashIcon,
 } from 'lucide-react';
 
 import {
@@ -14,7 +13,19 @@ import {
   useSetStatusWishlistItemMutation,
 } from '~/hooks/mutations/wishlists.owned.items';
 import { cn } from '~/lib/utils';
+import { DeleteAlertDialog } from '../alerts/delete-alert-dialog';
 import { AppDialogTrigger } from '../app-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
 import { Button } from '../ui/button';
 import {
   Empty,
@@ -175,14 +186,10 @@ export function DeleteWishlistItemButton({
   const deleteWishlistItem = useDeleteWishlistItemMutation({ wishlistId });
 
   return (
-    <Button
-      variant="outline"
+    <DeleteAlertDialog
       onClick={() => deleteWishlistItem.mutate({ wishlistItemId })}
       {...props}
-    >
-      <TrashIcon />
-      <span>Delete</span>
-    </Button>
+    />
   );
 }
 
@@ -197,18 +204,36 @@ export function ArchiveWishlistItemButton({
   return (
     <>
       {wishlistItem.status === 'active' && (
-        <Button
-          variant="outline"
-          onClick={() =>
-            archiveWishlistItem.mutate({
-              wishlistItemId: wishlistItem.id,
-              status: 'archived',
-            })
-          }
-        >
-          <ArchiveIcon />
-          <span>Archive</span>
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline">
+              <ArchiveIcon />
+              <span>Archive</span>
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Archive Item</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will archive the item and remove locks placed on it by
+                other users. You can reactivate the item later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() =>
+                  archiveWishlistItem.mutate({
+                    wishlistItemId: wishlistItem.id,
+                    status: 'archived',
+                  })
+                }
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
       {wishlistItem.status === 'archived' && (
         <Button
