@@ -1,7 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, notFound } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import z from 'zod';
+import { createFileRoute } from '@tanstack/react-router';
 
 import { ItemFooter } from '~/components/ui/item';
 
@@ -18,30 +16,11 @@ import {
   useUnlockWishlistItemMutation,
 } from '~/hooks/mutations/wishlists.shared.items';
 import { useTRPC } from '~/lib/trpc';
-import { trpcServerFnMiddleware } from '~/lib/trpc-server';
 import { cn } from '~/lib/utils';
-
-const wishlistSharedGetByIdServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.shared.getById(data);
-    } catch {
-      throw notFound();
-    }
-  });
-
-const wishlistSharedGetItemsServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.shared.items.getAll(data);
-    } catch {
-      throw notFound();
-    }
-  });
+import {
+  wishlistSharedGetByIdServerFn,
+  wishlistSharedGetItemsServerFn,
+} from '~/utils/trpc-server-fns';
 
 export const Route = createFileRoute('/app/shared/$id')({
   loader: async ({ context, params }) => {

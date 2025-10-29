@@ -1,8 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { EditIcon, Share2Icon, UserPlusIcon } from 'lucide-react';
-import z from 'zod';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 import { ItemActions, ItemFooter } from '~/components/ui/item';
@@ -26,29 +24,10 @@ import {
 import { PageLayout } from '~/components/page-layout';
 import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import { useTRPC } from '~/lib/trpc';
-import { trpcServerFnMiddleware } from '~/lib/trpc-server';
-
-const wishlistOwnedGetByIdServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.owned.getById(data);
-    } catch {
-      throw notFound();
-    }
-  });
-
-const wishlistOwnedGetItemsServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.owned.items.getAll(data);
-    } catch {
-      throw notFound();
-    }
-  });
+import {
+  wishlistOwnedGetByIdServerFn,
+  wishlistOwnedGetItemsServerFn,
+} from '~/utils/trpc-server-fns';
 
 export const Route = createFileRoute('/app/wishlists/$id')({
   loader: async ({ context, params }) => {

@@ -1,6 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import { CircleSlash2Icon } from 'lucide-react';
 
 import {
@@ -14,13 +13,7 @@ import {
 import { Wishlist, WishlistList } from '~/components/app/wishlist';
 import { PageLayout } from '~/components/page-layout';
 import { useTRPC } from '~/lib/trpc';
-import { trpcServerFnMiddleware } from '~/lib/trpc-server';
-
-const wishlistsSharedGetAllServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .handler(async ({ context }) => {
-    return context.trpc.wishlists.shared.getAll();
-  });
+import { wishlistsSharedGetAllServerFn } from '~/utils/trpc-server-fns';
 
 export const Route = createFileRoute('/app/shared/')({
   loader: async ({ context }) => {

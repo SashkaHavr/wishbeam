@@ -1,7 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import z from 'zod';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { ItemFooter } from '~/components/ui/item';
 
@@ -17,29 +15,10 @@ import { LoginDialog } from '~/components/login';
 import { PageLayout } from '~/components/page-layout';
 import { usePublicWishlistCacheInvalidation } from '~/hooks/use-cache-invalidation';
 import { useTRPC } from '~/lib/trpc';
-import { trpcServerFnMiddleware } from '~/lib/trpc-server';
-
-const wishlistPublicGetByIdServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.public.getById(data);
-    } catch {
-      throw notFound();
-    }
-  });
-
-const wishlistPublicGetItemsServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
-  .handler(async ({ context, data }) => {
-    try {
-      return await context.trpc.wishlists.public.items.getAll(data);
-    } catch {
-      throw notFound();
-    }
-  });
+import {
+  wishlistPublicGetByIdServerFn,
+  wishlistPublicGetItemsServerFn,
+} from '~/utils/trpc-server-fns';
 
 export const Route = createFileRoute('/(public)/shared/$id')({
   beforeLoad: ({ context, params }) => {
