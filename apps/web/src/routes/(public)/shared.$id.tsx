@@ -2,6 +2,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import { ItemFooter } from '~/components/ui/item';
+import { Separator } from '~/components/ui/separator';
 
 import { AppDialogTrigger } from '~/components/app-dialog';
 import { LockButton } from '~/components/app/lock-button';
@@ -12,6 +13,7 @@ import {
   WishlistItemsList,
 } from '~/components/app/wishlist-items';
 import { LoginDialog } from '~/components/login';
+import { Logo } from '~/components/logo';
 import { PageLayout } from '~/components/page-layout';
 import { usePublicWishlistCacheInvalidation } from '~/hooks/use-cache-invalidation';
 import { useTRPC } from '~/lib/trpc';
@@ -68,25 +70,36 @@ function RouteComponent() {
   usePublicWishlistCacheInvalidation(wishlistId);
 
   return (
-    <PageLayout>
-      <WishlistItemExpanded wishlist={wishlist}>
-        {wishlistItems.length === 0 && <WishlistItemsEmptyPublic />}
-        {wishlistItems.length > 0 && (
-          <WishlistItemsList>
-            {wishlistItems.map((wishlistItem) => (
-              <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
-                <ItemFooter className="flex">
-                  <LoginDialog>
-                    <AppDialogTrigger className="grow" asChild>
-                      <LockButton lockStatus={wishlistItem.lockStatus} />
-                    </AppDialogTrigger>
-                  </LoginDialog>
-                </ItemFooter>
-              </WishlistItem>
-            ))}
-          </WishlistItemsList>
-        )}
-      </WishlistItemExpanded>
-    </PageLayout>
+    <div className="flex h-[100svh] flex-col">
+      <div className="flex w-full items-center px-4 py-2.5">
+        <Logo withName />
+      </div>
+      <Separator />
+      <main className="grow overflow-y-auto">
+        <PageLayout>
+          <WishlistItemExpanded wishlist={wishlist}>
+            {wishlistItems.length === 0 && <WishlistItemsEmptyPublic />}
+            {wishlistItems.length > 0 && (
+              <WishlistItemsList>
+                {wishlistItems.map((wishlistItem) => (
+                  <WishlistItem
+                    key={wishlistItem.id}
+                    wishlistItem={wishlistItem}
+                  >
+                    <ItemFooter className="flex">
+                      <LoginDialog>
+                        <AppDialogTrigger className="grow" asChild>
+                          <LockButton lockStatus={wishlistItem.lockStatus} />
+                        </AppDialogTrigger>
+                      </LoginDialog>
+                    </ItemFooter>
+                  </WishlistItem>
+                ))}
+              </WishlistItemsList>
+            )}
+          </WishlistItemExpanded>
+        </PageLayout>
+      </main>
+    </div>
   );
 }

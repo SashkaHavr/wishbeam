@@ -6,6 +6,7 @@ import {
   HeadContent,
   Outlet,
   Scripts,
+  useMatches,
 } from '@tanstack/react-router';
 
 import { setupZodLocale } from '@wishbeam/intl';
@@ -17,6 +18,7 @@ import { getAuthContext } from '~/lib/auth';
 import { getAuthConfigServerFn } from '~/lib/auth-server';
 import { IntlProvider } from '~/lib/intl';
 import { getLocale, getMessages } from '~/lib/intl-server';
+import { cn } from '~/lib/utils';
 import indexCss from '../index.css?url';
 
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
@@ -72,18 +74,25 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   const { locale, theme } = Route.useRouteContext({
     select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
   });
+  const matches = useMatches();
+  const lastRoute = matches[matches.length - 1]?.routeId;
+  const overscrollClass =
+    lastRoute !== undefined &&
+    (lastRoute.startsWith('/app') ||
+      lastRoute.startsWith('/(public)/shared')) &&
+    'overscroll-y-none';
 
   return (
     <html
       suppressHydrationWarning
       lang={locale}
-      className={theme === 'system' ? undefined : theme}
+      className={cn(theme !== 'system' && theme, overscrollClass)}
     >
       <head>
         <HeadContent />
         <ThemeScript />
       </head>
-      <body>
+      <body className={cn(overscrollClass)}>
         <ThemeProvider>
           <IntlProvider>{children}</IntlProvider>
         </ThemeProvider>
