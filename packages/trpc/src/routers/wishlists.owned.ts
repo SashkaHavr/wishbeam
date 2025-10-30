@@ -4,6 +4,7 @@ import z from 'zod';
 
 import { db } from '@wishbeam/db';
 import {
+  wishlistItem as wishlistItemTable,
   wishlistOwner as wishlistOwnerTable,
   wishlist as wishlistTable,
 } from '@wishbeam/db/schema';
@@ -119,6 +120,33 @@ export const ownedWishlistsRouter = router({
           await tx
             .delete(wishlistTable)
             .where(eq(wishlistTable.id, ctx.wishlist.id));
+        }
+      });
+      void invalidateCache(ctx.userId, {
+        type: 'wishlists',
+        wishlistId: ctx.wishlist.id,
+      });
+    }),
+  setShareStatus: ownedWishlistProcedure
+    .input(z.object({ shareStatus: z.enum(['private', 'shared', 'public']) }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      if (ctx.wishlist.shareStatus === input.shareStatus) {
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: `Wishlist is already ${input.shareStatus}`,
+        });
+      }
+      await db.transaction(async (tx) => {
+        await tx
+          .update(wishlistTable)
+          .set({ shareStatus: input.shareStatus, updatedAt: new Date() })
+          .where(eq(wishlistTable.id, ctx.wishlist.id));
+        if (input.shareStatus === 'private') {
+          await tx
+            .update(wishlistItemTable)
+            .set({ lockedUserId: null, lockChangedAt: new Date() })
+            .where(eq(wishlistItemTable.wishlistId, ctx.wishlist.id));
         }
       });
       void invalidateCache(ctx.userId, {

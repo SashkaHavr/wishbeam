@@ -27,7 +27,10 @@ export const sharedWishlistsRouter = router({
           OR: [
             {
               shareStatus: 'public',
-              wishlistPublicSaved: { userId: ctx.userId },
+              OR: [
+                { wishlistPublicSaved: { userId: ctx.userId } },
+                { wishlistSharedWith: { userId: ctx.userId } },
+              ],
             },
             {
               shareStatus: 'shared',

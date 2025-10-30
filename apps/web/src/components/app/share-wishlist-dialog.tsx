@@ -3,7 +3,7 @@ import { CheckIcon, CopyIcon } from 'lucide-react';
 
 import type { TRPCOutput } from '@wishbeam/trpc';
 
-import { useUpdateWishlistMutation } from '~/hooks/mutations/wishlists.owned';
+import { useSetShareStatusWishlistMutation } from '~/hooks/mutations/wishlists.owned';
 import {
   useAddWishlistSharedWithMutation,
   useDeleteWishlistSharedWithMutation,
@@ -76,7 +76,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
 
   const addUser = useAddWishlistSharedWithMutation();
   const deleteUser = useDeleteWishlistSharedWithMutation();
-  const updateWishlist = useUpdateWishlistMutation();
+  const updateWishlist = useSetShareStatusWishlistMutation();
 
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
@@ -96,10 +96,8 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
             onValueChange={(value) =>
               updateWishlist.mutate({
                 wishlistId: wishlist.id,
-                data: {
-                  shareStatus:
-                    value as TRPCOutput['wishlists']['owned']['getById']['wishlist']['shareStatus'],
-                },
+                shareStatus:
+                  value as TRPCOutput['wishlists']['owned']['getById']['wishlist']['shareStatus'],
               })
             }
           >
