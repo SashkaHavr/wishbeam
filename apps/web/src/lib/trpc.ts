@@ -19,8 +19,8 @@ export function createTRPCRouteContext() {
       dehydrate: { serializeData: superjson.serialize },
       hydrate: { deserializeData: superjson.deserialize },
       queries: {
-        // All queries are cached forever, since we manually invalidate them as needed
-        staleTime: Infinity,
+        // Do not refetch preloaded data on mount (30 seconds stale time)
+        staleTime: 30000,
       },
     },
   });
