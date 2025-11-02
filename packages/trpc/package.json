@@ -26,7 +26,6 @@
     "@wishbeam/utils": "workspace:*",
     "base-x": "^5.0.1",
     "drizzle-orm": "catalog:drizzle",
-    "node-html-parser": "^7.0.1",
     "superjson": "catalog:",
     "uuid": "catalog:",
     "zod": "catalog:"

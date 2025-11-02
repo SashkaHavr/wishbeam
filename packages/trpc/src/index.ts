@@ -8,7 +8,6 @@ import { configRouter } from '#routers/config.ts';
 import { ownedWishlistsRouter } from '#routers/wishlists.owned.ts';
 import { publicWishlistsRouter } from '#routers/wishlists.public.ts';
 import { sharedWishlistsRouter } from '#routers/wishlists.shared.ts';
-import { urlMetaRouter } from '#routers/wishlists.url-meta.ts';
 
 const appRouter = router({
   health: publicProcedure.query(() => 'tRPC healthy!'),
@@ -18,7 +17,6 @@ const appRouter = router({
     owned: ownedWishlistsRouter,
     public: publicWishlistsRouter,
     shared: sharedWishlistsRouter,
-    urlMeta: urlMetaRouter,
   }),
 });
 

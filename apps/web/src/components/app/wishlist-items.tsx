@@ -1,5 +1,4 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
   ArchiveIcon,
   CircleSlash2Icon,
@@ -13,7 +12,6 @@ import {
   useDeleteWishlistItemMutation,
   useSetStatusWishlistItemMutation,
 } from '~/hooks/mutations/wishlists.owned.items';
-import { useTRPC } from '~/lib/trpc';
 import { cn } from '~/lib/utils';
 import { DeleteAlertDialog } from '../alerts/delete-alert-dialog';
 import { AppDialogTrigger } from '../app-dialog';
@@ -43,11 +41,9 @@ import {
   ItemContent,
   ItemDescription,
   ItemGroup,
-  ItemHeader,
   ItemTitle,
 } from '../ui/item';
 import { Separator } from '../ui/separator';
-import { Skeleton } from '../ui/skeleton';
 import { CreateWishlistItemDialog } from './create-wishlist-item-dialog';
 import { UpdateWishlistItemDialog } from './update-wishlist-item-dialog';
 
@@ -128,38 +124,8 @@ export function WishlistItem({
 }: Omit<React.ComponentProps<typeof Item>, 'variant'> & {
   wishlistItem: WishlistItem;
 }) {
-  const trpc = useTRPC();
-  const imageUrl = useQuery(
-    trpc.wishlists.urlMeta.fetchMetaImage.queryOptions({
-      wishlistItemId: wishlistItem.id,
-    }),
-  );
-
-  const [imageLoading, setImageLoading] = React.useState(true);
-
   return (
     <Item variant="outline" {...props}>
-      {wishlistItem.links.length > 0 &&
-        (imageUrl.isLoading || imageUrl.data?.imageUrl) && (
-          <ItemHeader className="justify-center">
-            {(imageUrl.isLoading || imageLoading) && (
-              <Skeleton className="h-32 w-full" />
-            )}
-            {imageUrl.data?.imageUrl && (
-              <img
-                src={imageUrl.data.imageUrl}
-                alt={wishlistItem.title}
-                height={128}
-                className={cn(
-                  'h-32 rounded-sm object-cover',
-                  imageLoading && 'h-0',
-                )}
-                onLoad={() => setImageLoading(false)}
-              />
-            )}
-          </ItemHeader>
-        )}
-
       <ItemContent>
         <ItemTitle className="text-lg">{wishlistItem.title}</ItemTitle>
         <ItemDescription>{wishlistItem.description}</ItemDescription>
