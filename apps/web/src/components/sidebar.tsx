@@ -5,7 +5,6 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Link, useRouterState } from '@tanstack/react-router';
 import {
   ChevronLeftIcon,
-  CircleUserIcon,
   EllipsisVerticalIcon,
   ListCheckIcon,
   LogOutIcon,
@@ -13,7 +12,6 @@ import {
   MoonIcon,
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
-  SettingsIcon,
   Share2Icon,
   SunIcon,
 } from 'lucide-react';
@@ -46,7 +44,7 @@ interface NavLinkProps {
   icon: React.ComponentType;
 }
 
-const mainLinks = [
+const mainLinks: NavLinkProps[] = [
   {
     to: '/app/wishlists',
     label: 'My wishlists',
@@ -57,15 +55,15 @@ const mainLinks = [
     label: 'Shared with me wishlists',
     icon: Share2Icon,
   },
-] satisfies NavLinkProps[];
+];
 
-const bottomLinks = [
-  { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
-] satisfies NavLinkProps[];
+const bottomLinks: NavLinkProps[] = [
+  // { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
+];
 
-const profileMenuLinks = [
-  { to: '/app/account', label: 'Account', icon: CircleUserIcon },
-] satisfies NavLinkProps[];
+const profileMenuLinks: NavLinkProps[] = [
+  // { to: '/app/account', label: 'Account', icon: CircleUserIcon },
+];
 
 function useKeyboardShortcut({
   open,
@@ -342,7 +340,7 @@ function ProfileButtonWithPopover({
             </Button>
           ))}
         </div>
-        <Separator className="m-1" />
+        {profileMenuLinks.length > 0 && <Separator className="m-1" />}
         <Button
           variant="ghost"
           size="sm"

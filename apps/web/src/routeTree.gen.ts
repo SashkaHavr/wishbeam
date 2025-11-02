@@ -15,8 +15,6 @@ import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
-import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppAccountRouteImport } from './routes/app/account'
 import { Route as publicLoginRouteImport } from './routes/(public)/login'
 import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
 import { Route as AppSharedIndexRouteImport } from './routes/app/shared/index'
@@ -46,16 +44,6 @@ const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppAccountRoute = AppAccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => AppRouteRoute,
 } as any)
 const publicLoginRoute = publicLoginRouteImport.update({
   id: '/login',
@@ -102,8 +90,6 @@ export interface FileRoutesByFullPath {
   '/': typeof publicIndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof publicLoginRoute
-  '/app/account': typeof AppAccountRoute
-  '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
@@ -113,8 +99,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/login': typeof publicLoginRoute
-  '/app/account': typeof AppAccountRoute
-  '/app/settings': typeof AppSettingsRoute
   '/': typeof publicIndexRoute
   '/app': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
@@ -128,8 +112,6 @@ export interface FileRoutesById {
   '/(public)': typeof publicRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
   '/(public)/login': typeof publicLoginRoute
-  '/app/account': typeof AppAccountRoute
-  '/app/settings': typeof AppSettingsRoute
   '/(public)/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/(public)/shared/$id': typeof publicSharedIdRoute
@@ -144,8 +126,6 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
-    | '/app/account'
-    | '/app/settings'
     | '/app/'
     | '/shared/$id'
     | '/app/shared/$id'
@@ -155,8 +135,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
-    | '/app/account'
-    | '/app/settings'
     | '/'
     | '/app'
     | '/shared/$id'
@@ -169,8 +147,6 @@ export interface FileRouteTypes {
     | '/(public)'
     | '/app'
     | '/(public)/login'
-    | '/app/account'
-    | '/app/settings'
     | '/(public)/'
     | '/app/'
     | '/(public)/shared/$id'
@@ -239,20 +215,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/account': {
-      id: '/app/account'
-      path: '/account'
-      fullPath: '/app/account'
-      preLoaderRoute: typeof AppAccountRouteImport
-      parentRoute: typeof AppRouteRoute
     }
     '/(public)/login': {
       id: '/(public)/login'
@@ -334,8 +296,6 @@ const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
 )
 
 interface AppRouteRouteChildren {
-  AppAccountRoute: typeof AppAccountRoute
-  AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppSharedIdRoute: typeof AppSharedIdRoute
   AppWishlistsIdRoute: typeof AppWishlistsIdRoute
@@ -344,8 +304,6 @@ interface AppRouteRouteChildren {
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppAccountRoute: AppAccountRoute,
-  AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppSharedIdRoute: AppSharedIdRoute,
   AppWishlistsIdRoute: AppWishlistsIdRoute,
