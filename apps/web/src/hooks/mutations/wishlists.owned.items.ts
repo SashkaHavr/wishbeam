@@ -81,6 +81,11 @@ export function useUpdateWishlistItemMutation({
             wishlistId: wishlistId,
           }),
         });
+        void context.client.invalidateQueries({
+          queryKey: trpc.wishlists.urlMeta.fetchMetaImage.queryKey({
+            wishlistItemId: input.wishlistItemId,
+          }),
+        });
       },
     }),
   );
