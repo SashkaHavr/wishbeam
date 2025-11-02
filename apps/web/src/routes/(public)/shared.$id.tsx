@@ -17,6 +17,7 @@ import { Logo } from '~/components/logo';
 import { PageLayout } from '~/components/page-layout';
 import { usePublicWishlistCacheInvalidation } from '~/hooks/use-cache-invalidation';
 import { useTRPC } from '~/lib/trpc';
+import { seo } from '~/utils/seo';
 import {
   wishlistPublicGetByIdServerFn,
   wishlistPublicGetItemsServerFn,
@@ -29,7 +30,7 @@ export const Route = createFileRoute('/(public)/shared/$id')({
     }
   },
   loader: async ({ context, params }) => {
-    await Promise.all([
+    const [wishlist, _] = await Promise.all([
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.public.getById.queryKey({
           wishlistId: params.id,
@@ -45,6 +46,20 @@ export const Route = createFileRoute('/(public)/shared/$id')({
           wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
+    return {
+      title: wishlist.wishlist.title,
+      description: wishlist.wishlist.description,
+    };
+  },
+  head: ({ loaderData }) => {
+    return loaderData
+      ? {
+          meta: seo({
+            title: loaderData.title,
+            description: loaderData.description,
+          }),
+        }
+      : {};
   },
   component: RouteComponent,
 });

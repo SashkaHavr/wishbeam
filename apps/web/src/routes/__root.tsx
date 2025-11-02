@@ -19,6 +19,7 @@ import { getAuthConfigServerFn } from '~/lib/auth-server';
 import { IntlProvider } from '~/lib/intl';
 import { getLocale, getMessages } from '~/lib/intl-server';
 import { cn } from '~/lib/utils';
+import { seo } from '~/utils/seo';
 import indexCss from '../index.css?url';
 
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
@@ -50,9 +51,7 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       { name: 'theme-color' },
-      {
-        title: 'Wishbeam',
-      },
+      ...seo({ title: 'Wishbeam' }),
       { name: 'robots', content: 'noindex, nofollow' },
     ],
     links: [
