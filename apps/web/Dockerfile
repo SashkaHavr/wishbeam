@@ -2,7 +2,7 @@ FROM oven/bun:1.3.1-alpine AS bun
 
 FROM bun AS base
 ENV TURBO_TELEMETRY_DISABLED=1
-RUN bun install -g turbo
+RUN bun install -g turbo@2.5.8
 
 # Generate a partial monorepo
 FROM base AS partial
