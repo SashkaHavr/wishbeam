@@ -131,11 +131,15 @@ function SidebarAdaptiveButton({
   React.ComponentProps<typeof SidebarAdaptiveButtonContent> & { children?: React.ReactElement }) {
   const button = (
     <SidebarButton
-      render={children ?? <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />}
+      render={children}
       className={cn(open && "justify-start", className)}
       size={open ? size : "icon"}
       {...props}
-    />
+    >
+      {children ? undefined : (
+        <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />
+      )}
+    </SidebarButton>
   );
 
   return open ? (
