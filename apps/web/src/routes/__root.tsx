@@ -53,7 +53,7 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         content: "width=device-width, initial-scale=1",
       },
       { name: "theme-color" },
-      ...seo({ title: "Rectlith template" }),
+      ...seo({ title: "Wishbeam" }),
       { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
