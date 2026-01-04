@@ -10,10 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "1.0.0",
-    "@wishbeam/auth": "workspace:*",
-    "@wishbeam/intl": "workspace:*",
-    "@wishbeam/trpc": "workspace:*",
     "@tailwindcss/vite": "catalog:tailwind",
+    "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:trpc",
     "@tanstack/react-router": "catalog:vite",
     "@tanstack/react-router-ssr-query": "catalog:vite",
@@ -22,11 +20,16 @@
     "@trpc/client": "catalog:trpc",
     "@trpc/tanstack-react-query": "catalog:trpc",
     "@vitejs/plugin-react": "catalog:vite",
+    "@wishbeam/auth": "workspace:*",
+    "@wishbeam/intl": "workspace:*",
+    "@wishbeam/trpc": "workspace:*",
+    "@wishbeam/utils": "workspace:*",
     "babel-plugin-react-compiler": "latest",
     "better-auth": "catalog:",
     "class-variance-authority": "catalog:tailwind",
     "clsx": "catalog:tailwind",
     "lucide-react": "catalog:",
+    "motion": "^12.23.22",
     "nitro": "catalog:vite",
     "react": "catalog:react",
     "react-dom": "catalog:react",
@@ -37,16 +40,13 @@
     "use-intl": "catalog:",
     "vite": "catalog:vite",
     "vite-tsconfig-paths": "catalog:vite",
-    "zod": "catalog:",
-    "@wishbeam/utils": "workspace:*",
-    "motion": "^12.23.22",
-    "@tanstack/react-form": "catalog:"
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "@wishbeam/typescript-config": "workspace:*",
     "@types/bun": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
+    "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }
 }

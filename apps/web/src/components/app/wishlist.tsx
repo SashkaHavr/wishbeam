@@ -1,24 +1,14 @@
-import type { LinkProps } from '@tanstack/react-router';
-import type React from 'react';
-import { Link } from '@tanstack/react-router';
-import { ChevronRightIcon, PlusIcon } from 'lucide-react';
+import type { LinkProps } from "@tanstack/react-router";
+import type React from "react";
+import { Link } from "@tanstack/react-router";
+import { ChevronRightIcon, PlusIcon } from "lucide-react";
 
-import { cn } from '~/lib/utils';
-import { AppDialogTrigger } from '../app-dialog';
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from '../ui/item';
-import { CreateWishlistDialog } from './create-wishlist-dialog';
+import { cn } from "~/lib/utils";
+import { AppDialogTrigger } from "../app-dialog";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
+import { CreateWishlistDialog } from "./create-wishlist-dialog";
 
-const _wishlistPages = [
-  '/app/wishlists/$id',
-  '/app/shared/$id',
-] satisfies LinkProps['to'][];
+const _wishlistPages = ["/app/wishlists/$id", "/app/shared/$id"] satisfies LinkProps["to"][];
 
 export function Wishlist({
   wishlist,
@@ -32,30 +22,23 @@ export function Wishlist({
   targetPage: (typeof _wishlistPages)[number];
 }) {
   return (
-    <Item variant="outline" asChild>
-      <Link to={targetPage} params={{ id: wishlist.id }}>
-        <ItemContent>
-          <ItemTitle>{wishlist.title}</ItemTitle>
-          <ItemDescription>{wishlist.description}</ItemDescription>
-        </ItemContent>
-        <ItemActions>
-          <ChevronRightIcon className="size-4" />
-        </ItemActions>
-      </Link>
+    <Item variant="outline" render={<Link to={targetPage} params={{ id: wishlist.id }} />}>
+      <ItemContent>
+        <ItemTitle>{wishlist.title}</ItemTitle>
+        <ItemDescription>{wishlist.description}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <ChevronRightIcon className="size-4" />
+      </ItemActions>
     </Item>
   );
 }
 
-export function WishlistList({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) {
-  return <ItemGroup className={cn('gap-4', className)} {...props} />;
+export function WishlistList({ className, ...props }: React.ComponentProps<"div">) {
+  return <ItemGroup className={cn("gap-4", className)} {...props} />;
 }
 
-export function CreateWishlistButton(
-  props: React.ComponentProps<typeof AppDialogTrigger>,
-) {
+export function CreateWishlistButton(props: React.ComponentProps<typeof AppDialogTrigger>) {
   return (
     <CreateWishlistDialog>
       <AppDialogTrigger size="lg" variant="outline" {...props}>

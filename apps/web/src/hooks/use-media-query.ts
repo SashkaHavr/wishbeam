@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { isServer } from '@tanstack/react-query';
+import { useState } from "react";
+import { isServer } from "@tanstack/react-query";
 
-import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect';
+import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 
 interface UseMediaQueryOptions {
   defaultValue?: boolean;
@@ -10,10 +10,7 @@ interface UseMediaQueryOptions {
 
 export function useMediaQuery(
   query: string,
-  {
-    defaultValue = false,
-    initializeWithValue = true,
-  }: UseMediaQueryOptions = {},
+  { defaultValue = false, initializeWithValue = true }: UseMediaQueryOptions = {},
 ): boolean {
   const getMatches = (query: string): boolean => {
     if (isServer) {
@@ -41,19 +38,17 @@ export function useMediaQuery(
     handleChange();
 
     // Use deprecated `addListener` and `removeListener` to support Safari < 14 (#135)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (matchMedia.addListener) {
       matchMedia.addListener(handleChange);
     } else {
-      matchMedia.addEventListener('change', handleChange);
+      matchMedia.addEventListener("change", handleChange);
     }
 
     return () => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (matchMedia.removeListener) {
         matchMedia.removeListener(handleChange);
       } else {
-        matchMedia.removeEventListener('change', handleChange);
+        matchMedia.removeEventListener("change", handleChange);
       }
     };
   }, [query]);

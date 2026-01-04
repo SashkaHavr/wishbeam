@@ -1,9 +1,9 @@
-import z from 'zod';
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { publish } from '@wishbeam/pubsub';
+import { db } from "@wishbeam/db";
+import { publish } from "@wishbeam/pubsub";
 
-import { uuidv7ToBase62 } from './zod-utils';
+import { uuidv7ToBase62 } from "./zod-utils";
 
 export function getCacheInvalidationChannel(userId: string) {
   const base62UserId = uuidv7ToBase62.parse(userId);
@@ -15,9 +15,9 @@ export function getPublicCacheInvalidationChannel(wishlistId: string) {
   return `public-wishlist:${base62WishlistId}`;
 }
 
-export const cacheInvalidationSchema = z.discriminatedUnion('type', [
+export const cacheInvalidationSchema = z.discriminatedUnion("type", [
   z.object({
-    type: z.literal(['wishlists']),
+    type: z.literal(["wishlists"]),
     wishlistId: uuidv7ToBase62,
   }),
 ]);
@@ -26,8 +26,7 @@ async function getUserIdsToNotify(
   data: z.infer<typeof cacheInvalidationSchema>,
 ): Promise<string[]> {
   switch (data.type) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    case 'wishlists':
+    case "wishlists":
       return (
         await Promise.all([
           db.query.wishlistOwner.findMany({
@@ -53,9 +52,7 @@ export async function invalidateCache(
   currentUserId: string,
   data: z.infer<typeof cacheInvalidationSchema>,
 ) {
-  const userIdsToNotify = (await getUserIdsToNotify(data)).filter(
-    (id) => id !== currentUserId,
-  );
+  const userIdsToNotify = (await getUserIdsToNotify(data)).filter((id) => id !== currentUserId);
   for (const userId of userIdsToNotify) {
     await publish<z.infer<typeof cacheInvalidationSchema>>({
       channel: getCacheInvalidationChannel(userId),

@@ -6,7 +6,7 @@ export const configRouter = router({
   general: publicProcedure
     .output(
       z.object({
-        auth: z.object({ testAuth: z.boolean(), githubOAuth: z.boolean() }),
+        auth: z.object({ testAuth: z.boolean(), googleOAuth: z.boolean() }),
       }),
     )
     .query(() => {

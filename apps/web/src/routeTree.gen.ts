@@ -8,23 +8,19 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as TrpcSplatRouteImport } from './routes/trpc.$'
+import { Route as AuthSplatRouteImport } from './routes/auth.$'
 import { Route as publicLoginRouteImport } from './routes/(public)/login'
 import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
 import { Route as AppSharedIndexRouteImport } from './routes/app/shared/index'
 import { Route as AppWishlistsIdRouteImport } from './routes/app/wishlists/$id'
 import { Route as AppSharedIdRouteImport } from './routes/app/shared/$id'
 import { Route as publicSharedIdRouteImport } from './routes/(public)/shared.$id'
-import { ServerRoute as TrpcSplatServerRouteImport } from './routes/trpc.$'
-import { ServerRoute as AuthSplatServerRouteImport } from './routes/auth.$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/app',
@@ -44,6 +40,16 @@ const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
+} as any)
+const TrpcSplatRoute = TrpcSplatRouteImport.update({
+  id: '/trpc/$',
+  path: '/trpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSplatRoute = AuthSplatRouteImport.update({
+  id: '/auth/$',
+  path: '/auth/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const publicLoginRoute = publicLoginRouteImport.update({
   id: '/login',
@@ -75,21 +81,13 @@ const publicSharedIdRoute = publicSharedIdRouteImport.update({
   path: '/shared/$id',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const TrpcSplatServerRoute = TrpcSplatServerRouteImport.update({
-  id: '/trpc/$',
-  path: '/trpc/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const AuthSplatServerRoute = AuthSplatServerRouteImport.update({
-  id: '/auth/$',
-  path: '/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof publicIndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/login': typeof publicLoginRoute
+  '/auth/$': typeof AuthSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
+  '/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
@@ -99,6 +97,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/login': typeof publicLoginRoute
+  '/auth/$': typeof AuthSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
   '/': typeof publicIndexRoute
   '/app': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
@@ -112,6 +112,8 @@ export interface FileRoutesById {
   '/(public)': typeof publicRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
   '/(public)/login': typeof publicLoginRoute
+  '/auth/$': typeof AuthSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
   '/(public)/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/(public)/shared/$id': typeof publicSharedIdRoute
@@ -123,9 +125,11 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/app'
     | '/login'
+    | '/auth/$'
+    | '/trpc/$'
+    | '/'
     | '/app/'
     | '/shared/$id'
     | '/app/shared/$id'
@@ -135,6 +139,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/auth/$'
+    | '/trpc/$'
     | '/'
     | '/app'
     | '/shared/$id'
@@ -147,6 +153,8 @@ export interface FileRouteTypes {
     | '/(public)'
     | '/app'
     | '/(public)/login'
+    | '/auth/$'
+    | '/trpc/$'
     | '/(public)/'
     | '/app/'
     | '/(public)/shared/$id'
@@ -159,31 +167,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   publicRouteRoute: typeof publicRouteRouteWithChildren
   AppRouteRoute: typeof AppRouteRouteWithChildren
-}
-export interface FileServerRoutesByFullPath {
-  '/auth/$': typeof AuthSplatServerRoute
-  '/trpc/$': typeof TrpcSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/auth/$': typeof AuthSplatServerRoute
-  '/trpc/$': typeof TrpcSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/auth/$': typeof AuthSplatServerRoute
-  '/trpc/$': typeof TrpcSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/auth/$' | '/trpc/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/auth/$' | '/trpc/$'
-  id: '__root__' | '/auth/$' | '/trpc/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  AuthSplatServerRoute: typeof AuthSplatServerRoute
-  TrpcSplatServerRoute: typeof TrpcSplatServerRoute
+  AuthSplatRoute: typeof AuthSplatRoute
+  TrpcSplatRoute: typeof TrpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -197,8 +182,8 @@ declare module '@tanstack/react-router' {
     }
     '/(public)': {
       id: '/(public)'
-      path: '/'
-      fullPath: '/'
+      path: ''
+      fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -215,6 +200,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/trpc/$': {
+      id: '/trpc/$'
+      path: '/trpc/$'
+      fullPath: '/trpc/$'
+      preLoaderRoute: typeof TrpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/$': {
+      id: '/auth/$'
+      path: '/auth/$'
+      fullPath: '/auth/$'
+      preLoaderRoute: typeof AuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(public)/login': {
       id: '/(public)/login'
@@ -260,24 +259,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/trpc/$': {
-      id: '/trpc/$'
-      path: '/trpc/$'
-      fullPath: '/trpc/$'
-      preLoaderRoute: typeof TrpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/auth/$': {
-      id: '/auth/$'
-      path: '/auth/$'
-      fullPath: '/auth/$'
-      preLoaderRoute: typeof AuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-  }
-}
 
 interface publicRouteRouteChildren {
   publicLoginRoute: typeof publicLoginRoute
@@ -318,14 +299,18 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   publicRouteRoute: publicRouteRouteWithChildren,
   AppRouteRoute: AppRouteRouteWithChildren,
+  AuthSplatRoute: AuthSplatRoute,
+  TrpcSplatRoute: TrpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  AuthSplatServerRoute: AuthSplatServerRoute,
-  TrpcSplatServerRoute: TrpcSplatServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

@@ -1,9 +1,9 @@
-import type { Formats } from 'use-intl';
-import { useRouteContext } from '@tanstack/react-router';
-import { IntlProvider as BaseIntlProvider } from 'use-intl';
+import type { Formats } from "use-intl";
+import { useRouteContext } from "@tanstack/react-router";
+import { IntlProvider as BaseIntlProvider } from "use-intl";
 
 export function IntlProvider({ children }: { children: React.ReactNode }) {
-  const intl = useRouteContext({ from: '__root__', select: (s) => s.intl });
+  const intl = useRouteContext({ from: "__root__", select: (s) => s.intl });
   return (
     <BaseIntlProvider
       messages={intl.messages}
@@ -18,7 +18,7 @@ export function IntlProvider({ children }: { children: React.ReactNode }) {
 
 const formats = {} satisfies Formats;
 
-declare module 'use-intl' {
+declare module "use-intl" {
   interface AppConfig {
     Formats: typeof formats;
   }

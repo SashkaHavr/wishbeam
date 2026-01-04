@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import z from 'zod';
+import { useState } from "react";
+import z from "zod";
 
-import { wishlistItemSchema } from '@wishbeam/utils/schemas';
+import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 
-import { useCreateWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
+import { useCreateWishlistItemMutation } from "~/hooks/mutations/wishlists.owned.items";
 import {
   AppDialog,
   AppDialogBody,
@@ -13,11 +13,11 @@ import {
   AppDialogFooter,
   AppDialogHeader,
   AppDialogTitle,
-} from '../app-dialog';
-import { Form } from '../form/form';
-import { FormSubmitButton } from '../form/form-submit-button';
-import { useAppForm } from '../form/use-app-form';
-import { WishlistItemFields } from '../form/wishlist-item-form.components';
+} from "../app-dialog";
+import { Form } from "../form/form";
+import { FormSubmitButton } from "../form/form-submit-button";
+import { useAppForm } from "../form/use-app-form";
+import { WishlistItemFields } from "../form/wishlist-item-form.components";
 
 export function CreateWishlistItemDialog({
   children,
@@ -38,9 +38,9 @@ export function CreateWishlistItemDialog({
 
   const form = useAppForm({
     defaultValues: {
-      title: '',
-      description: '',
-      estimatedPrice: '',
+      title: "",
+      description: "",
+      estimatedPrice: "",
       links: [] as string[],
     },
     validators: {
@@ -52,8 +52,7 @@ export function CreateWishlistItemDialog({
     onSubmit: async ({ value }) => {
       await createWishlistItem.mutateAsync({
         ...value,
-        estimatedPrice:
-          value.estimatedPrice === '' ? null : value.estimatedPrice,
+        estimatedPrice: value.estimatedPrice === "" ? null : value.estimatedPrice,
         wishlistId,
       });
       setOpen(false);

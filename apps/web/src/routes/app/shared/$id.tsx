@@ -1,43 +1,41 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { ItemFooter } from '~/components/ui/item';
+import { ItemFooter } from "~/components/ui/item";
 
-import { LockButton } from '~/components/app/lock-button';
+import { LockButton } from "~/components/app/lock-button";
 import {
   WishlistItem,
   WishlistItemExpanded,
   WishlistItemsEmptyPublic,
   WishlistItemsList,
-} from '~/components/app/wishlist-items';
-import { PageLayout } from '~/components/page-layout';
+} from "~/components/app/wishlist-items";
+import { PageLayout } from "~/components/page-layout";
 import {
   useLockWishlistItemMutation,
   useUnlockWishlistItemMutation,
-} from '~/hooks/mutations/wishlists.shared.items';
-import { useTRPC } from '~/lib/trpc';
-import { cn } from '~/lib/utils';
+} from "~/hooks/mutations/wishlists.shared.items";
+import { useTRPC } from "~/lib/trpc";
+import { cn } from "~/lib/utils";
 import {
   wishlistSharedGetByIdServerFn,
   wishlistSharedGetItemsServerFn,
-} from '~/utils/trpc-server-fns';
+} from "~/utils/trpc-server-fns";
 
-export const Route = createFileRoute('/app/shared/$id')({
+export const Route = createFileRoute("/app/shared/$id")({
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.shared.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistSharedGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistSharedGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.shared.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistSharedGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistSharedGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },
@@ -49,10 +47,7 @@ function RouteComponent() {
 
   const wishlistId = Route.useParams({ select: (state) => state.id });
   const { data: wishlist } = useSuspenseQuery(
-    trpc.wishlists.shared.getById.queryOptions(
-      { wishlistId },
-      { select: (data) => data.wishlist },
-    ),
+    trpc.wishlists.shared.getById.queryOptions({ wishlistId }, { select: (data) => data.wishlist }),
   );
 
   const { data: wishlistItems } = useSuspenseQuery(
@@ -76,23 +71,17 @@ function RouteComponent() {
                 key={wishlistItem.id}
                 wishlistItem={wishlistItem}
                 className={cn(
-                  'transition-shadow',
-                  wishlistItem.lockStatus === 'lockedByAnotherUser' &&
-                    'bg-muted/50',
-                  wishlistItem.lockStatus === 'lockedByCurrentUser' &&
-                    'shadow-lg',
+                  "transition-shadow",
+                  wishlistItem.lockStatus === "lockedByAnotherUser" && "bg-muted/50",
+                  wishlistItem.lockStatus === "lockedByCurrentUser" && "shadow-lg",
                 )}
               >
                 <ItemFooter className="flex">
                   <LockButton
                     className="grow"
                     lockStatus={wishlistItem.lockStatus}
-                    lockAction={() =>
-                      lockItem.mutate({ wishlistItemId: wishlistItem.id })
-                    }
-                    unlockAction={() =>
-                      unlockItem.mutate({ wishlistItemId: wishlistItem.id })
-                    }
+                    lockAction={() => lockItem.mutate({ wishlistItemId: wishlistItem.id })}
+                    unlockAction={() => unlockItem.mutate({ wishlistItemId: wishlistItem.id })}
                   />
                 </ItemFooter>
               </WishlistItem>

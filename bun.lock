@@ -7,7 +7,7 @@
       "devDependencies": {
         "oxfmt": "^0.21.0",
         "oxlint": "^1.36.0",
-        "oxlint-tsgolint": "^0.10.0",
+        "oxlint-tsgolint": "^0.10.1",
       },
     },
     "apps/web": {
@@ -132,8 +132,12 @@
         "@wishbeam/auth": "workspace:*",
         "@wishbeam/db": "workspace:*",
         "@wishbeam/env": "workspace:*",
+        "@wishbeam/pubsub": "workspace:*",
+        "@wishbeam/utils": "workspace:*",
+        "base-x": "5.0.1",
         "drizzle-orm": "catalog:drizzle",
         "superjson": "catalog:",
+        "uuid": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -849,6 +853,8 @@
     "balanced-match": ["balanced-match@1.0.2", "", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
     "bare-events": ["bare-events@2.7.0", "", {}, "sha512-b3N5eTW1g7vXkw+0CXh/HazGTcO5KYuu/RCNaJbDMPI6LHDi+7qe8EmxKUVe1sUbY2KZOVZFyj62x0OEz9qyAA=="],
+
+    "base-x": ["base-x@5.0.1", "", {}, "sha512-M7uio8Zt++eg3jPj+rHMfCC+IuygQHHCOU+IYsVtik6FWjuYpVt/+MRKcgsAMHh8mMFAwnB+Bs+mTrFiXjMzKg=="],
 
     "base64-js": ["base64-js@1.5.1", "", {}, "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA=="],
 

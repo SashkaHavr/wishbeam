@@ -1,28 +1,28 @@
-import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
+import z from "zod";
 
-import { db } from '@wishbeam/db';
+import { db } from "@wishbeam/db";
 import {
   wishlistItem as wishlistItemTable,
   wishlistOwner as wishlistOwnerTable,
   wishlist as wishlistTable,
-} from '@wishbeam/db/schema';
-import { wishlistSchema } from '@wishbeam/utils/schemas';
+} from "@wishbeam/db/schema";
+import { wishlistSchema } from "@wishbeam/utils/schemas";
 
-import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { uuidv7ToBase62 } from '#utils/zod-utils.ts';
-import { ownedWishlistItemsRouter } from './wishlists.owned.items';
-import { ownedWishlistOwnersRouter } from './wishlists.owned.owners';
-import { ownedWishlistSharedWithRouter } from './wishlists.owned.sharedWith';
+import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
+import { ownedWishlistItemsRouter } from "./wishlists.owned.items";
+import { ownedWishlistOwnersRouter } from "./wishlists.owned.owners";
+import { ownedWishlistSharedWithRouter } from "./wishlists.owned.sharedWith";
 
 const wishlistOutputSchema = z.object({
   id: uuidv7ToBase62,
   title: z.string(),
   description: z.string(),
   currentUserIsCreator: z.boolean(),
-  shareStatus: z.enum(['private', 'shared', 'public']),
+  shareStatus: z.enum(["private", "shared", "public"]),
 });
 
 export const ownedWishlistsRouter = router({
@@ -31,15 +31,14 @@ export const ownedWishlistsRouter = router({
     .query(async ({ ctx }) => {
       const wishlists = await db.query.wishlist.findMany({
         where: { wishlistOwners: { userId: ctx.userId } },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
         with: { wishlistOwners: true },
       });
       return {
         wishlists: wishlists.map((w) => ({
           ...w,
           currentUserIsCreator:
-            w.wishlistOwners.find((owner) => owner.id === ctx.userId)?.role ===
-            'creator',
+            w.wishlistOwners.find((owner) => owner.id === ctx.userId)?.role === "creator",
         })),
       };
     }),
@@ -48,25 +47,22 @@ export const ownedWishlistsRouter = router({
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .mutation(async ({ input, ctx }) => {
       const wishlist = await db.transaction(async (tx) => {
-        const [wishlist] = await tx
-          .insert(wishlistTable)
-          .values(input)
-          .returning();
+        const [wishlist] = await tx.insert(wishlistTable).values(input).returning();
         if (!wishlist) {
           throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: 'Could not create wishlist',
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Could not create wishlist",
           });
         }
         await tx.insert(wishlistOwnerTable).values({
           userId: ctx.userId,
           wishlistId: wishlist.id,
-          role: 'creator',
+          role: "creator",
         });
         return wishlist;
       });
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: wishlist.id,
       });
       return {
@@ -83,7 +79,7 @@ export const ownedWishlistsRouter = router({
       return {
         wishlist: {
           ...ctx.wishlist,
-          currentUserIsCreator: ctx.currentOwner.role === 'creator',
+          currentUserIsCreator: ctx.currentOwner.role === "creator",
         },
       };
     }),
@@ -96,44 +92,38 @@ export const ownedWishlistsRouter = router({
         .set({ ...input.data, updatedAt: new Date() })
         .where(eq(wishlistTable.id, ctx.wishlist.id));
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),
-  delete: ownedWishlistProcedure
-    .output(z.undefined())
-    .mutation(async ({ ctx }) => {
-      const isCreator = ctx.currentOwner.role === 'creator';
-      await db.transaction(async (tx) => {
-        await tx
-          .delete(wishlistOwnerTable)
-          .where(
-            and(
-              eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
-              !isCreator
-                ? eq(wishlistOwnerTable.userId, ctx.userId)
-                : undefined,
-            ),
-          );
+  delete: ownedWishlistProcedure.output(z.undefined()).mutation(async ({ ctx }) => {
+    const isCreator = ctx.currentOwner.role === "creator";
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(wishlistOwnerTable)
+        .where(
+          and(
+            eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
+            !isCreator ? eq(wishlistOwnerTable.userId, ctx.userId) : undefined,
+          ),
+        );
 
-        if (isCreator) {
-          await tx
-            .delete(wishlistTable)
-            .where(eq(wishlistTable.id, ctx.wishlist.id));
-        }
-      });
-      void invalidateCache(ctx.userId, {
-        type: 'wishlists',
-        wishlistId: ctx.wishlist.id,
-      });
-    }),
+      if (isCreator) {
+        await tx.delete(wishlistTable).where(eq(wishlistTable.id, ctx.wishlist.id));
+      }
+    });
+    void invalidateCache(ctx.userId, {
+      type: "wishlists",
+      wishlistId: ctx.wishlist.id,
+    });
+  }),
   setShareStatus: ownedWishlistProcedure
-    .input(z.object({ shareStatus: z.enum(['private', 'shared', 'public']) }))
+    .input(z.object({ shareStatus: z.enum(["private", "shared", "public"]) }))
     .output(z.undefined())
     .mutation(async ({ input, ctx }) => {
       if (ctx.wishlist.shareStatus === input.shareStatus) {
         throw new TRPCError({
-          code: 'CONFLICT',
+          code: "CONFLICT",
           message: `Wishlist is already ${input.shareStatus}`,
         });
       }
@@ -142,7 +132,7 @@ export const ownedWishlistsRouter = router({
           .update(wishlistTable)
           .set({ shareStatus: input.shareStatus, updatedAt: new Date() })
           .where(eq(wishlistTable.id, ctx.wishlist.id));
-        if (input.shareStatus === 'private') {
+        if (input.shareStatus === "private") {
           await tx
             .update(wishlistItemTable)
             .set({ lockedUserId: null, lockChangedAt: new Date() })
@@ -150,7 +140,7 @@ export const ownedWishlistsRouter = router({
         }
       });
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),

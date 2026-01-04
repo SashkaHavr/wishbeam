@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import z from 'zod';
+import { useState } from "react";
+import z from "zod";
 
-import { wishlistItemSchema } from '@wishbeam/utils/schemas';
+import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 
-import { useUpdateWishlistItemMutation } from '~/hooks/mutations/wishlists.owned.items';
+import { useUpdateWishlistItemMutation } from "~/hooks/mutations/wishlists.owned.items";
 import {
   AppDialog,
   AppDialogBody,
@@ -13,11 +13,11 @@ import {
   AppDialogFooter,
   AppDialogHeader,
   AppDialogTitle,
-} from '../app-dialog';
-import { Form } from '../form/form';
-import { FormSubmitButton } from '../form/form-submit-button';
-import { useAppForm } from '../form/use-app-form';
-import { WishlistItemFields } from '../form/wishlist-item-form.components';
+} from "../app-dialog";
+import { Form } from "../form/form";
+import { FormSubmitButton } from "../form/form-submit-button";
+import { useAppForm } from "../form/use-app-form";
+import { WishlistItemFields } from "../form/wishlist-item-form.components";
 
 export function UpdateWishlistItemDialog({
   children,
@@ -48,7 +48,7 @@ export function UpdateWishlistItemDialog({
     defaultValues: {
       title: wishlistItem.title,
       description: wishlistItem.description,
-      estimatedPrice: wishlistItem.estimatedPrice ?? '',
+      estimatedPrice: wishlistItem.estimatedPrice ?? "",
       links: wishlistItem.links,
     },
     validators: {
@@ -62,8 +62,7 @@ export function UpdateWishlistItemDialog({
         wishlistItemId: wishlistItem.id,
         data: {
           ...value,
-          estimatedPrice:
-            value.estimatedPrice === '' ? null : value.estimatedPrice,
+          estimatedPrice: value.estimatedPrice === "" ? null : value.estimatedPrice,
         },
       });
       setOpen(false);

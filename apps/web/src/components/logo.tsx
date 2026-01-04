@@ -1,17 +1,16 @@
-import type React from 'react';
-import { Link } from '@tanstack/react-router';
-import { Gift } from 'lucide-react';
+import { Link } from "@tanstack/react-router";
+import { Gift } from "lucide-react";
 
-import { cn } from '~/lib/utils';
+import { cn } from "~/lib/utils";
 
 export function Logo({
   withName,
-  size = 'lg',
+  size = "lg",
   className,
   ...props
 }: {
   withName?: boolean;
-  size?: 'md' | 'lg';
+  size?: "md" | "lg";
   className?: string;
   onClick?: () => void;
 }) {
@@ -19,21 +18,18 @@ export function Logo({
     <Link
       to="/"
       aria-label="home"
-      className={cn(
-        'flex items-center gap-2 font-medium text-secondary-foreground',
-        className,
-      )}
+      className={cn("flex items-center gap-2 font-medium text-secondary-foreground", className)}
       {...props}
     >
       <div
         className={cn(
-          'flex items-center justify-center rounded-md',
-          { md: 'size-6', lg: 'size-8' }[size],
+          "flex items-center justify-center rounded-md",
+          { md: "size-6", lg: "size-8" }[size],
         )}
       >
-        <Gift className={cn({ md: 'size-4', lg: 'size-6' }[size])} />
+        <Gift className={cn({ md: "size-4", lg: "size-6" }[size])} />
       </div>
-      <span className={cn(!withName && 'sr-only')}>Wishbeam</span>
+      <span className={cn(!withName && "sr-only")}>Wishbeam</span>
     </Link>
   );
 }

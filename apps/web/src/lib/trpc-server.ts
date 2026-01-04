@@ -23,4 +23,3 @@ export const getHealthCheckServerFn = createServerFn()
   .handler(({ context: { trpc } }) => {
     return trpc.health();
   });
-

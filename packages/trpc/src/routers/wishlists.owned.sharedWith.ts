@@ -1,13 +1,13 @@
-import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { wishlistUsersSharedWith as wishlistUsersSharedWithTable } from '@wishbeam/db/schema';
+import { db } from "@wishbeam/db";
+import { wishlistUsersSharedWith as wishlistUsersSharedWithTable } from "@wishbeam/db/schema";
 
-import { ownedWishlistProcedure, router } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { getUserByEmail, getUserById } from '#utils/db-utils.ts';
+import { ownedWishlistProcedure, router } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { getUserByEmail, getUserById } from "#utils/db-utils.ts";
 
 const wishlistSharedWithOutputSchema = z.object({
   id: z.uuidv7(),
@@ -37,8 +37,8 @@ export const ownedWishlistSharedWithRouter = router({
     .mutation(async ({ input, ctx }) => {
       if (input.email === ctx.session.user.email) {
         throw new TRPCError({
-          message: 'You cannot share a wishlist with yourself',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "You cannot share a wishlist with yourself",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       const newOwnerUser = await getUserByEmail(input.email);
@@ -50,8 +50,8 @@ export const ownedWishlistSharedWithRouter = router({
       });
       if (existingOwner) {
         throw new TRPCError({
-          message: 'This wishlist is already shared with this user',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "This wishlist is already shared with this user",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       const newSharedWithUser = (
@@ -65,12 +65,12 @@ export const ownedWishlistSharedWithRouter = router({
       )[0];
       if (!newSharedWithUser) {
         throw new TRPCError({
-          message: 'Failed to add user',
-          code: 'INTERNAL_SERVER_ERROR',
+          message: "Failed to add user",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
       return {
@@ -83,8 +83,8 @@ export const ownedWishlistSharedWithRouter = router({
       const userToDelete = await getUserById(input.userId);
       if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
-          message: 'You cannot remove yourself as an owner',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "You cannot remove yourself as an owner",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       await db
@@ -96,7 +96,7 @@ export const ownedWishlistSharedWithRouter = router({
           ),
         );
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),

@@ -1,10 +1,10 @@
-import { FieldLabel } from '../ui/field';
-import { getRadioGroupFieldId, useFieldContext } from './form-context';
+import { FieldLabel } from "../ui/field";
+import { getRadioGroupFieldId, useFieldContext } from "./form-context";
 
 export function FormRadioGroupFieldLabel({
   value,
   ...props
-}: Omit<React.ComponentProps<typeof FieldLabel>, 'htmlFor'> & {
+}: Omit<React.ComponentProps<typeof FieldLabel>, "htmlFor"> & {
   value: string;
 }) {
   const field = useFieldContext();

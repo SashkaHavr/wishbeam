@@ -1,19 +1,19 @@
-import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import { and, eq } from "drizzle-orm";
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { wishlistOwner as wishlistOwnerTable } from '@wishbeam/db/schema';
+import { db } from "@wishbeam/db";
+import { wishlistOwner as wishlistOwnerTable } from "@wishbeam/db/schema";
 
-import { ownedWishlistProcedure, router } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { getUserByEmail, getUserById } from '#utils/db-utils.ts';
+import { ownedWishlistProcedure, router } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { getUserByEmail, getUserById } from "#utils/db-utils.ts";
 
 const creatorProcedure = ownedWishlistProcedure.use(async ({ ctx, next }) => {
-  if (ctx.currentOwner.role !== 'creator') {
+  if (ctx.currentOwner.role !== "creator") {
     throw new TRPCError({
-      message: 'This endpoint is only accessible to the wishlist creator',
-      code: 'FORBIDDEN',
+      message: "This endpoint is only accessible to the wishlist creator",
+      code: "FORBIDDEN",
     });
   }
   return next();
@@ -23,7 +23,7 @@ const wishlistOwnerOutputSchema = z.object({
   id: z.uuidv7(),
   email: z.email(),
   name: z.string(),
-  role: z.enum(['creator', 'owner']),
+  role: z.enum(["creator", "owner"]),
 });
 
 export const ownedWishlistOwnersRouter = router({
@@ -49,8 +49,8 @@ export const ownedWishlistOwnersRouter = router({
     .mutation(async ({ input, ctx }) => {
       if (input.email === ctx.session.user.email) {
         throw new TRPCError({
-          message: 'You cannot add yourself as an owner',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "You cannot add yourself as an owner",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       const newOwnerUser = await getUserByEmail(input.email);
@@ -62,8 +62,8 @@ export const ownedWishlistOwnersRouter = router({
       });
       if (existingOwner) {
         throw new TRPCError({
-          message: 'User is already an owner',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "User is already an owner",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       const newOwner = (
@@ -72,18 +72,18 @@ export const ownedWishlistOwnersRouter = router({
           .values({
             userId: newOwnerUser.id,
             wishlistId: ctx.wishlist.id,
-            role: 'owner',
+            role: "owner",
           })
           .returning()
       )[0];
       if (!newOwner) {
         throw new TRPCError({
-          message: 'Failed to add owner',
-          code: 'INTERNAL_SERVER_ERROR',
+          message: "Failed to add owner",
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
       return {
@@ -99,8 +99,8 @@ export const ownedWishlistOwnersRouter = router({
       const userToDelete = await getUserById(input.userId);
       if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
-          message: 'You cannot remove yourself as an owner',
-          code: 'UNPROCESSABLE_CONTENT',
+          message: "You cannot remove yourself as an owner",
+          code: "UNPROCESSABLE_CONTENT",
         });
       }
       await db
@@ -112,7 +112,7 @@ export const ownedWishlistOwnersRouter = router({
           ),
         );
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),

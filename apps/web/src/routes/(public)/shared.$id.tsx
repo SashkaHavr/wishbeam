@@ -1,32 +1,32 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { ItemFooter } from '~/components/ui/item';
-import { Separator } from '~/components/ui/separator';
+import { ItemFooter } from "~/components/ui/item";
+import { Separator } from "~/components/ui/separator";
 
-import { AppDialogTrigger } from '~/components/app-dialog';
-import { LockButton } from '~/components/app/lock-button';
+import { AppDialogTrigger } from "~/components/app-dialog";
+import { LockButton } from "~/components/app/lock-button";
 import {
   WishlistItem,
   WishlistItemExpanded,
   WishlistItemsEmptyPublic,
   WishlistItemsList,
-} from '~/components/app/wishlist-items';
-import { LoginDialog } from '~/components/login';
-import { Logo } from '~/components/logo';
-import { PageLayout } from '~/components/page-layout';
-import { usePublicWishlistCacheInvalidation } from '~/hooks/use-cache-invalidation';
-import { useTRPC } from '~/lib/trpc';
-import { seo } from '~/utils/seo';
+} from "~/components/app/wishlist-items";
+import { LoginDialog } from "~/components/login";
+import { Logo } from "~/components/logo";
+import { PageLayout } from "~/components/page-layout";
+import { usePublicWishlistCacheInvalidation } from "~/hooks/use-cache-invalidation";
+import { useTRPC } from "~/lib/trpc";
+import { seo } from "~/utils/seo";
 import {
   wishlistPublicGetByIdServerFn,
   wishlistPublicGetItemsServerFn,
-} from '~/utils/trpc-server-fns';
+} from "~/utils/trpc-server-fns";
 
-export const Route = createFileRoute('/(public)/shared/$id')({
+export const Route = createFileRoute("/(public)/shared/$id")({
   beforeLoad: ({ context, params }) => {
     if (context.auth.loggedIn) {
-      throw redirect({ to: '/app/shared/$id', params: { id: params.id } });
+      throw redirect({ to: "/app/shared/$id", params: { id: params.id } });
     }
   },
   loader: async ({ context, params }) => {
@@ -35,15 +35,13 @@ export const Route = createFileRoute('/(public)/shared/$id')({
         queryKey: context.trpc.wishlists.public.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.public.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
     return {
@@ -69,10 +67,7 @@ function RouteComponent() {
 
   const wishlistId = Route.useParams({ select: (state) => state.id });
   const { data: wishlist } = useSuspenseQuery(
-    trpc.wishlists.public.getById.queryOptions(
-      { wishlistId },
-      { select: (data) => data.wishlist },
-    ),
+    trpc.wishlists.public.getById.queryOptions({ wishlistId }, { select: (data) => data.wishlist }),
   );
 
   const { data: wishlistItems } = useSuspenseQuery(
@@ -97,15 +92,13 @@ function RouteComponent() {
             {wishlistItems.length > 0 && (
               <WishlistItemsList>
                 {wishlistItems.map((wishlistItem) => (
-                  <WishlistItem
-                    key={wishlistItem.id}
-                    wishlistItem={wishlistItem}
-                  >
+                  <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
                     <ItemFooter className="flex">
                       <LoginDialog>
-                        <AppDialogTrigger className="grow" asChild>
-                          <LockButton lockStatus={wishlistItem.lockStatus} />
-                        </AppDialogTrigger>
+                        <AppDialogTrigger
+                          className="grow"
+                          render={<LockButton lockStatus={wishlistItem.lockStatus} />}
+                        />
                       </LoginDialog>
                     </ItemFooter>
                   </WishlistItem>

@@ -1,11 +1,11 @@
-import { useIsClient } from './use-is-client';
-import { useMediaQuery } from './use-media-query';
+import { useIsClient } from "./use-is-client";
+import { useMediaQuery } from "./use-media-query";
 
 const screens = {
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
+  sm: "640px",
+  md: "768px",
+  lg: "1024px",
+  xl: "1280px",
 };
 
 export function useMatchesBreakpoint(breakpoint: keyof typeof screens) {
@@ -25,9 +25,9 @@ export function useNotMatchesBreakpoint(breakpoint: keyof typeof screens) {
 }
 
 export function useMobile() {
-  return useNotMatchesBreakpoint('md');
+  return useNotMatchesBreakpoint("md");
 }
 
 export function useDesktop() {
-  return useMatchesBreakpoint('md');
+  return useMatchesBreakpoint("md");
 }

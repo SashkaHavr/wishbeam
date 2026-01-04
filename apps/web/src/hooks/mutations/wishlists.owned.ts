@@ -1,18 +1,16 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useTRPC } from '~/lib/trpc';
+import { useTRPC } from "~/lib/trpc";
 
 export function useCreateWishlistMutation() {
   const trpc = useTRPC();
   return useMutation(
     trpc.wishlists.owned.create.mutationOptions({
       onSuccess: (response, input, onMutateResult, context) => {
-        context.client.setQueryData(
-          trpc.wishlists.owned.getAll.queryKey(),
-          (old) =>
-            old
-              ? { wishlists: [...old.wishlists, response.wishlist] }
-              : { wishlists: [response.wishlist] },
+        context.client.setQueryData(trpc.wishlists.owned.getAll.queryKey(), (old) =>
+          old
+            ? { wishlists: [...old.wishlists, response.wishlist] }
+            : { wishlists: [response.wishlist] },
         );
         void context.client.invalidateQueries({
           queryKey: trpc.wishlists.owned.getAll.queryKey(),
@@ -37,9 +35,7 @@ export function useUpdateWishlistMutation() {
         });
 
         const previous = {
-          all: context.client.getQueryData(
-            trpc.wishlists.owned.getAll.queryKey(),
-          ),
+          all: context.client.getQueryData(trpc.wishlists.owned.getAll.queryKey()),
           byId: context.client.getQueryData(
             trpc.wishlists.owned.getById.queryKey({
               wishlistId: input.wishlistId,
@@ -52,9 +48,7 @@ export function useUpdateWishlistMutation() {
           (old) =>
             old && {
               wishlists: old.wishlists.map((wishlist) =>
-                wishlist.id === input.wishlistId
-                  ? { ...wishlist, ...input.data }
-                  : wishlist,
+                wishlist.id === input.wishlistId ? { ...wishlist, ...input.data } : wishlist,
               ),
             },
         );
@@ -110,18 +104,14 @@ export function useDeleteWishlistMutation() {
         });
 
         const previous = {
-          all: context.client.getQueryData(
-            trpc.wishlists.owned.getAll.queryKey(),
-          ),
+          all: context.client.getQueryData(trpc.wishlists.owned.getAll.queryKey()),
         };
 
         context.client.setQueryData(
           trpc.wishlists.owned.getAll.queryKey(),
           (old) =>
             old && {
-              wishlists: old.wishlists.filter(
-                (wishlist) => wishlist.id !== input.wishlistId,
-              ),
+              wishlists: old.wishlists.filter((wishlist) => wishlist.id !== input.wishlistId),
             },
         );
 
@@ -135,7 +125,7 @@ export function useDeleteWishlistMutation() {
         );
       },
       onSuccess: (response, input, onMutateResult, context) => {
-        void context.client.removeQueries({
+        context.client.removeQueries({
           queryKey: trpc.wishlists.owned.getById.queryKey({
             wishlistId: input.wishlistId,
           }),
@@ -165,9 +155,7 @@ export function useSetShareStatusWishlistMutation() {
         });
 
         const previous = {
-          all: context.client.getQueryData(
-            trpc.wishlists.owned.getAll.queryKey(),
-          ),
+          all: context.client.getQueryData(trpc.wishlists.owned.getAll.queryKey()),
           byId: context.client.getQueryData(
             trpc.wishlists.owned.getById.queryKey({
               wishlistId: input.wishlistId,

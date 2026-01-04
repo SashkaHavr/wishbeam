@@ -11,8 +11,8 @@
   "scripts": {},
   "dependencies": {},
   "devDependencies": {
-    "@wishbeam/typescript-config": "workspace:*",
     "@types/bun": "catalog:",
+    "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }
 }

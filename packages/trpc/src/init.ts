@@ -1,13 +1,13 @@
-import { initTRPC, TRPCError } from '@trpc/server';
-import superjson from 'superjson';
-import z, { ZodError } from 'zod';
+import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
+import z, { ZodError } from "zod";
 
-import { auth } from '@wishbeam/auth';
-import { db } from '@wishbeam/db';
-import { envServer } from '@wishbeam/env/server';
+import { auth } from "@wishbeam/auth";
+import { db } from "@wishbeam/db";
+import { envServer } from "@wishbeam/env/server";
 
-import type { Context } from '#context.ts';
-import { base62ToUuidv7 } from '#utils/zod-utils.ts';
+import type { Context } from "#context.ts";
+import { base62ToUuidv7 } from "#utils/zod-utils.ts";
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -17,8 +17,7 @@ const t = initTRPC.context<Context>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? z.prettifyError(error.cause) : null,
+        zodError: error.cause instanceof ZodError ? z.prettifyError(error.cause) : null,
       },
     };
   },
@@ -27,18 +26,18 @@ const t = initTRPC.context<Context>().create({
 export const router = t.router;
 
 export const publicProcedure =
-  envServer.NODE_ENV === 'production'
+  envServer.NODE_ENV === "production"
     ? t.procedure
     : t.procedure.use(async ({ next }) => {
         const result = await next();
         if (
           !result.ok &&
           [
-            'INTERNAL_SERVER_ERROR',
-            'NOT_IMPLEMENTED',
-            'BAD_GATEWAY',
-            'SERVICE_UNAVAILABLE',
-            'SERVICE_UNAVAILABLE',
+            "INTERNAL_SERVER_ERROR",
+            "NOT_IMPLEMENTED",
+            "BAD_GATEWAY",
+            "SERVICE_UNAVAILABLE",
+            "SERVICE_UNAVAILABLE",
           ].includes(result.error.code)
         ) {
           console.error(result.error);
@@ -52,8 +51,8 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   });
   if (!session) {
     throw new TRPCError({
-      message: 'You must authenticate to use this endpoint',
-      code: 'UNAUTHORIZED',
+      message: "You must authenticate to use this endpoint",
+      code: "UNAUTHORIZED",
     });
   }
   return next({
@@ -67,7 +66,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
 
 export function adminProcedure(
   permission: NonNullable<
-    Parameters<typeof auth.api.userHasPermission>[0]['body']['permission']
+    NonNullable<Parameters<typeof auth.api.userHasPermission>[0]>["body"]["permission"]
   >,
 ) {
   return protectedProcedure.use(async ({ ctx, next }) => {
@@ -77,7 +76,7 @@ export function adminProcedure(
     if (!hasPermission.success) {
       throw new TRPCError({
         message: "You don't have permissions to access this endpoint",
-        code: 'FORBIDDEN',
+        code: "FORBIDDEN",
       });
     }
     return next();
@@ -91,13 +90,11 @@ export const ownedWishlistProcedure = protectedProcedure
       where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
       with: { wishlistOwners: true },
     });
-    const currentOwner = wishlist?.wishlistOwners.find(
-      (wo) => wo.userId === ctx.userId,
-    );
+    const currentOwner = wishlist?.wishlistOwners.find((wo) => wo.userId === ctx.userId);
     if (!wishlist || !currentOwner) {
       throw new TRPCError({
-        message: 'Wishlist not found',
-        code: 'NOT_FOUND',
+        message: "Wishlist not found",
+        code: "NOT_FOUND",
       });
     }
     return next({
@@ -116,22 +113,22 @@ export const sharedWishlistProcedure = protectedProcedure
       where: {
         id: input.wishlistId,
         OR: [
-          { shareStatus: 'public' },
-          { shareStatus: 'shared', wishlistSharedWith: { userId: ctx.userId } },
+          { shareStatus: "public" },
+          { shareStatus: "shared", wishlistSharedWith: { userId: ctx.userId } },
         ],
       },
       with: { wishlistOwners: true },
     });
     if (!wishlist) {
       throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Wishlist not found',
+        code: "NOT_FOUND",
+        message: "Wishlist not found",
       });
     }
     if (wishlist.wishlistOwners.some((wo) => wo.userId === ctx.userId)) {
       throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Owners cannot access shared wishlist endpoints',
+        code: "FORBIDDEN",
+        message: "Owners cannot access shared wishlist endpoints",
       });
     }
     return next({

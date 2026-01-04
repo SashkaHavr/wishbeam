@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 import {
   useAddWishlistOwnerMutation,
   useDeleteWishlistOwnerMutation,
-} from '~/hooks/mutations/wishlists.owned.owners';
-import { useTRPC } from '~/lib/trpc';
-import { AddDeleteUsersByEmailForm } from '../add-delete-users-by-email-form';
+} from "~/hooks/mutations/wishlists.owned.owners";
+import { useTRPC } from "~/lib/trpc";
+import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
 import {
   AppDialog,
   AppDialogBody,
@@ -15,7 +15,7 @@ import {
   AppDialogFooter,
   AppDialogHeader,
   AppDialogTitle,
-} from '../app-dialog';
+} from "../app-dialog";
 
 interface Props {
   children?: React.ReactNode;
@@ -24,9 +24,7 @@ interface Props {
 
 export function UpdateOwnersDialog({ children, wishlistId }: Props) {
   const trpc = useTRPC();
-  const owners = useQuery(
-    trpc.wishlists.owned.owners.getAll.queryOptions({ wishlistId }),
-  );
+  const owners = useQuery(trpc.wishlists.owned.owners.getAll.queryOptions({ wishlistId }));
 
   const addOwner = useAddWishlistOwnerMutation();
   const deleteOwner = useDeleteWishlistOwnerMutation();
@@ -37,19 +35,13 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
       <AppDialogContent>
         <AppDialogHeader>
           <AppDialogTitle>Manage owners</AppDialogTitle>
-          <AppDialogDescription>
-            Add or remove owners from your wishlist.
-          </AppDialogDescription>
+          <AppDialogDescription>Add or remove owners from your wishlist.</AppDialogDescription>
         </AppDialogHeader>
         <AppDialogBody>
           <AddDeleteUsersByEmailForm
-            users={
-              owners.data?.owners.filter((user) => user.role === 'owner') ?? []
-            }
+            users={owners.data?.owners.filter((user) => user.role === "owner") ?? []}
             addUser={({ email }) => addOwner.mutateAsync({ email, wishlistId })}
-            deleteUser={({ userId }) =>
-              deleteOwner.mutate({ userId, wishlistId })
-            }
+            deleteUser={({ userId }) => deleteOwner.mutate({ userId, wishlistId })}
           />
         </AppDialogBody>
         <AppDialogFooter>

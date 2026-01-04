@@ -1,8 +1,7 @@
-import type { LinkProps } from '@tanstack/react-router';
-import type React from 'react';
-import { useEffect, useEffectEvent, useState } from 'react';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { Link, useRouterState } from '@tanstack/react-router';
+import type { LinkProps } from "@tanstack/react-router";
+import type React from "react";
+import { useEffect, useEffectEvent, useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
   EllipsisVerticalIcon,
@@ -14,19 +13,19 @@ import {
   PanelLeftOpenIcon,
   Share2Icon,
   SunIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useLoggedInAuth } from '~/hooks/route-context';
-import { useNotMatchesBreakpoint } from '~/hooks/use-breakpoint';
-import { useIsClient } from '~/hooks/use-is-client';
-import { useSignout } from '~/lib/auth';
-import { cn } from '~/lib/utils';
-import { Logo } from './logo';
-import { useTheme } from './theme/context';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Separator } from './ui/separator';
+import { useLoggedInAuth } from "~/hooks/route-context";
+import { useNotMatchesBreakpoint } from "~/hooks/use-breakpoint";
+import { useIsClient } from "~/hooks/use-is-client";
+import { useSignout } from "~/lib/auth";
+import { cn } from "~/lib/utils";
+import { Logo } from "./logo";
+import { useTheme } from "./theme/context";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Separator } from "./ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -35,24 +34,24 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from './ui/sheet';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+} from "./ui/sheet";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface NavLinkProps {
-  to: LinkProps['to'];
+  to: LinkProps["to"];
   label: string;
   icon: React.ComponentType;
 }
 
 const mainLinks: NavLinkProps[] = [
   {
-    to: '/app/wishlists',
-    label: 'My wishlists',
+    to: "/app/wishlists",
+    label: "My wishlists",
     icon: ListCheckIcon,
   },
   {
-    to: '/app/shared',
-    label: 'Shared with me wishlists',
+    to: "/app/shared",
+    label: "Shared with me wishlists",
     icon: Share2Icon,
   },
 ];
@@ -73,22 +72,22 @@ function useKeyboardShortcut({
   onOpenChange: (open: boolean) => void;
 }) {
   const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
-    if (event.key === 'b' && (event.metaKey || event.ctrlKey)) {
+    if (event.key === "b" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       onOpenChange(!open);
     }
   });
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 }
 
 function SidebarLink({
   icon: IconProp,
   ...props
-}: Omit<React.ComponentProps<typeof SidebarButton>, 'children'> &
+}: Omit<React.ComponentProps<typeof SidebarButton>, "children"> &
   NavLinkProps & { open?: boolean }) {
   return (
     <SidebarAdaptiveButton
@@ -97,11 +96,7 @@ function SidebarLink({
       {...props}
     >
       <Link to={props.to}>
-        <SidebarAdaptiveButtonContent
-          open={props.open}
-          label={props.label}
-          icon={<IconProp />}
-        />
+        <SidebarAdaptiveButtonContent open={props.open} label={props.label} icon={<IconProp />} />
       </Link>
     </SidebarAdaptiveButton>
   );
@@ -133,25 +128,21 @@ function SidebarAdaptiveButton({
   children,
   ...props
 }: React.ComponentProps<typeof SidebarButton> &
-  React.ComponentProps<typeof SidebarAdaptiveButtonContent>) {
+  React.ComponentProps<typeof SidebarAdaptiveButtonContent> & { children?: React.ReactElement }) {
   const button = (
     <SidebarButton
-      asChild={children !== undefined}
-      className={cn(open && 'justify-start', className)}
-      size={open ? size : 'icon'}
+      render={children ?? <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />}
+      className={cn(open && "justify-start", className)}
+      size={open ? size : "icon"}
       {...props}
-    >
-      {children ?? (
-        <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />
-      )}
-    </SidebarButton>
+    />
   );
 
   return open ? (
     button
   ) : (
     <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipTrigger render={button} />
       <TooltipContent side="right">
         <span>{label}</span>
       </TooltipContent>
@@ -162,12 +153,12 @@ function SidebarAdaptiveButton({
 function SidebarButton({
   className,
   ...props
-}: Omit<React.ComponentProps<typeof Button>, 'variant'>) {
+}: Omit<React.ComponentProps<typeof Button>, "variant">) {
   return (
     <Button
       variant="ghost"
       className={cn(
-        'transition-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:border-sidebar-ring has-[>svg]:px-2 dark:hover:bg-sidebar-accent/50',
+        "transition-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:border-sidebar-ring has-[>svg]:px-2 dark:hover:bg-sidebar-accent/50",
         className,
       )}
       {...props}
@@ -175,10 +166,8 @@ function SidebarButton({
   );
 }
 
-function SidebarGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div className={cn('flex flex-col gap-1 p-2', className)} {...props}></div>
-  );
+function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return <div className={cn("flex flex-col gap-1 p-2", className)} {...props}></div>;
 }
 
 function SidebarHeader({
@@ -189,21 +178,21 @@ function SidebarHeader({
   onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <SidebarGroup className={cn(open ? 'flex-row' : 'gap-1')}>
+    <SidebarGroup className={cn(open ? "flex-row" : "gap-1")}>
       <Logo withName={open} className="p-0.5" />
       <div className="grow" />
       <SidebarButton size="icon" onClick={() => onOpenChange(!open)}>
         <div className="grid grid-cols-1 grid-rows-1">
           <PanelLeftCloseIcon
             className={cn(
-              'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
-              open ? 'opacity-100' : 'opacity-0',
+              "col-end-1 row-end-1 self-center justify-self-end transition-opacity",
+              open ? "opacity-100" : "opacity-0",
             )}
           />
           <PanelLeftOpenIcon
             className={cn(
-              'col-end-1 row-end-1 self-center justify-self-end transition-opacity',
-              open ? 'opacity-0' : 'opacity-100',
+              "col-end-1 row-end-1 self-center justify-self-end transition-opacity",
+              open ? "opacity-0" : "opacity-100",
             )}
           />
         </div>
@@ -218,24 +207,24 @@ function ThemeSwitcher({ desktopOpen }: { desktopOpen: boolean }) {
 
   return (
     <>
-      {(!isClient || theme.resolvedTheme === 'light') && (
+      {(!isClient || theme.resolvedTheme === "light") && (
         <SidebarAdaptiveButton
           className="dark:hidden"
           open={desktopOpen}
-          label={'Dark mode'}
+          label={"Dark mode"}
           icon={<MoonIcon />}
-          onClick={() => theme.setTheme('dark')}
-          size={desktopOpen ? undefined : 'icon'}
+          onClick={() => theme.setTheme("dark")}
+          size={desktopOpen ? undefined : "icon"}
         />
       )}
-      {(!isClient || theme.resolvedTheme === 'dark') && (
+      {(!isClient || theme.resolvedTheme === "dark") && (
         <SidebarAdaptiveButton
           className="hidden dark:inline-flex"
           open={desktopOpen}
-          label={'Light mode'}
+          label={"Light mode"}
           icon={<SunIcon />}
-          onClick={() => theme.setTheme('light')}
-          size={desktopOpen ? undefined : 'icon'}
+          onClick={() => theme.setTheme("light")}
+          size={desktopOpen ? undefined : "icon"}
         />
       )}
     </>
@@ -248,9 +237,7 @@ function ProfileAvatar({ imgSrc, label }: { imgSrc?: string; label: string }) {
       {imgSrc ? (
         <AvatarImage src={imgSrc} alt={label} />
       ) : (
-        <AvatarFallback className="rounded-lg uppercase">
-          {label.slice(0, 2)}
-        </AvatarFallback>
+        <AvatarFallback className="rounded-lg uppercase">{label.slice(0, 2)}</AvatarFallback>
       )}
     </Avatar>
   );
@@ -263,7 +250,7 @@ function ProfileButton({
   imgSrc,
   className,
   ...props
-}: Omit<React.ComponentProps<typeof SidebarButton>, 'children' | 'size'> & {
+}: Omit<React.ComponentProps<typeof SidebarButton>, "children" | "size"> & {
   open?: boolean;
   label: string;
   endIcon?: React.ReactNode;
@@ -271,12 +258,8 @@ function ProfileButton({
 }) {
   return (
     <SidebarButton
-      className={cn(
-        'h-12 items-center font-normal',
-        open && 'justify-start p-2',
-        className,
-      )}
-      size={open ? 'lg' : 'icon'}
+      className={cn("h-12 items-center font-normal", open && "justify-start p-2", className)}
+      size={open ? "lg" : "icon"}
       {...props}
     >
       <ProfileAvatar imgSrc={imgSrc} label={label} />
@@ -299,20 +282,18 @@ function ProfileButtonWithPopover({
   onLinkClick?: () => void;
 }) {
   const signout = useSignout();
-  const mobile = useNotMatchesBreakpoint('md');
+  const mobile = useNotMatchesBreakpoint("md");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const auth = useLoggedInAuth();
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger asChild>
-        <ProfileButton
-          label={auth.user.name}
-          endIcon={<EllipsisVerticalIcon />}
-          open={open}
-        />
-      </PopoverTrigger>
-      <PopoverContent side={mobile ? 'top' : 'right'} className="p-1">
+      <PopoverTrigger
+        render={
+          <ProfileButton label={auth.user.name} endIcon={<EllipsisVerticalIcon />} open={open} />
+        }
+      />
+      <PopoverContent side={mobile ? "top" : "right"} className="p-1">
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">
           <ProfileAvatar label={auth.user.name} />
           <span className="truncate font-medium">{auth.user.name}</span>
@@ -325,18 +306,18 @@ function ProfileButtonWithPopover({
               variant="ghost"
               size="sm"
               className="w-full justify-start"
-              asChild
+              render={
+                <Link
+                  to={item.to}
+                  onClick={() => {
+                    setPopoverOpen(false);
+                    onLinkClick?.();
+                  }}
+                />
+              }
             >
-              <Link
-                to={item.to}
-                onClick={() => {
-                  setPopoverOpen(false);
-                  onLinkClick?.();
-                }}
-              >
-                <item.icon />
-                <span>{item.label}</span>
-              </Link>
+              <item.icon />
+              <span>{item.label}</span>
             </Button>
           ))}
         </div>
@@ -360,7 +341,7 @@ export function Sidebar({
   open = true,
   onOpenChange,
   ...props
-}: React.ComponentProps<'div'> & {
+}: React.ComponentProps<"div"> & {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -369,8 +350,8 @@ export function Sidebar({
   return (
     <div
       className={cn(
-        'hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex',
-        open ? 'w-64 min-w-64' : 'w-17 min-w-17',
+        "hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex",
+        open ? "w-64 min-w-64" : "w-17 min-w-17",
         className,
       )}
       {...props}
@@ -395,57 +376,41 @@ export function Sidebar({
   );
 }
 
-export function MobileNav({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) {
+export function MobileNav({ className, ...props }: React.ComponentProps<"div">) {
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
   const allLinks = [...mainLinks, ...bottomLinks, ...profileMenuLinks];
-  const fullPath =
-    routerState.matches[routerState.matches.length - 1]?.fullPath;
+  const fullPath = routerState.matches[routerState.matches.length - 1]?.fullPath;
   const exactMatch = allLinks.find((link) => {
     if (!fullPath) return false;
-    const trimmedPath = fullPath.replace(/\/+$/, '');
+    const trimmedPath = fullPath.replace(/\/+$/, "");
     return link.to === trimmedPath;
   });
 
   return (
-    <div
-      className={cn(
-        'flex w-full items-center px-4 py-2.5 md:hidden',
-        className,
-      )}
-      {...props}
-    >
+    <div className={cn("flex w-full items-center px-4 py-2.5 md:hidden", className)} {...props}>
       {exactMatch ? (
-        <Button variant="ghost" asChild>
-          <Link to={exactMatch.to}>{exactMatch.label}</Link>
+        <Button variant="ghost" render={<Link to={exactMatch.to} />}>
+          {exactMatch.label}
         </Button>
       ) : (
-        <Button variant="ghost" asChild>
-          <Link to={'..'}>
-            <ChevronLeftIcon />
-            <span>Back</span>
-          </Link>
+        <Button variant="ghost" render={<Link to={".."} />}>
+          <ChevronLeftIcon />
+          <span>Back</span>
         </Button>
       )}
       <div className="grow" />
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button size="icon" variant="ghost">
-            <MenuIcon />
-          </Button>
+        <SheetTrigger render={<Button size="icon" variant="ghost" />}>
+          <MenuIcon />
         </SheetTrigger>
         <SheetContent side="right" className="w-64.25 px-2">
           <SheetHeader>
             <SheetTitle>
               <Logo withName onClick={closeNav} />
             </SheetTitle>
-            <VisuallyHidden>
-              <SheetDescription>Navigation menu</SheetDescription>
-            </VisuallyHidden>
+            <SheetDescription className="sr-only">Navigation menu</SheetDescription>
           </SheetHeader>
           <SidebarGroup>
             {mainLinks.map((link) => (

@@ -1,9 +1,9 @@
-import type React from 'react';
+import type React from "react";
 
-import { useDesktop, useMobile } from '~/hooks/use-breakpoint';
-import { cn } from '~/lib/utils';
-import { MobileNav, Sidebar } from './sidebar';
-import { Separator } from './ui/separator';
+import { useDesktop, useMobile } from "~/hooks/use-breakpoint";
+import { cn } from "~/lib/utils";
+import { MobileNav, Sidebar } from "./sidebar";
+import { Separator } from "./ui/separator";
 
 export function AppNav({
   className,
@@ -11,23 +11,17 @@ export function AppNav({
   desktopSidebarOpen,
   onDesktopSidebarOpenChange,
   ...props
-}: React.ComponentProps<'div'> & {
+}: React.ComponentProps<"div"> & {
   desktopSidebarOpen: boolean;
   onDesktopSidebarOpenChange: (open: boolean) => void;
 }) {
   const mobile = useMobile();
   const desktop = useDesktop();
   return (
-    <div
-      className={cn('flex h-[100svh] flex-col md:flex-row', className)}
-      {...props}
-    >
+    <div className={cn("flex h-[100svh] flex-col md:flex-row", className)} {...props}>
       {desktop && (
         <>
-          <Sidebar
-            open={desktopSidebarOpen}
-            onOpenChange={onDesktopSidebarOpenChange}
-          />
+          <Sidebar open={desktopSidebarOpen} onOpenChange={onDesktopSidebarOpenChange} />
           <Separator orientation="vertical" className="hidden md:block" />
         </>
       )}

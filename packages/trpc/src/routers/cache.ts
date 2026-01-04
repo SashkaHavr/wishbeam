@@ -1,15 +1,15 @@
-import { TRPCError } from '@trpc/server';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import z from "zod";
 
-import { subscribe } from '@wishbeam/pubsub';
+import { subscribe } from "@wishbeam/pubsub";
 
-import { protectedProcedure, publicProcedure, router } from '#init.ts';
+import { protectedProcedure, publicProcedure, router } from "#init.ts";
 import {
   cacheInvalidationSchema,
   getCacheInvalidationChannel,
   getPublicCacheInvalidationChannel,
-} from '#utils/cache-invalidation.ts';
-import { base62ToUuidv7 } from '#utils/zod-utils.ts';
+} from "#utils/cache-invalidation.ts";
+import { base62ToUuidv7 } from "#utils/zod-utils.ts";
 
 export const cacheRouter = router({
   invalidations: protectedProcedure.subscription(async function* ({
@@ -18,8 +18,8 @@ export const cacheRouter = router({
   }) {
     if (!abortSignal) {
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Abort signal is required',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Abort signal is required",
       });
     }
     for await (const message of subscribe({
@@ -35,8 +35,8 @@ export const cacheRouter = router({
     .subscription(async function* ({ input, signal: abortSignal }) {
       if (!abortSignal) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Abort signal is required',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Abort signal is required",
         });
       }
       for await (const message of subscribe({

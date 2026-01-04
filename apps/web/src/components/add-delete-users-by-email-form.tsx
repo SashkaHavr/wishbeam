@@ -1,25 +1,19 @@
-import { revalidateLogic } from '@tanstack/react-form';
-import { TRPCClientError } from '@trpc/client';
-import { XIcon } from 'lucide-react';
-import z from 'zod';
+import { revalidateLogic } from "@tanstack/react-form";
+import { TRPCClientError } from "@trpc/client";
+import { XIcon } from "lucide-react";
+import z from "zod";
 
-import { useLoggedInAuth } from '~/hooks/route-context';
-import { cn } from '~/lib/utils';
-import { Form } from './form/form';
-import { FormField } from './form/form-field';
-import { FormFieldError } from './form/form-field-error';
-import { FormInputGroupInput } from './form/form-input-group-input';
-import { FormInputGroupSubmitButton } from './form/form-input-group-submit-button';
-import { useAppForm } from './form/use-app-form';
-import { Button } from './ui/button';
-import { InputGroup, InputGroupAddon } from './ui/input-group';
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemGroup,
-  ItemTitle,
-} from './ui/item';
+import { useLoggedInAuth } from "~/hooks/route-context";
+import { cn } from "~/lib/utils";
+import { Form } from "./form/form";
+import { FormField } from "./form/form-field";
+import { FormFieldError } from "./form/form-field-error";
+import { FormInputGroupInput } from "./form/form-input-group-input";
+import { FormInputGroupSubmitButton } from "./form/form-input-group-submit-button";
+import { useAppForm } from "./form/use-app-form";
+import { Button } from "./ui/button";
+import { InputGroup, InputGroupAddon } from "./ui/input-group";
+import { Item, ItemActions, ItemContent, ItemGroup, ItemTitle } from "./ui/item";
 
 interface Props {
   className?: string;
@@ -28,21 +22,16 @@ interface Props {
   deleteUser: (input: { userId: string }) => void;
 }
 
-export function AddDeleteUsersByEmailForm({
-  className,
-  users,
-  addUser,
-  deleteUser,
-}: Props) {
+export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUser }: Props) {
   const { user: currentUser } = useLoggedInAuth();
 
   const form = useAppForm({
-    defaultValues: { email: '' },
+    defaultValues: { email: "" },
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: z.object({
         email: z.email().refine((email) => email !== currentUser.email, {
-          error: 'You cannot add yourself',
+          error: "You cannot add yourself",
         }),
       }),
     },
@@ -61,13 +50,7 @@ export function AddDeleteUsersByEmailForm({
   });
 
   return (
-    <div
-      className={cn(
-        'flex flex-col gap-2 p-1',
-        users.length === 0 && 'mt-1',
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col gap-2 p-1", users.length === 0 && "mt-1", className)}>
       {users.length > 0 && (
         <ItemGroup>
           {users.map((user) => (
@@ -100,9 +83,7 @@ export function AddDeleteUsersByEmailForm({
                 <InputGroup>
                   <FormInputGroupInput placeholder="user@example.com" />
                   <InputGroupAddon align="inline-end">
-                    <FormInputGroupSubmitButton variant="default">
-                      Add
-                    </FormInputGroupSubmitButton>
+                    <FormInputGroupSubmitButton variant="default">Add</FormInputGroupSubmitButton>
                   </InputGroupAddon>
                 </InputGroup>
                 <FormFieldError />

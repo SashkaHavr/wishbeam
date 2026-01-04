@@ -1,11 +1,11 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/(public)')({
+export const Route = createFileRoute("/(public)")({
   beforeLoad: ({ context, matches }) => {
-    if (matches.some((m) => m.routeId === '/(public)/shared/$id')) return;
+    if (matches.some((m) => m.routeId === "/(public)/shared/$id")) return;
 
     if (context.auth.user) {
-      throw redirect({ to: '/app' });
+      throw redirect({ to: "/app" });
     }
   },
   component: RouteComponent,

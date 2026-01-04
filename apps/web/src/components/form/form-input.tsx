@@ -1,10 +1,10 @@
-import { Input } from '../ui/input';
-import { getFieldId, useFieldContext } from './form-context';
+import { Input } from "../ui/input";
+import { getFieldId, useFieldContext } from "./form-context";
 
 export function FormInput(
   props: Omit<
     React.ComponentProps<typeof Input>,
-    'id' | 'name' | 'value' | 'onBlur' | 'onChange' | 'aria-invalid'
+    "id" | "name" | "value" | "onBlur" | "onChange" | "aria-invalid"
   >,
 ) {
   const field = useFieldContext<string>();

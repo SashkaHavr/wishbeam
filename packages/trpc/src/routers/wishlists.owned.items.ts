@@ -1,14 +1,14 @@
-import { TRPCError } from '@trpc/server';
-import { eq } from 'drizzle-orm';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { wishlistItem as wishlistItemTable } from '@wishbeam/db/schema';
-import { wishlistItemSchema } from '@wishbeam/utils/schemas';
+import { db } from "@wishbeam/db";
+import { wishlistItem as wishlistItemTable } from "@wishbeam/db/schema";
+import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 
-import { ownedWishlistProcedure, protectedProcedure, router } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { base62ToUuidv7, uuidv7ToBase62 } from '#utils/zod-utils.ts';
+import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
 
 const wishlistItemOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -16,7 +16,7 @@ const wishlistItemOutputSchema = z.object({
   description: z.string(),
   links: z.array(z.string()),
   estimatedPrice: z.string().nullable(),
-  status: z.enum(['active', 'archived']),
+  status: z.enum(["active", "archived"]),
 });
 
 const ownedWishlistItemProcedure = protectedProcedure
@@ -31,8 +31,8 @@ const ownedWishlistItemProcedure = protectedProcedure
     });
     if (!wishlistItem) {
       throw new TRPCError({
-        message: 'Wishlist item not found',
-        code: 'NOT_FOUND',
+        message: "Wishlist item not found",
+        code: "NOT_FOUND",
       });
     }
     const { wishlist, ...restItem } = wishlistItem;
@@ -51,7 +51,7 @@ export const ownedWishlistItemsRouter = router({
     .query(async ({ ctx }) => {
       const wishlistItems = await db.query.wishlistItem.findMany({
         where: { wishlistId: ctx.wishlist.id },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
       });
       return { wishlistItems };
     }),
@@ -67,12 +67,12 @@ export const ownedWishlistItemsRouter = router({
       )[0];
       if (!wishlistItem) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Could not create wishlist item',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Could not create wishlist item",
         });
       }
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
       return { wishlistItem };
@@ -87,28 +87,24 @@ export const ownedWishlistItemsRouter = router({
         .set({ ...input.data, updatedAt: new Date() })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),
-  delete: ownedWishlistItemProcedure
-    .output(z.undefined())
-    .mutation(async ({ ctx }) => {
-      await db
-        .delete(wishlistItemTable)
-        .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
-      void invalidateCache(ctx.userId, {
-        type: 'wishlists',
-        wishlistId: ctx.wishlist.id,
-      });
-    }),
+  delete: ownedWishlistItemProcedure.output(z.undefined()).mutation(async ({ ctx }) => {
+    await db.delete(wishlistItemTable).where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+    void invalidateCache(ctx.userId, {
+      type: "wishlists",
+      wishlistId: ctx.wishlist.id,
+    });
+  }),
   setStatus: ownedWishlistItemProcedure
-    .input(z.object({ status: z.enum(['active', 'archived']) }))
+    .input(z.object({ status: z.enum(["active", "archived"]) }))
     .output(z.undefined())
     .mutation(async ({ input, ctx }) => {
       if (ctx.wishlistItem.status === input.status) {
         throw new TRPCError({
-          code: 'CONFLICT',
+          code: "CONFLICT",
           message: `Wishlist item is already ${input.status}`,
         });
       }
@@ -123,7 +119,7 @@ export const ownedWishlistItemsRouter = router({
         })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
       void invalidateCache(ctx.userId, {
-        type: 'wishlists',
+        type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),

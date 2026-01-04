@@ -1,10 +1,10 @@
-import { InputGroupInput } from '../ui/input-group';
-import { getFieldId, useFieldContext } from './form-context';
+import { InputGroupInput } from "../ui/input-group";
+import { getFieldId, useFieldContext } from "./form-context";
 
 export function FormInputGroupInput(
   props: Omit<
     React.ComponentProps<typeof InputGroupInput>,
-    'id' | 'name' | 'value' | 'onBlur' | 'onChange' | 'aria-invalid'
+    "id" | "name" | "value" | "onBlur" | "onChange" | "aria-invalid"
   >,
 ) {
   const field = useFieldContext<string>();

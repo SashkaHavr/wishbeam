@@ -1,4 +1,4 @@
-import { TrashIcon } from 'lucide-react';
+import { TrashIcon } from "lucide-react";
 
 import {
   AlertDialog,
@@ -10,8 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../ui/alert-dialog';
-import { Button } from '../ui/button';
+} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
 
 export function DeleteAlertDialog({
   description,
@@ -20,24 +20,15 @@ export function DeleteAlertDialog({
 }: React.ComponentProps<typeof Button> & { description?: string }) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          children={
-            <>
-              <TrashIcon />
-              <span>Delete</span>
-            </>
-          }
-          {...props}
-        />
+      <AlertDialogTrigger render={<Button variant="outline" {...props} />}>
+        <TrashIcon />
+        <span>Delete</span>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            {description ??
-              'This action cannot be undone. This will permanently delete this item.'}
+            {description ?? "This action cannot be undone. This will permanently delete this item."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

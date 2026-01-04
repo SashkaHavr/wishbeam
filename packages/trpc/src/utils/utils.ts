@@ -6,10 +6,10 @@ export function getWishlistItemLockStatus({
   currentUserId?: string;
 }) {
   if (lockUserId === null) {
-    return 'unlocked';
+    return "unlocked";
   }
   if (lockUserId === currentUserId) {
-    return 'lockedByCurrentUser';
+    return "lockedByCurrentUser";
   }
-  return 'lockedByAnotherUser';
+  return "lockedByAnotherUser";
 }

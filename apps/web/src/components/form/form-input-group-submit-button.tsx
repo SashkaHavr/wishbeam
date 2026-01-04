@@ -1,17 +1,15 @@
-import { InputGroupButton } from '../ui/input-group';
-import { Spinner } from '../ui/spinner';
-import { useFormContext } from './form-context';
+import { InputGroupButton } from "../ui/input-group";
+import { Spinner } from "../ui/spinner";
+import { useFormContext } from "./form-context";
 
 export function FormInputGroupSubmitButton({
   children,
   ...props
-}: Omit<React.ComponentProps<typeof InputGroupButton>, 'type' | 'disabled'>) {
+}: Omit<React.ComponentProps<typeof InputGroupButton>, "type" | "disabled">) {
   const form = useFormContext();
   return (
     <form.Subscribe
-      selector={(state) =>
-        [state.canSubmit, state.isSubmitting, state.isDefaultValue] as const
-      }
+      selector={(state) => [state.canSubmit, state.isSubmitting, state.isDefaultValue] as const}
     >
       {([canSubmit, isSubmitting]) => {
         return (

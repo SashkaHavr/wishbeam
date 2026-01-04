@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useTRPC } from '~/lib/trpc';
+import { useTRPC } from "~/lib/trpc";
 
 export function useLockWishlistItemMutation(wishlistId: string) {
   const trpc = useTRPC();
@@ -30,7 +30,7 @@ export function useLockWishlistItemMutation(wishlistId: string) {
                   wishlistItem.id === input.wishlistItemId
                     ? {
                         ...wishlistItem,
-                        lockStatus: 'lockedByCurrentUser' as const,
+                        lockStatus: "lockedByCurrentUser" as const,
                       }
                     : wishlistItem,
                 ),
@@ -89,7 +89,7 @@ export function useUnlockWishlistItemMutation(wishlistId: string) {
                   wishlistItem.id === input.wishlistItemId
                     ? {
                         ...wishlistItem,
-                        lockStatus: 'unlocked' as const,
+                        lockStatus: "unlocked" as const,
                       }
                     : wishlistItem,
                 ),

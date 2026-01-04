@@ -1,14 +1,14 @@
-import { TRPCError } from '@trpc/server';
-import { eq } from 'drizzle-orm';
-import z from 'zod';
+import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { wishlistItem as wishlistItemTable } from '@wishbeam/db/schema';
+import { db } from "@wishbeam/db";
+import { wishlistItem as wishlistItemTable } from "@wishbeam/db/schema";
 
-import { protectedProcedure, router, sharedWishlistProcedure } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { getWishlistItemLockStatus } from '#utils/utils.ts';
-import { base62ToUuidv7, uuidv7ToBase62 } from '#utils/zod-utils.ts';
+import { protectedProcedure, router, sharedWishlistProcedure } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { getWishlistItemLockStatus } from "#utils/utils.ts";
+import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
 
 const wishlistItemOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -16,11 +16,7 @@ const wishlistItemOutputSchema = z.object({
   description: z.string(),
   links: z.array(z.string()),
   estimatedPrice: z.string().nullable(),
-  lockStatus: z.enum([
-    'lockedByCurrentUser',
-    'lockedByAnotherUser',
-    'unlocked',
-  ]),
+  lockStatus: z.enum(["lockedByCurrentUser", "lockedByAnotherUser", "unlocked"]),
 });
 
 const sharedWishlistItemProcedure = protectedProcedure
@@ -29,12 +25,12 @@ const sharedWishlistItemProcedure = protectedProcedure
     const wishlistItem = await db.query.wishlistItem.findFirst({
       where: {
         id: input.wishlistItemId,
-        status: 'active',
+        status: "active",
         wishlist: {
           OR: [
-            { shareStatus: 'public' },
+            { shareStatus: "public" },
             {
-              shareStatus: 'shared',
+              shareStatus: "shared",
               wishlistSharedWith: { userId: ctx.userId },
             },
           ],
@@ -44,8 +40,8 @@ const sharedWishlistItemProcedure = protectedProcedure
     });
     if (!wishlistItem) {
       throw new TRPCError({
-        message: 'Wishlist item not found',
-        code: 'NOT_FOUND',
+        message: "Wishlist item not found",
+        code: "NOT_FOUND",
       });
     }
     const { wishlist, ...restItem } = wishlistItem;
@@ -63,8 +59,8 @@ export const sharedWishlistItemsRouter = router({
     .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
     .query(async ({ ctx }) => {
       const wishlistItems = await db.query.wishlistItem.findMany({
-        where: { wishlistId: ctx.wishlist.id, status: 'active' },
-        orderBy: { createdAt: 'asc' },
+        where: { wishlistId: ctx.wishlist.id, status: "active" },
+        orderBy: { createdAt: "asc" },
       });
       return {
         wishlistItems: wishlistItems.map((item) => ({
@@ -83,18 +79,18 @@ export const sharedWishlistItemsRouter = router({
           .select()
           .from(wishlistItemTable)
           .where(eq(wishlistItemTable.id, ctx.wishlistItem.id))
-          .for('update')
+          .for("update")
       )[0];
       if (!item) {
         throw new TRPCError({
-          message: 'Wishlist item not found',
-          code: 'NOT_FOUND',
+          message: "Wishlist item not found",
+          code: "NOT_FOUND",
         });
       }
       if (item.lockedUserId) {
         throw new TRPCError({
-          message: 'Wishlist item is already locked',
-          code: 'CONFLICT',
+          message: "Wishlist item is already locked",
+          code: "CONFLICT",
         });
       }
       await tx
@@ -103,7 +99,7 @@ export const sharedWishlistItemsRouter = router({
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
     void invalidateCache(ctx.userId, {
-      type: 'wishlists',
+      type: "wishlists",
       wishlistId: ctx.wishlist.id,
     });
   }),
@@ -114,18 +110,18 @@ export const sharedWishlistItemsRouter = router({
           .select()
           .from(wishlistItemTable)
           .where(eq(wishlistItemTable.id, ctx.wishlistItem.id))
-          .for('update')
+          .for("update")
       )[0];
       if (!item) {
         throw new TRPCError({
-          message: 'Wishlist item not found',
-          code: 'NOT_FOUND',
+          message: "Wishlist item not found",
+          code: "NOT_FOUND",
         });
       }
       if (!item.lockedUserId) {
         throw new TRPCError({
-          message: 'Wishlist item is not locked',
-          code: 'CONFLICT',
+          message: "Wishlist item is not locked",
+          code: "CONFLICT",
         });
       }
       await tx
@@ -134,7 +130,7 @@ export const sharedWishlistItemsRouter = router({
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
     });
     void invalidateCache(ctx.userId, {
-      type: 'wishlists',
+      type: "wishlists",
       wishlistId: ctx.wishlist.id,
     });
   }),

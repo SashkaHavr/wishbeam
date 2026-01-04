@@ -1,36 +1,25 @@
-import { sql } from 'drizzle-orm';
-import { index, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from "drizzle-orm";
+import { index, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-import { baseTable } from '#utils/base-table.ts';
-import {
-  oneToMany,
-  oneToManyCascadeOnDelete,
-  oneToManyNullable,
-} from '#utils/foreign-keys.ts';
-import { user } from './auth';
+import { baseTable } from "#utils/base-table.ts";
+import { oneToMany, oneToManyCascadeOnDelete, oneToManyNullable } from "#utils/foreign-keys.ts";
+import { user } from "./auth";
 
-export const wishlistShareStatus = pgEnum('wishlist_share_status', [
-  'private',
-  'shared',
-  'public',
-]);
+export const wishlistShareStatus = pgEnum("wishlist_share_status", ["private", "shared", "public"]);
 
-export const wishlistStatus = pgEnum('wishlist_status', ['active', 'archived']);
+export const wishlistStatus = pgEnum("wishlist_status", ["active", "archived"]);
 
-export const wishlist = pgTable('wishlist', {
+export const wishlist = pgTable("wishlist", {
   ...baseTable,
   title: text().notNull(),
   description: text().notNull(),
-  shareStatus: wishlistShareStatus().notNull().default('private'),
+  shareStatus: wishlistShareStatus().notNull().default("private"),
 });
 
-export const wishlistOwnerRole = pgEnum('wishlist_owner_role', [
-  'owner',
-  'creator',
-]);
+export const wishlistOwnerRole = pgEnum("wishlist_owner_role", ["owner", "creator"]);
 
 export const wishlistOwner = pgTable(
-  'wishlist_owner',
+  "wishlist_owner",
   {
     ...baseTable,
     wishlistId: oneToMany(() => wishlist.id),
@@ -41,7 +30,7 @@ export const wishlistOwner = pgTable(
 );
 
 export const wishlistItem = pgTable(
-  'wishlist_item',
+  "wishlist_item",
   {
     ...baseTable,
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
@@ -51,7 +40,7 @@ export const wishlistItem = pgTable(
       .array()
       .notNull()
       .default(sql`'{}'::text[]`),
-    status: wishlistStatus().notNull().default('active'),
+    status: wishlistStatus().notNull().default("active"),
     estimatedPrice: text(),
     lockedUserId: oneToManyNullable(() => user.id),
     lockChangedAt: timestamp().notNull().defaultNow(),
@@ -60,7 +49,7 @@ export const wishlistItem = pgTable(
 );
 
 export const wishlistUsersSharedWith = pgTable(
-  'wishlist_users_shared_with',
+  "wishlist_users_shared_with",
   {
     ...baseTable,
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
@@ -70,7 +59,7 @@ export const wishlistUsersSharedWith = pgTable(
 );
 
 export const wishlistPublicUsersSavedShare = pgTable(
-  'wishlist_public_users_saved_share',
+  "wishlist_public_users_saved_share",
   {
     ...baseTable,
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),

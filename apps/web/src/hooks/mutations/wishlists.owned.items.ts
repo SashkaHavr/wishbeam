@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useTRPC } from '~/lib/trpc';
+import { useTRPC } from "~/lib/trpc";
 
 export function useCreateWishlistItemMutation() {
   const trpc = useTRPC();
@@ -26,11 +26,7 @@ export function useCreateWishlistItemMutation() {
   );
 }
 
-export function useUpdateWishlistItemMutation({
-  wishlistId,
-}: {
-  wishlistId: string;
-}) {
+export function useUpdateWishlistItemMutation({ wishlistId }: { wishlistId: string }) {
   const trpc = useTRPC();
   return useMutation(
     trpc.wishlists.owned.items.update.mutationOptions({
@@ -86,11 +82,7 @@ export function useUpdateWishlistItemMutation({
   );
 }
 
-export function useDeleteWishlistItemMutation({
-  wishlistId,
-}: {
-  wishlistId: string;
-}) {
+export function useDeleteWishlistItemMutation({ wishlistId }: { wishlistId: string }) {
   const trpc = useTRPC();
 
   return useMutation(
@@ -142,11 +134,7 @@ export function useDeleteWishlistItemMutation({
   );
 }
 
-export function useSetStatusWishlistItemMutation({
-  wishlistId,
-}: {
-  wishlistId: string;
-}) {
+export function useSetStatusWishlistItemMutation({ wishlistId }: { wishlistId: string }) {
   const trpc = useTRPC();
   return useMutation(
     trpc.wishlists.owned.items.setStatus.mutationOptions({

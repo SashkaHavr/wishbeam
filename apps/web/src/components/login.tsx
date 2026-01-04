@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { UserIcon } from 'lucide-react';
+// oxlint-disable anchor-is-valid
+import { useState } from "react";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { UserIcon } from "lucide-react";
 
-import { authClient, useResetAuth } from '~/lib/auth';
-import { useTRPC } from '~/lib/trpc';
-import { cn } from '~/lib/utils';
+import { authClient, useResetAuth } from "~/lib/auth";
+import { useTRPC } from "~/lib/trpc";
+import { cn } from "~/lib/utils";
 import {
   AppDialog,
   AppDialogBody,
@@ -14,26 +15,22 @@ import {
   AppDialogFooter,
   AppDialogHeader,
   AppDialogTitle,
-} from './app-dialog';
-import { Google } from './icons/brands';
-import { Button } from './ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from './ui/card';
-import { Field, FieldDescription, FieldGroup } from './ui/field';
-import { Select, SelectContent, SelectItem, SelectTrigger } from './ui/select';
-import { Spinner } from './ui/spinner';
+} from "./app-dialog";
+import { Google } from "./icons/brands";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Field, FieldDescription, FieldGroup } from "./ui/field";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
+import { Spinner } from "./ui/spinner";
 
 export function LoginButtons() {
   const trpc = useTRPC();
-  const authConfig = useSuspenseQuery(trpc.config.authConfig.queryOptions());
+  const authConfig = useSuspenseQuery(
+    trpc.config.general.queryOptions(undefined, { select: (data) => data.auth }),
+  );
   const resetAuth = useResetAuth();
 
-  const [selectedTestUser, setSelectedTestUser] = useState<string>('0');
+  const [selectedTestUser, setSelectedTestUser] = useState<string>("0");
   const loginAsTestUser = useMutation({
     mutationFn: async ({ user }: { user: number }) => {
       if (!authConfig.data.testAuth) return;
@@ -48,7 +45,7 @@ export function LoginButtons() {
   const loginGoogle = useMutation({
     mutationFn: () =>
       authClient.signIn.social({
-        provider: 'google',
+        provider: "google",
         callbackURL: window.location.href,
       }),
   });
@@ -74,7 +71,7 @@ export function LoginButtons() {
             </Button>
             <Select
               value={selectedTestUser}
-              onValueChange={setSelectedTestUser}
+              onValueChange={(value) => setSelectedTestUser(value as string)}
             >
               <SelectTrigger>
                 <span>{`Test User ${selectedTestUser}`}</span>
@@ -90,13 +87,9 @@ export function LoginButtons() {
           </Field>
         </>
       )}
-      {authConfig.data.google && (
+      {authConfig.data.googleOAuth && (
         <Field>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() => loginGoogle.mutate()}
-          >
+          <Button variant="outline" type="button" onClick={() => loginGoogle.mutate()}>
             <Google />
             Login with Google
           </Button>
@@ -106,12 +99,9 @@ export function LoginButtons() {
   );
 }
 
-export function LoginCard({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) {
+export function LoginCard({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome</CardTitle>
@@ -122,8 +112,8 @@ export function LoginCard({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
-        and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
   );
@@ -132,7 +122,7 @@ export function LoginCard({
 export function LoginDialog({
   children,
   ...props
-}: React.ComponentProps<typeof AppDialog>) {
+}: React.ComponentProps<typeof AppDialog> & { children?: React.ReactNode }) {
   return (
     <AppDialog {...props}>
       {children}

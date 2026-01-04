@@ -3,7 +3,13 @@
 import type { ReactNode } from "react";
 
 import { setupZodLocale } from "@wishbeam/intl";
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  Scripts,
+  useMatches,
+} from "@tanstack/react-router";
 
 import type { TRPCRouteContext } from "~/lib/trpc";
 
@@ -69,16 +75,19 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   const { locale, theme } = Route.useRouteContext({
     select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
   });
-    const matches = useMatches();
+  const matches = useMatches();
   const lastRoute = matches[matches.length - 1]?.routeId;
   const overscrollClass =
     lastRoute !== undefined &&
-    (lastRoute.startsWith('/app') ||
-      lastRoute.startsWith('/(public)/shared')) &&
-    'overscroll-y-none';
+    (lastRoute.startsWith("/app") || lastRoute.startsWith("/(public)/shared")) &&
+    "overscroll-y-none";
 
   return (
-    <html suppressHydrationWarning lang={locale} className={cn(theme !== 'system' && theme, overscrollClass)}>
+    <html
+      suppressHydrationWarning
+      lang={locale}
+      className={cn(theme !== "system" && theme, overscrollClass)}
+    >
       <head>
         <HeadContent />
         <ThemeScript />

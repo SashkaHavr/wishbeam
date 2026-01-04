@@ -1,37 +1,27 @@
-import { XIcon } from 'lucide-react';
+import { XIcon } from "lucide-react";
 
-import { cn } from '~/lib/utils';
-import { Button } from '../ui/button';
-import {
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLegend,
-  FieldSet,
-} from '../ui/field';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-} from '../ui/input-group';
-import { FormField } from './form-field';
-import { FormFieldError } from './form-field-error';
-import { FormFieldLabel } from './form-field-label';
-import { FormInput } from './form-input';
-import { FormInputGroupInput } from './form-input-group-input';
-import { withForm } from './use-app-form';
+import { cn } from "~/lib/utils";
+import { Button } from "../ui/button";
+import { FieldContent, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "../ui/field";
+import { InputGroup, InputGroupAddon, InputGroupButton } from "../ui/input-group";
+import { FormField } from "./form-field";
+import { FormFieldError } from "./form-field-error";
+import { FormFieldLabel } from "./form-field-label";
+import { FormInput } from "./form-input";
+import { FormInputGroupInput } from "./form-input-group-input";
+import { withForm } from "./use-app-form";
 
 export const WishlistItemFields = withForm({
   defaultValues: {
-    title: '',
-    description: '',
-    estimatedPrice: '',
+    title: "",
+    description: "",
+    estimatedPrice: "",
     links: [] as string[],
   },
-  props: { className: '' } as { className?: string },
+  props: { className: "" } as { className?: string },
   render: function Render({ form, className }) {
     return (
-      <div className={cn('flex flex-col gap-4', className)}>
+      <div className={cn("flex flex-col gap-4", className)}>
         <form.AppField name="title">
           {() => (
             <FormField>
@@ -63,9 +53,7 @@ export const WishlistItemFields = withForm({
           {(field) => (
             <FieldSet className="gap-4">
               <FieldLegend variant="label">Links</FieldLegend>
-              <FieldDescription>
-                Add links related to this item.
-              </FieldDescription>
+              <FieldDescription>Add links related to this item.</FieldDescription>
               <FieldGroup className="gap-4">
                 {field.state.value.map((_, index) => (
                   <form.AppField key={index} name={`links[${index}]`}>
@@ -80,7 +68,6 @@ export const WishlistItemFields = withForm({
                                 variant="ghost"
                                 size="icon-xs"
                                 onClick={() => field.removeValue(index)}
-                                aria-label={`Remove link ${index + 1}`}
                               >
                                 <XIcon />
                               </InputGroupButton>
@@ -98,7 +85,7 @@ export const WishlistItemFields = withForm({
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      field.pushValue('');
+                      field.pushValue("");
                       setTimeout(() => {
                         const newField = document.querySelector(
                           `input[name="links[${field.state.value.length - 1}]"]`,

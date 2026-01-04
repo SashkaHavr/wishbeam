@@ -1,12 +1,12 @@
-import { notFound } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
-import z from 'zod';
+import { notFound } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import type { TRPCInput } from "@wishbeam/trpc";
 
-import { trpcServerFnMiddleware } from '~/lib/trpc-server';
+import { trpcServerFnMiddleware } from "~/lib/trpc-server";
 
 export const wishlistOwnedGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["owned"]["getById"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.owned.getById(data);
@@ -17,7 +17,7 @@ export const wishlistOwnedGetByIdServerFn = createServerFn()
 
 export const wishlistOwnedGetItemsServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["owned"]["items"]["getAll"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.owned.items.getAll(data);
@@ -28,7 +28,7 @@ export const wishlistOwnedGetItemsServerFn = createServerFn()
 
 export const wishlistPublicGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["public"]["getById"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.public.getById(data);
@@ -39,7 +39,7 @@ export const wishlistPublicGetByIdServerFn = createServerFn()
 
 export const wishlistPublicGetItemsServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["public"]["items"]["getAll"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.public.items.getAll(data);
@@ -50,7 +50,7 @@ export const wishlistPublicGetItemsServerFn = createServerFn()
 
 export const wishlistSharedGetByIdServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["shared"]["getById"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.shared.getById(data);
@@ -61,7 +61,7 @@ export const wishlistSharedGetByIdServerFn = createServerFn()
 
 export const wishlistSharedGetItemsServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
-  .validator(z.object({ wishlistId: z.string() }))
+  .inputValidator((data: TRPCInput["wishlists"]["shared"]["items"]["getAll"]) => data)
   .handler(async ({ context, data }) => {
     try {
       return await context.trpc.wishlists.shared.items.getAll(data);

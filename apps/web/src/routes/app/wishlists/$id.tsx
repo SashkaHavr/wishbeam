@@ -1,16 +1,16 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { EditIcon, Share2Icon, UserPlusIcon } from 'lucide-react';
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 
-import type { TRPCOutput } from '@wishbeam/trpc';
-import { ItemActions, ItemFooter } from '~/components/ui/item';
-import { Separator } from '~/components/ui/separator';
+import type { TRPCOutput } from "@wishbeam/trpc";
+import { ItemActions, ItemFooter } from "~/components/ui/item";
+import { Separator } from "~/components/ui/separator";
 
-import { DeleteAlertDialog } from '~/components/alerts/delete-alert-dialog';
-import { AppDialogTrigger } from '~/components/app-dialog';
-import { ShareWishlistDialog } from '~/components/app/share-wishlist-dialog';
-import { UpdateOwnersDialog } from '~/components/app/update-owners-dialog';
-import { UpdateWishlistDialog } from '~/components/app/update-wishlist-dialog';
+import { DeleteAlertDialog } from "~/components/alerts/delete-alert-dialog";
+import { AppDialogTrigger } from "~/components/app-dialog";
+import { ShareWishlistDialog } from "~/components/app/share-wishlist-dialog";
+import { UpdateOwnersDialog } from "~/components/app/update-owners-dialog";
+import { UpdateWishlistDialog } from "~/components/app/update-wishlist-dialog";
 import {
   ArchiveWishlistItemButton,
   CreateWishlistItemButton,
@@ -20,31 +20,29 @@ import {
   WishlistItemExpanded,
   WishlistItemsEmpty,
   WishlistItemsList,
-} from '~/components/app/wishlist-items';
-import { PageLayout } from '~/components/page-layout';
-import { useDeleteWishlistMutation } from '~/hooks/mutations/wishlists.owned';
-import { useTRPC } from '~/lib/trpc';
+} from "~/components/app/wishlist-items";
+import { PageLayout } from "~/components/page-layout";
+import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
+import { useTRPC } from "~/lib/trpc";
 import {
   wishlistOwnedGetByIdServerFn,
   wishlistOwnedGetItemsServerFn,
-} from '~/utils/trpc-server-fns';
+} from "~/utils/trpc-server-fns";
 
-export const Route = createFileRoute('/app/wishlists/$id')({
+export const Route = createFileRoute("/app/wishlists/$id")({
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.owned.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.owned.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () =>
-          wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: () => wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },
@@ -57,10 +55,7 @@ function RouteComponent() {
 
   const wishlistId = Route.useParams({ select: (state) => state.id });
   const { data: wishlist } = useSuspenseQuery(
-    trpc.wishlists.owned.getById.queryOptions(
-      { wishlistId },
-      { select: (data) => data.wishlist },
-    ),
+    trpc.wishlists.owned.getById.queryOptions({ wishlistId }, { select: (data) => data.wishlist }),
   );
   const deleteWishlist = useDeleteWishlistMutation();
 
@@ -71,12 +66,8 @@ function RouteComponent() {
     ),
   );
 
-  const activeWishlistItems = wishlistItems.filter(
-    (item) => item.status === 'active',
-  );
-  const archivedWishlistItems = wishlistItems.filter(
-    (item) => item.status === 'archived',
-  );
+  const activeWishlistItems = wishlistItems.filter((item) => item.status === "active");
+  const archivedWishlistItems = wishlistItems.filter((item) => item.status === "archived");
 
   return (
     <PageLayout>
@@ -111,7 +102,7 @@ function RouteComponent() {
                 <DeleteAlertDialog
                   onClick={() => {
                     deleteWishlist.mutate({ wishlistId });
-                    void navigate({ to: '/app/wishlists' });
+                    void navigate({ to: "/app/wishlists" });
                   }}
                 />
               )}
@@ -119,9 +110,7 @@ function RouteComponent() {
           </>
         }
       >
-        {wishlistItems.length === 0 && (
-          <WishlistItemsEmpty wishlistId={wishlistId} />
-        )}
+        {wishlistItems.length === 0 && <WishlistItemsEmpty wishlistId={wishlistId} />}
         {wishlistItems.length > 0 && (
           <div className="flex flex-col gap-8">
             <WishlistItemsList>
@@ -162,24 +151,15 @@ function WishlistItemComposed({
   wishlistId,
   wishlistItem,
 }: {
-  wishlistItem: TRPCOutput['wishlists']['owned']['items']['getAll']['wishlistItems'][number];
+  wishlistItem: TRPCOutput["wishlists"]["owned"]["items"]["getAll"]["wishlistItems"][number];
   wishlistId: string;
 }) {
   return (
     <WishlistItem wishlistItem={wishlistItem}>
       <ItemFooter className="grid grid-cols-2">
-        <UpdateWishlistItemButton
-          wishlistItem={wishlistItem}
-          wishlistId={wishlistId}
-        />
-        <DeleteWishlistItemButton
-          wishlistItemId={wishlistItem.id}
-          wishlistId={wishlistId}
-        />
-        <ArchiveWishlistItemButton
-          wishlistItem={wishlistItem}
-          wishlistId={wishlistId}
-        />
+        <UpdateWishlistItemButton wishlistItem={wishlistItem} wishlistId={wishlistId} />
+        <DeleteWishlistItemButton wishlistItemId={wishlistItem.id} wishlistId={wishlistId} />
+        <ArchiveWishlistItemButton wishlistItem={wishlistItem} wishlistId={wishlistId} />
       </ItemFooter>
     </WishlistItem>
   );

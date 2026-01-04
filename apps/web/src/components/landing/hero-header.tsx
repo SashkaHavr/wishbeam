@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
-import { Menu, X } from 'lucide-react';
+import React from "react";
+import { Link } from "@tanstack/react-router";
+import { Menu, X } from "lucide-react";
 
-import { Button } from '~/components/ui/button';
+import { Button } from "~/components/ui/button";
 
-import { cn } from '~/lib/utils';
-import { Logo } from '../logo';
+import { cn } from "~/lib/utils";
+import { Logo } from "../logo";
 
 const menuItems = [
-  { name: 'Features', href: '#link' },
-  { name: 'Solution', href: '#link' },
-  { name: 'Pricing', href: '#link' },
-  { name: 'About', href: '#link' },
+  { name: "Features", href: "#link" },
+  { name: "Solution", href: "#link" },
+  { name: "Pricing", href: "#link" },
+  { name: "About", href: "#link" },
 ];
 
 export const HeroHeader = () => {
@@ -22,20 +22,16 @@ export const HeroHeader = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   return (
     <header>
-      <nav
-        data-state={menuState && 'active'}
-        className="fixed z-20 w-full px-2"
-      >
+      <nav data-state={menuState && "active"} className="fixed z-20 w-full px-2">
         <div
           className={cn(
-            'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12',
-            isScrolled &&
-              'max-w-4xl rounded-2xl border bg-background/50 backdrop-blur-lg lg:px-5',
+            "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
+            isScrolled && "max-w-4xl rounded-2xl border bg-background/50 backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
@@ -43,7 +39,7 @@ export const HeroHeader = () => {
               <Logo withName />
               <button
                 onClick={() => setMenuState(!menuState)}
-                aria-label={menuState ? 'Close Menu' : 'Open Menu'}
+                aria-label={menuState ? "Close Menu" : "Open Menu"}
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
               >
                 <Menu className="m-auto size-6 duration-200 in-data-[state=active]:scale-0 in-data-[state=active]:rotate-180 in-data-[state=active]:opacity-0" />
@@ -82,10 +78,8 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button asChild size="sm" className={cn('lg:inline-flex')}>
-                  <Link to="/login">
-                    <span>Get Started</span>
-                  </Link>
+                <Button size="sm" className={cn("lg:inline-flex")} render={<Link to="/login" />}>
+                  <span>Get Started</span>
                 </Button>
               </div>
             </div>

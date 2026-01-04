@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useTRPC } from '~/lib/trpc';
+import { useTRPC } from "~/lib/trpc";
 
 export function useAddWishlistOwnerMutation() {
   const trpc = useTRPC();
@@ -12,9 +12,7 @@ export function useAddWishlistOwnerMutation() {
             wishlistId: input.wishlistId,
           }),
           (old) =>
-            old
-              ? { owners: [...old.owners, response.owner] }
-              : { owners: [response.owner] },
+            old ? { owners: [...old.owners, response.owner] } : { owners: [response.owner] },
         );
         void context.client.invalidateQueries({
           queryKey: trpc.wishlists.owned.owners.getAll.queryKey(),

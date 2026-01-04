@@ -1,12 +1,12 @@
-import z from 'zod';
+import z from "zod";
 
-import { db } from '@wishbeam/db';
-import { wishlistPublicUsersSavedShare as wishlistPublicUsersSavedShareTable } from '@wishbeam/db/schema';
+import { db } from "@wishbeam/db";
+import { wishlistPublicUsersSavedShare as wishlistPublicUsersSavedShareTable } from "@wishbeam/db/schema";
 
-import { protectedProcedure, router, sharedWishlistProcedure } from '#init.ts';
-import { invalidateCache } from '#utils/cache-invalidation.ts';
-import { uuidv7ToBase62 } from '#utils/zod-utils.ts';
-import { sharedWishlistItemsRouter } from './wishlists.shared.items';
+import { protectedProcedure, router, sharedWishlistProcedure } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
+import { sharedWishlistItemsRouter } from "./wishlists.shared.items";
 
 const wishlistOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -26,26 +26,26 @@ export const sharedWishlistsRouter = router({
         where: {
           OR: [
             {
-              shareStatus: 'public',
+              shareStatus: "public",
               OR: [
                 { wishlistPublicSaved: { userId: ctx.userId } },
                 { wishlistSharedWith: { userId: ctx.userId } },
               ],
             },
             {
-              shareStatus: 'shared',
+              shareStatus: "shared",
               wishlistSharedWith: { userId: ctx.userId },
             },
           ],
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
       });
       return { wishlists };
     }),
   getById: sharedWishlistProcedure
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .query(({ ctx }) => {
-      if (ctx.wishlist.shareStatus === 'public') {
+      if (ctx.wishlist.shareStatus === "public") {
         void db.query.wishlistPublicUsersSavedShare
           .findFirst({
             where: { wishlistId: ctx.wishlist.id, userId: ctx.userId },
@@ -57,7 +57,7 @@ export const sharedWishlistsRouter = router({
                 userId: ctx.userId,
               });
               await invalidateCache(ctx.userId, {
-                type: 'wishlists',
+                type: "wishlists",
                 wishlistId: ctx.wishlist.id,
               });
             }

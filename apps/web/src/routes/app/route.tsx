@@ -1,17 +1,12 @@
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useRouter,
-} from '@tanstack/react-router';
-import { createIsomorphicFn } from '@tanstack/react-start';
-import { getCookie } from '@tanstack/react-start/server';
+import { createFileRoute, Outlet, redirect, useRouter } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getCookie } from "@tanstack/react-start/server";
 
-import { AppNav } from '~/components/app-nav';
-import { useCacheInvalidation } from '~/hooks/use-cache-invalidation';
-import { getClientCookie, setClientCookie } from '~/utils/cookie';
+import { AppNav } from "~/components/app-nav";
+import { useCacheInvalidation } from "~/hooks/use-cache-invalidation";
+import { getClientCookie, setClientCookie } from "~/utils/cookie";
 
-const desktopSidebarOpenCookieName = 'desktop-sidebar-open';
+const desktopSidebarOpenCookieName = "desktop-sidebar-open";
 
 const getDesktopSidebarOpen = createIsomorphicFn()
   .server(() => {
@@ -21,15 +16,13 @@ const getDesktopSidebarOpen = createIsomorphicFn()
     return getClientCookie(desktopSidebarOpenCookieName);
   });
 
-export const Route = createFileRoute('/app')({
+export const Route = createFileRoute("/app")({
   beforeLoad: ({ context }) => {
     if (!context.auth.user) {
-      throw redirect({ to: '/' });
+      throw redirect({ to: "/" });
     }
     return {
-      desktopSidebarOpen: JSON.parse(
-        getDesktopSidebarOpen() ?? 'true',
-      ) as boolean,
+      desktopSidebarOpen: JSON.parse(getDesktopSidebarOpen() ?? "true") as boolean,
     };
   },
   component: RouteComponent,

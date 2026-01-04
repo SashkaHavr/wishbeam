@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 export const wishlistSchema = z.object({
   title: z.string().nonempty().max(100),

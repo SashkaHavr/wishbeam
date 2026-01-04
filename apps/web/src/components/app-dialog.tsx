@@ -1,8 +1,8 @@
-import React, { use } from 'react';
+import React, { use } from "react";
 
-import { useMatchesBreakpoint } from '~/hooks/use-breakpoint';
-import { cn } from '~/lib/utils';
-import { Button } from './ui/button';
+import { useMatchesBreakpoint } from "~/hooks/use-breakpoint";
+import { cn } from "~/lib/utils";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
+} from "./ui/dialog";
 import {
   Sheet,
   SheetClose,
@@ -22,14 +22,12 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from './ui/sheet';
+} from "./ui/sheet";
 
 const AppDialogContext = React.createContext({ desktop: true });
 
-export function AppDialog(
-  props: React.ComponentProps<typeof Dialog | typeof Sheet>,
-) {
-  const desktop = useMatchesBreakpoint('md');
+export function AppDialog(props: React.ComponentProps<typeof Dialog | typeof Sheet>) {
+  const desktop = useMatchesBreakpoint("md");
   const Component = desktop ? Dialog : Sheet;
 
   return (
@@ -53,11 +51,7 @@ export function AppDialogContent({
     );
   }
   return (
-    <SheetContent
-      onOpenAutoFocus={(e) => e.preventDefault()}
-      {...props}
-      side="bottom"
-    >
+    <SheetContent {...props} side="bottom">
       <div className="max-h-[70vh] overflow-auto">{children}</div>
     </SheetContent>
   );
@@ -88,9 +82,7 @@ export function AppDialogTitle(
 }
 
 export function AppDialogDescription(
-  props: React.ComponentProps<
-    typeof DialogDescription | typeof SheetDescription
-  >,
+  props: React.ComponentProps<typeof DialogDescription | typeof SheetDescription>,
 ) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogDescription : SheetDescription;
@@ -101,26 +93,18 @@ export function AppDialogTrigger(props: React.ComponentProps<typeof Button>) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogTrigger : SheetTrigger;
 
-  return (
-    <Component asChild>
-      <Button {...props} />
-    </Component>
-  );
+  return <Component render={<Button {...props} />} />;
 }
 
 export function AppDialogClose(props: React.ComponentProps<typeof Button>) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogClose : SheetClose;
-  return (
-    <Component asChild>
-      <Button {...props} />
-    </Component>
-  );
+  return <Component render={<Button {...props} />} />;
 }
 
 export function AppDialogBody({
   className,
   ...props
-}: React.ComponentProps<'div'> & { asChild?: boolean }) {
-  return <div className={cn('px-4 pt-4 md:p-0', className)} {...props} />;
+}: React.ComponentProps<"div"> & { asChild?: boolean }) {
+  return <div className={cn("px-4 pt-4 md:p-0", className)} {...props} />;
 }

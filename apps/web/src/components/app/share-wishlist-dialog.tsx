@@ -1,17 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import { CheckIcon, CopyIcon } from 'lucide-react';
+import { useQuery } from "@tanstack/react-query";
+import { CheckIcon, CopyIcon } from "lucide-react";
 
-import type { TRPCOutput } from '@wishbeam/trpc';
+import type { TRPCOutput } from "@wishbeam/trpc";
 
-import { useSetShareStatusWishlistMutation } from '~/hooks/mutations/wishlists.owned';
+import { useSetShareStatusWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 import {
   useAddWishlistSharedWithMutation,
   useDeleteWishlistSharedWithMutation,
-} from '~/hooks/mutations/wishlists.owned.sharedWith';
-import { useCopyToClipboard } from '~/hooks/use-copy-to-clipboard';
-import { useTRPC } from '~/lib/trpc';
-import { getWishlistShareUrl } from '~/utils/share-url';
-import { AddDeleteUsersByEmailForm } from '../add-delete-users-by-email-form';
+} from "~/hooks/mutations/wishlists.owned.sharedWith";
+import { useCopyToClipboard } from "~/hooks/use-copy-to-clipboard";
+import { useTRPC } from "~/lib/trpc";
+import { getWishlistShareUrl } from "~/utils/share-url";
+import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
 import {
   AppDialog,
   AppDialogBody,
@@ -21,47 +21,36 @@ import {
   AppDialogFooter,
   AppDialogHeader,
   AppDialogTitle,
-} from '../app-dialog';
-import { Collapsible, CollapsibleContent } from '../ui/collapsible';
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-  FieldTitle,
-} from '../ui/field';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from '../ui/input-group';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+} from "../app-dialog";
+import { Collapsible, CollapsibleContent } from "../ui/collapsible";
+import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "../ui/field";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface Props {
   children?: React.ReactNode;
-  wishlist: TRPCOutput['wishlists']['owned']['getById']['wishlist'];
+  wishlist: TRPCOutput["wishlists"]["owned"]["getById"]["wishlist"];
 }
 
 const shareItems = [
   {
-    value: 'private',
-    title: 'Private',
-    description: 'Only you can see this wishlist',
+    value: "private",
+    title: "Private",
+    description: "Only you can see this wishlist",
   },
   {
-    value: 'shared',
-    title: 'Shared',
-    description: 'Only people you specify can see this wishlist',
+    value: "shared",
+    title: "Shared",
+    description: "Only people you specify can see this wishlist",
   },
   {
-    value: 'public',
-    title: 'Public',
-    description: 'Anyone with the link can see this wishlist',
+    value: "public",
+    title: "Public",
+    description: "Anyone with the link can see this wishlist",
   },
 ] satisfies {
-  value: TRPCOutput['wishlists']['owned']['getById']['wishlist']['shareStatus'];
+  value: TRPCOutput["wishlists"]["owned"]["getById"]["wishlist"]["shareStatus"];
   title: string;
   description: string;
 }[];
@@ -86,9 +75,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
       <AppDialogContent>
         <AppDialogHeader>
           <AppDialogTitle>Manage sharing settings</AppDialogTitle>
-          <AppDialogDescription>
-            Change visibility of your wishlist
-          </AppDialogDescription>
+          <AppDialogDescription>Change visibility of your wishlist</AppDialogDescription>
         </AppDialogHeader>
         <AppDialogBody>
           <RadioGroup
@@ -97,22 +84,17 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
               updateWishlist.mutate({
                 wishlistId: wishlist.id,
                 shareStatus:
-                  value as TRPCOutput['wishlists']['owned']['getById']['wishlist']['shareStatus'],
+                  value as TRPCOutput["wishlists"]["owned"]["getById"]["wishlist"]["shareStatus"],
               })
             }
           >
             {shareItems.map((item) => (
-              <FieldLabel
-                htmlFor={`radio-group-shareStatus-${item.value}`}
-                key={item.value}
-              >
+              <FieldLabel htmlFor={`radio-group-shareStatus-${item.value}`} key={item.value}>
                 <Field>
                   <Collapsible
                     open={
-                      (item.value === 'shared' &&
-                        wishlist.shareStatus === 'shared') ||
-                      (item.value === 'public' &&
-                        wishlist.shareStatus === 'public')
+                      (item.value === "shared" && wishlist.shareStatus === "shared") ||
+                      (item.value === "public" && wishlist.shareStatus === "public")
                     }
                   >
                     <div className="flex">
@@ -126,7 +108,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                       />
                     </div>
                     <CollapsibleContent>
-                      {item.value === 'shared' && (
+                      {item.value === "shared" && (
                         <AddDeleteUsersByEmailForm
                           className="basis-full"
                           users={users.data?.users ?? []}
@@ -144,7 +126,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                           }
                         />
                       )}
-                      {item.value === 'public' && (
+                      {item.value === "public" && (
                         <div className="mt-2 p-1">
                           <InputGroup>
                             <InputGroupInput
@@ -154,22 +136,22 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                             />
                             <InputGroupAddon align="inline-end">
                               <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <InputGroupButton
-                                    aria-label="Copy"
-                                    title="Copy"
-                                    size="icon-xs"
-                                    onClick={() => {
-                                      copyToClipboard(
-                                        getWishlistShareUrl(wishlist.id),
-                                      );
-                                    }}
-                                  >
-                                    {isCopied ? <CheckIcon /> : <CopyIcon />}
-                                  </InputGroupButton>
+                                <TooltipTrigger
+                                  render={
+                                    <InputGroupButton
+                                      aria-label="Copy"
+                                      title="Copy"
+                                      size="icon-xs"
+                                      onClick={() => {
+                                        copyToClipboard(getWishlistShareUrl(wishlist.id));
+                                      }}
+                                    />
+                                  }
+                                >
+                                  {isCopied ? <CheckIcon /> : <CopyIcon />}
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  {isCopied ? 'Copied' : 'Copy to clipboard'}
+                                  {isCopied ? "Copied" : "Copy to clipboard"}
                                 </TooltipContent>
                               </Tooltip>
                             </InputGroupAddon>

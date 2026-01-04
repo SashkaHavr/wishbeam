@@ -20,8 +20,8 @@
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@wishbeam/typescript-config": "workspace:*",
     "@types/bun": "catalog:",
+    "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }
 }

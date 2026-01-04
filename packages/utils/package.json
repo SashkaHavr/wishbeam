@@ -8,8 +8,7 @@
   "exports": {
     "./schemas": "./src/schemas.ts"
   },
-  "scripts": { },
-  "prettier": "@wishbeam/prettier-config",
+  "scripts": {},
   "dependencies": {
     "zod": "catalog:"
   },
@@ -17,5 +16,6 @@
     "@types/bun": "catalog:",
     "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
-  }
+  },
+  "prettier": "@wishbeam/prettier-config"
 }
