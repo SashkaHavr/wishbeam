@@ -10,31 +10,20 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
-    "build-scripts": "bun build --entrypoints ./src/migrate.ts --outdir ./dist --target bun",
-    "clean": "bun exec \"rm -rf node_modules .turbo dist\"",
+    "build": "bun build --entrypoints ./src/migrate.ts --outdir ./dist --target bun",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun run ./src/migrate.ts",
-    "db:studio": "drizzle-kit studio",
-    "db:up": "docker run -d --name pg-wishbeam -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-wishbeam:/var/lib/postgresql/data -p 5432:5432 postgres",
-    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
-    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit"
+    "db:studio": "drizzle-kit studio"
   },
-  "prettier": "@wishbeam/prettier-config",
   "dependencies": {
     "@wishbeam/env": "workspace:*",
     "drizzle-kit": "catalog:drizzle",
     "drizzle-orm": "catalog:drizzle",
-    "pg": "catalog:drizzle",
     "uuid": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "@types/pg": "catalog:drizzle",
-    "@wishbeam/eslint-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
+    "@types/bun": "catalog:",
     "typescript": "catalog:"
   }
 }

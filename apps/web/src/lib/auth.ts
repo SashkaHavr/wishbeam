@@ -1,29 +1,24 @@
-import type { QueryClient } from '@tanstack/react-query';
-import {
-  queryOptions,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useRouter } from '@tanstack/react-router';
-import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
-import { createAuthClient } from 'better-auth/react';
+import type { auth } from "@wishbeam/auth";
+import type { QueryClient } from "@tanstack/react-query";
 
-import type { auth } from '@wishbeam/auth';
-import type { Role } from '@wishbeam/auth/permissions';
-import { getRoles, isRoleArray, permissions } from '@wishbeam/auth/permissions';
+import { permissions } from "@wishbeam/auth/permissions";
+import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
+import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
+import { createAuthClient } from "better-auth/react";
 
-import { getSessionServerFn } from './auth-server';
+import { getSessionServerFn } from "./auth-server";
 
 export const authClient = createAuthClient({
-  basePath: '/auth',
+  basePath: "/auth",
   plugins: [inferAdditionalFields<typeof auth>(), adminClient(permissions)],
   fetchOptions: { throw: true },
 });
 
-const authBaseKey = 'auth';
+const authBaseKey = "auth";
 
 export const authGetSessionOptions = queryOptions({
-  queryKey: [authBaseKey, 'getSession'],
+  queryKey: [authBaseKey, "getSession"],
   queryFn: async () => await getSessionServerFn(),
 });
 
@@ -68,26 +63,4 @@ export function useSignout() {
       await resetAuth();
     },
   });
-}
-
-export function hasPermissions(
-  user: typeof authClient.$Infer.Session.user,
-  permissions: NonNullable<
-    Parameters<typeof authClient.admin.checkRolePermission>[0]['permission']
-  >,
-) {
-  return (
-    isRoleArray(user.role) &&
-    authClient.admin.checkRolePermission({
-      role: user.role as Role,
-      permissions: permissions,
-    })
-  );
-}
-
-export function hasAnyRoleExceptUser(
-  user: typeof authClient.$Infer.Session.user,
-) {
-  const roles = getRoles(user.role);
-  return roles && roles.filter((r) => r !== 'user').length > 0;
 }

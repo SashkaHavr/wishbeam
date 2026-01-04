@@ -8,21 +8,13 @@
   "exports": {
     "./schemas": "./src/schemas.ts"
   },
-  "scripts": {
-    "clean": "bun exec \"rm -rf node_modules .turbo\"",
-    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
-    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit"
-  },
+  "scripts": { },
   "prettier": "@wishbeam/prettier-config",
   "dependencies": {
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
-    "@wishbeam/eslint-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
     "typescript": "catalog:"
   }

@@ -1,17 +1,8 @@
-import {
-  ErrorComponent as DefaultErrorComponent,
-  Link,
-} from '@tanstack/react-router';
-import { useTranslations } from 'use-intl';
+import { ErrorComponent as DefaultErrorComponent, Link } from "@tanstack/react-router";
+import { useTranslations } from "use-intl";
 
-import { Button } from '../ui/button';
-import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '../ui/empty';
+import { Button } from "../ui/button";
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
 
 export function ErrorComponent({ error }: { error: Error }) {
   const t = useTranslations();
@@ -21,13 +12,11 @@ export function ErrorComponent({ error }: { error: Error }) {
         <EmptyMedia variant="default">
           {import.meta.env.DEV && <DefaultErrorComponent error={error} />}
         </EmptyMedia>
-        <EmptyTitle>{t('routeComponents.error')}</EmptyTitle>
+        <EmptyTitle>{t("routeComponents.error")}</EmptyTitle>
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <Button asChild>
-            <Link to="/">{t('routeComponents.returnToHomePage')}</Link>
-          </Button>
+          <Button render={<Link to="/">{t("routeComponents.returnToHomePage")}</Link>} />
         </div>
       </EmptyContent>
     </Empty>

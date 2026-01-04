@@ -6,28 +6,16 @@
     "#*": "./src/*"
   },
   "exports": {
-    "./server": "./src/server.ts",
-    "./db": "./src/db.ts",
-    "./auth": "./src/auth.ts",
-    "./pubsub": "./src/pubsub.ts"
+    "./*": "./src/*.ts"
   },
-  "scripts": {
-    "clean": "bun exec \"rm -rf node_modules .turbo\"",
-    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
-    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit"
-  },
-  "prettier": "@wishbeam/prettier-config",
+  "scripts": {},
   "dependencies": {
     "@t3-oss/env-core": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "@wishbeam/eslint-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
+    "@types/bun": "catalog:",
     "typescript": "catalog:"
   }
 }

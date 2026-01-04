@@ -1,20 +1,19 @@
 {
-  "name": "Wishbeam Dev Container",
+  "name": "Dev Container",
   "dockerComposeFile": "docker-compose.yaml",
   "service": "devcontainer",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  // vite dev start, drizzle studio
+  // vite dev/bun start, drizzle studio
   "forwardPorts": [3000, 4983],
-  "postCreateCommand": "bun install && bun --filter '@wishbeam/db' db:migrate",
+  "postCreateCommand": "bun install && bun --filter '@wishbeam/db' db:migrate && bun --filter '@wishbeam/auth' generate-test-users",
   "remoteUser": "root",
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
         "lokalise.i18n-ally",
-        "esbenp.prettier-vscode",
         "ms-azuretools.vscode-containers",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "oxc.oxc-vscode"
       ]
     }
   },

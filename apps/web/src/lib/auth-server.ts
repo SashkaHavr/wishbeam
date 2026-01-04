@@ -1,26 +1,17 @@
-import { createMiddleware, createServerFn } from '@tanstack/react-start';
-import { getWebRequest } from '@tanstack/react-start/server';
-
-import { auth } from '@wishbeam/auth';
-
-import { trpcServerFnMiddleware } from './trpc-server';
+import { auth } from "@wishbeam/auth";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 
 export const authServerFnMiddleware = createMiddleware({
-  type: 'function',
+  type: "function",
 }).server(({ next }) => {
   return next({
     context: {
       auth: auth.api,
-      headers: getWebRequest().headers,
+      headers: getRequest().headers,
     },
   });
 });
-
-export const getAuthConfigServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .handler(async ({ context: { trpc } }) => {
-    return trpc.config.authConfig();
-  });
 
 export const getSessionServerFn = createServerFn()
   .middleware([authServerFnMiddleware])

@@ -1,19 +1,13 @@
-import type { Locale } from 'use-intl';
-import { createIsomorphicFn, createServerFn } from '@tanstack/react-start';
-import { getCookie, getRequestHeaders } from '@tanstack/react-start/server';
+import type { Locale } from "use-intl";
 
-import { defaultLocale, isLocale, localeCookieName } from '@wishbeam/intl';
+import { defaultLocale, isLocale, localeCookieName } from "@wishbeam/intl";
+import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getCookie, getRequestHeader } from "@tanstack/react-start/server";
 
-import type baseMessages from '../../messages/en.json';
-import { getClientCookie } from '~/utils/cookie';
+import { getClientCookie, setClientCookie } from "~/utils/cookie";
 
-export const getAcceptLanguageHeaderServerFn = createServerFn().handler(() => {
-  const headers = getRequestHeaders();
-  return (
-    headers['accept-language']?.split(',').map((lang) => lang.split(';')[0]) ??
-    []
-  );
-});
+import type baseMessages from "../../messages/en.json";
 
 export const getLocale = createIsomorphicFn()
   .server(() => {
@@ -22,11 +16,10 @@ export const getLocale = createIsomorphicFn()
       return localeFromCookie;
     }
 
-    const headers = getRequestHeaders();
     const locales =
-      headers['accept-language']
-        ?.split(',')
-        .map((lang) => lang.split(';')[0]) ?? [];
+      getRequestHeader("accept-language")
+        ?.split(",")
+        .map((lang) => lang.split(";")[0]) ?? [];
     return locales.find(isLocale) ?? defaultLocale;
   })
   .client(() => {
@@ -39,19 +32,37 @@ export const getLocale = createIsomorphicFn()
     return locales.find(isLocale) ?? defaultLocale;
   });
 
+export function useSetLocale() {
+  const router = useRouter();
+
+  return (locale: string) => {
+    if (!isLocale(locale)) return;
+    setClientCookie(localeCookieName, locale);
+    void router.invalidate();
+  };
+}
+
+export function useLocale() {
+  return useRouteContext({
+    from: "__root__",
+    select: (s) => s.intl.locale,
+  });
+}
+
 type BaseMessages = typeof baseMessages;
 
 export async function getMessages(locale: Locale) {
   switch (locale) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    case 'en':
-      return (await import(
-        `../../messages/en.json`
-      )) as unknown as BaseMessages;
+    case "en":
+      return (await import(`../../messages/en.json`)) as unknown as BaseMessages;
   }
 }
 
-declare module 'use-intl' {
+export const localeToString: Record<Locale, string> = {
+  en: "English",
+};
+
+declare module "use-intl" {
   interface AppConfig {
     Messages: BaseMessages;
   }

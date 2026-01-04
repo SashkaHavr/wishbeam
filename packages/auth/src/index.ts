@@ -1,15 +1,12 @@
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { admin } from 'better-auth/plugins';
-import { redis } from 'bun';
-
-import { db } from '@wishbeam/db';
-import { envAuth } from '@wishbeam/env/auth';
-
-import { permissions } from '#permissions.ts';
+import { permissions } from "#permissions.ts";
+import { db } from "@wishbeam/db";
+import { envAuth } from "@wishbeam/env/auth";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
-  basePath: '/auth',
+  basePath: "/auth",
   session: {
     cookieCache: {
       enabled: true,
@@ -17,9 +14,9 @@ export const auth = betterAuth({
     },
   },
   database: drizzleAdapter(db, {
-    provider: 'pg',
+    provider: "pg",
   }),
-  secondaryStorage: process.env.REDIS_URL
+    secondaryStorage: process.env.REDIS_URL
     ? {
         get: async (key) => {
           return await redis.get(`auth:${key}`);

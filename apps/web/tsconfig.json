@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
     },
@@ -8,5 +7,5 @@
     "lib": ["ES2024", "DOM", "DOM.Iterable"]
   },
   "extends": "@wishbeam/typescript-config",
-  "exclude": [".nitro", ".output"]
+  "include": ["./src"]
 }

@@ -10,26 +10,18 @@
     "./permissions": "./src/permissions.ts"
   },
   "scripts": {
-    "build-scripts": "bun build --entrypoints ./src/generate-test-users.ts --outdir ./dist --target bun",
-    "clean": "bun exec \"rm -rf node_modules .turbo dist\"",
-    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
-    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
+    "build": "bun build --entrypoints ./src/generate-test-users.ts --outdir ./dist --target bun",
     "generate-db-schema": "bun exec \"DATABASE_URL=url bunx @better-auth/cli@latest generate --config src/index.ts --output ./generated/auth-schema.ts --yes\"",
-    "generate-test-users": "bun run ./src/generate-test-users.ts",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
-    "typecheck": "tsc --noEmit"
+    "generate-test-users": "bun run ./src/generate-test-users.ts"
   },
-  "prettier": "@wishbeam/prettier-config",
   "dependencies": {
     "@wishbeam/db": "workspace:*",
     "@wishbeam/env": "workspace:*",
     "better-auth": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "@wishbeam/eslint-config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
+    "@types/bun": "catalog:",
     "typescript": "catalog:"
   }
 }

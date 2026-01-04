@@ -1,10 +1,9 @@
-import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-
-import { baseTable } from '#utils/base-table.ts';
-import { oneToManyCascadeOnDelete } from '#utils/foreign-keys.ts';
+import { baseTable } from "#utils/base-table.ts";
+import { oneToManyCascadeOnDelete } from "#utils/foreign-keys.ts";
+import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const user = pgTable(
-  'user',
+  "user",
   {
     ...baseTable,
     name: text().notNull(),
@@ -20,7 +19,7 @@ export const user = pgTable(
 );
 
 export const session = pgTable(
-  'session',
+  "session",
   {
     ...baseTable,
     expiresAt: timestamp().notNull(),
@@ -34,7 +33,7 @@ export const session = pgTable(
 );
 
 export const account = pgTable(
-  'account',
+  "account",
   {
     ...baseTable,
     accountId: text().notNull(),
@@ -52,7 +51,7 @@ export const account = pgTable(
 );
 
 export const verification = pgTable(
-  'verification',
+  "verification",
   {
     ...baseTable,
     identifier: text().notNull(),

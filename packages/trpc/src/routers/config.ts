@@ -1,18 +1,20 @@
-import z from 'zod';
-
-import { envServer } from '@wishbeam/env/server';
-
-import { publicProcedure, router } from '#init.ts';
+import { publicProcedure, router } from "#init.ts";
+import { envServer } from "@wishbeam/env/server";
+import z from "zod";
 
 export const configRouter = router({
-  authConfig: publicProcedure
-    .output(z.object({ testAuth: z.boolean(), google: z.boolean() }))
+  general: publicProcedure
+    .output(
+      z.object({
+        auth: z.object({ testAuth: z.boolean(), githubOAuth: z.boolean() }),
+      }),
+    )
     .query(() => {
       return {
-        testAuth: envServer.TEST_AUTH,
-        google:
-          envServer.GOOGLE_CLIENT_ID !== undefined &&
-          envServer.GOOGLE_CLIENT_SECRET !== undefined,
+        auth: {
+          testAuth: envServer.TEST_AUTH,
+          googleOAuth: !!envServer.GOOGLE_CLIENT_ID && !!envServer.GOOGLE_CLIENT_SECRET,
+        },
       };
     }),
 });

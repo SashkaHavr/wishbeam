@@ -1,14 +1,12 @@
-import type { Locale } from 'use-intl';
-import z from 'zod';
+import type { Locale } from "use-intl";
 
-export const defaultLocale: (typeof locales)[number] = 'en';
-export const locales = ['en'] as const;
+import z from "zod";
+
+export const defaultLocale: (typeof locales)[number] = "en";
+export const locales = ["en"] as const;
 
 export function isLocale(locale: unknown): locale is Locale {
-  return (
-    typeof locale === 'string' &&
-    (locales as readonly string[]).includes(locale)
-  );
+  return typeof locale === "string" && (locales as readonly string[]).includes(locale);
 }
 
 export function parseLocale(localeOptional: string | undefined): Locale {
@@ -18,7 +16,7 @@ export function parseLocale(localeOptional: string | undefined): Locale {
   return defaultLocale;
 }
 
-declare module 'use-intl' {
+declare module "use-intl" {
   interface AppConfig {
     Locale: (typeof locales)[number];
   }
@@ -26,8 +24,7 @@ declare module 'use-intl' {
 
 async function getZodLocale(locale: Locale) {
   switch (locale) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    case 'en':
+    case "en":
       return (await import(`zod/v4/locales/en.js`)).default;
   }
 }
@@ -36,5 +33,4 @@ export async function setupZodLocale(locale: Locale) {
   z.config((await getZodLocale(locale))());
 }
 
-export const localeHeaderName = 'wishbeam-Locale';
-export const localeCookieName = 'wishbeam-locale';
+export const localeCookieName = "locale";

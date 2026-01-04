@@ -1,4 +1,4 @@
 {
   "extends": "@wishbeam/typescript-config",
-  "exclude": ["dist"]
+  "include": ["./src", "drizzle.config.ts"]
 }

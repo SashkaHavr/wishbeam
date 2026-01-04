@@ -1,12 +1,15 @@
-import { createServerFileRoute } from '@tanstack/react-start/server';
+import { trpcHandler } from "@wishbeam/trpc";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { trpcHandler } from '@wishbeam/trpc';
-
-export const ServerRoute = createServerFileRoute('/trpc/$').methods({
-  GET: async ({ request }) => {
-    return trpcHandler({ request });
-  },
-  POST: async ({ request }) => {
-    return trpcHandler({ request });
+export const Route = createFileRoute("/trpc/$")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        return trpcHandler({ request });
+      },
+      POST: async ({ request }) => {
+        return trpcHandler({ request });
+      },
+    },
   },
 });

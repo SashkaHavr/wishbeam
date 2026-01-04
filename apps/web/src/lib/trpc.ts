@@ -1,17 +1,9 @@
-import { QueryClient } from '@tanstack/react-query';
-import {
-  createTRPCClient,
-  httpBatchLink,
-  httpSubscriptionLink,
-  splitLink,
-} from '@trpc/client';
-import {
-  createTRPCContext,
-  createTRPCOptionsProxy,
-} from '@trpc/tanstack-react-query';
-import superjson from 'superjson';
+import type { TRPCRouter } from "@wishbeam/trpc";
 
-import type { TRPCRouter } from '@wishbeam/trpc';
+import { QueryClient } from "@tanstack/react-query";
+import { createTRPCClient, httpBatchLink, httpSubscriptionLink, splitLink } from "@trpc/client";
+import { createTRPCContext, createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import superjson from "superjson";
 
 export function createTRPCRouteContext() {
   const queryClient = new QueryClient({
@@ -28,14 +20,14 @@ export function createTRPCRouteContext() {
     links: [
       splitLink({
         // uses the httpSubscriptionLink for subscriptions
-        condition: (op) => op.type === 'subscription',
+        condition: (op) => op.type === "subscription",
         true: httpSubscriptionLink({
           transformer: superjson,
           url: `/trpc`,
         }),
         false: httpBatchLink({
           transformer: superjson,
-          url: '/trpc',
+          url: "/trpc",
         }),
       }),
     ],
@@ -48,5 +40,4 @@ export function createTRPCRouteContext() {
 }
 
 export type TRPCRouteContext = ReturnType<typeof createTRPCRouteContext>;
-export const { TRPCProvider, useTRPC, useTRPCClient } =
-  createTRPCContext<TRPCRouter>();
+export const { TRPCProvider, useTRPC, useTRPCClient } = createTRPCContext<TRPCRouter>();
