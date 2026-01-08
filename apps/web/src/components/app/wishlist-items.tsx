@@ -125,9 +125,9 @@ export function WishlistItem({
         )}
       </ItemActions>
       <ItemGroup className="basis-full gap-1">
-        {wishlistItem.links.map((link) => (
+        {wishlistItem.links.map((link, index) => (
           <Item
-            key={link}
+            key={`${wishlistItem.id}-${index}-link`}
             size="sm"
             // oxlint-disable-next-line anchor-has-content
             render={<a href={link} target="_blank" rel="noopener noreferrer" />}
