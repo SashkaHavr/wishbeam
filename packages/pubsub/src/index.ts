@@ -23,7 +23,9 @@ export async function* subscribe<Output>({
       ee.dispatchEvent(new MessageEvent("message", { data: message }));
     });
     for await (const [event] of on(ee, "message", { signal: abortSignal })) {
-      yield schema.parse(JSON.parse(event as string));
+      if (event instanceof MessageEvent) {
+        yield schema.parse(JSON.parse(event.data as string));
+      }
     }
   } catch {
     await subscriber.unsubscribe(channel);
