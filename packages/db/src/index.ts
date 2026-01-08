@@ -1,6 +1,7 @@
+import { drizzle } from "drizzle-orm/bun-sql";
+
 import { relations } from "#relations.ts";
 import { envDB } from "@wishbeam/env/db";
-import { drizzle } from "drizzle-orm/bun-sql";
 
 import * as schema from "./schema";
 

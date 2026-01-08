@@ -1,9 +1,11 @@
 import type { LinkProps } from "@tanstack/react-router";
 import type React from "react";
+
 import { Link } from "@tanstack/react-router";
 import { ChevronRightIcon, PlusIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+
 import { AppDialogTrigger } from "../app-dialog";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 import { CreateWishlistDialog } from "./create-wishlist-dialog";

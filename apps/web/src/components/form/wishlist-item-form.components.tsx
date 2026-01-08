@@ -1,6 +1,7 @@
 import { XIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
+
 import { Button } from "../ui/button";
 import { FieldContent, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "../ui/field";
 import { InputGroup, InputGroupAddon, InputGroupButton } from "../ui/input-group";
@@ -55,8 +56,8 @@ export const WishlistItemFields = withForm({
               <FieldLegend variant="label">Links</FieldLegend>
               <FieldDescription>Add links related to this item.</FieldDescription>
               <FieldGroup className="gap-4">
-                {field.state.value.map((_, index) => (
-                  <form.AppField key={index} name={`links[${index}]`}>
+                {field.state.value.map((link, index) => (
+                  <form.AppField key={link} name={`links[${index}]`}>
                     {() => (
                       <FormField orientation="horizontal">
                         <FieldContent>

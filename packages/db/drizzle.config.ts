@@ -1,5 +1,6 @@
-import { envDB } from "@wishbeam/env/db";
 import { defineConfig } from "drizzle-kit";
+
+import { envDB } from "@wishbeam/env/db";
 
 export default defineConfig({
   out: "./drizzle",

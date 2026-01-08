@@ -1,4 +1,5 @@
 import type { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { createContext } from "#context.ts";
@@ -20,8 +21,8 @@ const appRouter = router({
   }),
 });
 
-export function trpcHandler({ request }: { request: Request }) {
-  return fetchRequestHandler({
+export async function trpcHandler({ request }: { request: Request }) {
+  return await fetchRequestHandler({
     req: request,
     router: appRouter,
     endpoint: "/trpc",

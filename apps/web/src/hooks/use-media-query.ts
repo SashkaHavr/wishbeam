@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { isServer } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 
@@ -38,14 +38,18 @@ export function useMediaQuery(
     handleChange();
 
     // Use deprecated `addListener` and `removeListener` to support Safari < 14 (#135)
+    // oxlint-disable-next-line strict-boolean-expressions no-deprecated
     if (matchMedia.addListener) {
+      // oxlint-disable-next-line no-deprecated
       matchMedia.addListener(handleChange);
     } else {
       matchMedia.addEventListener("change", handleChange);
     }
 
     return () => {
+      // oxlint-disable-next-line strict-boolean-expressions no-deprecated
       if (matchMedia.removeListener) {
+        // oxlint-disable-next-line no-deprecated
         matchMedia.removeListener(handleChange);
       } else {
         matchMedia.removeEventListener("change", handleChange);

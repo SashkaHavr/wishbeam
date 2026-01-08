@@ -1,8 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ItemFooter } from "~/components/ui/item";
-
 import { LockButton } from "~/components/app/lock-button";
 import {
   WishlistItem,
@@ -11,6 +9,7 @@ import {
   WishlistItemsList,
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
+import { ItemFooter } from "~/components/ui/item";
 import {
   useLockWishlistItemMutation,
   useUnlockWishlistItemMutation,
@@ -29,13 +28,15 @@ export const Route = createFileRoute("/app/shared/$id")({
         queryKey: context.trpc.wishlists.shared.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistSharedGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistSharedGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.shared.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistSharedGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistSharedGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },

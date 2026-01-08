@@ -2,13 +2,12 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
-import { db } from "@wishbeam/db";
-import { wishlistItem as wishlistItemTable } from "@wishbeam/db/schema";
-import { wishlistItemSchema } from "@wishbeam/utils/schemas";
-
 import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
 import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
+import { db } from "@wishbeam/db";
+import { wishlistItem as wishlistItemTable } from "@wishbeam/db/schema";
+import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 
 const wishlistItemOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -36,7 +35,7 @@ const ownedWishlistItemProcedure = protectedProcedure
       });
     }
     const { wishlist, ...restItem } = wishlistItem;
-    return next({
+    return await next({
       ctx: {
         ...ctx,
         wishlistItem: restItem,

@@ -1,6 +1,7 @@
-import EventEmitter, { on } from "events";
 import type z from "zod";
+
 import { RedisClient } from "bun";
+import { on } from "events";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 
@@ -14,12 +15,12 @@ export async function* subscribe<Output>({
 }: {
   channel: string;
   abortSignal: AbortSignal;
-  schema: z.ZodSchema<Output>;
+  schema: z.ZodType<Output>;
 }) {
-  const ee = new EventEmitter();
+  const ee = new EventTarget();
   try {
     await subscriber.subscribe(channel, (message) => {
-      ee.emit("message", message);
+      ee.dispatchEvent(new MessageEvent("message", { data: message }));
     });
     for await (const [event] of on(ee, "message", { signal: abortSignal })) {
       yield schema.parse(JSON.parse(event as string));

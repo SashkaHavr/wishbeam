@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 
-import { setupZodLocale } from "@wishbeam/intl";
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -10,27 +9,33 @@ import {
   Scripts,
   useMatches,
 } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 
 import type { TRPCRouteContext } from "~/lib/trpc";
 
 import { getTheme } from "~/components/theme/context";
 import { ThemeProvider, ThemeScript } from "~/components/theme/provider";
 import { getAuthContext } from "~/lib/auth";
-import { IntlProvider } from "~/lib/intl";
-import { getLocale, getMessages } from "~/lib/intl-server";
-import { getGeneralConfigServerFn } from "~/lib/trpc-server";
+import { getLocale, getMessages } from "~/lib/intl";
+import { IntlProvider } from "~/lib/intl-provider";
+import { trpcServerFnMiddleware } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
 import { seo } from "~/utils/seo";
 
 import indexCss from "../index.css?url";
 
+const getGeneralConfigServerFn = createServerFn()
+  .middleware([trpcServerFnMiddleware])
+  .handler(async ({ context: { trpc } }) => {
+    return await trpc.config.general();
+  });
+
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
   beforeLoad: async ({ context: { queryClient, trpc } }) => {
     const locale = getLocale();
-    await setupZodLocale(locale);
     await queryClient.ensureQueryData({
       queryKey: trpc.config.general.queryKey(),
-      queryFn: () => getGeneralConfigServerFn(),
+      queryFn: async () => await getGeneralConfigServerFn(),
     });
 
     return {
@@ -76,10 +81,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
   });
   const matches = useMatches();
-  const lastRoute = matches[matches.length - 1]?.routeId;
+  const lastRoute = matches.at(-1)?.routeId;
   const overscrollClass =
     lastRoute !== undefined &&
-    (lastRoute.startsWith("/app") || lastRoute.startsWith("/(public)/shared")) &&
+    (lastRoute.startsWith("/app") ?? lastRoute.startsWith("/(public)/shared")) &&
     "overscroll-y-none";
 
   return (

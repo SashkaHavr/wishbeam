@@ -1,8 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { subscribe } from "@wishbeam/pubsub";
-
 import { protectedProcedure, publicProcedure, router } from "#init.ts";
 import {
   cacheInvalidationSchema,
@@ -10,6 +8,7 @@ import {
   getPublicCacheInvalidationChannel,
 } from "#utils/cache-invalidation.ts";
 import { base62ToUuidv7 } from "#utils/zod-utils.ts";
+import { subscribe } from "@wishbeam/pubsub";
 
 export const cacheRouter = router({
   invalidations: protectedProcedure.subscription(async function* ({

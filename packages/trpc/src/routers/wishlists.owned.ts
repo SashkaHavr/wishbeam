@@ -2,6 +2,9 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
 
+import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
+import { invalidateCache } from "#utils/cache-invalidation.ts";
+import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
 import { db } from "@wishbeam/db";
 import {
   wishlistItem as wishlistItemTable,
@@ -10,9 +13,6 @@ import {
 } from "@wishbeam/db/schema";
 import { wishlistSchema } from "@wishbeam/utils/schemas";
 
-import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
-import { invalidateCache } from "#utils/cache-invalidation.ts";
-import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
 import { ownedWishlistItemsRouter } from "./wishlists.owned.items";
 import { ownedWishlistOwnersRouter } from "./wishlists.owned.owners";
 import { ownedWishlistSharedWithRouter } from "./wishlists.owned.sharedWith";
@@ -104,7 +104,7 @@ export const ownedWishlistsRouter = router({
         .where(
           and(
             eq(wishlistOwnerTable.wishlistId, ctx.wishlist.id),
-            !isCreator ? eq(wishlistOwnerTable.userId, ctx.userId) : undefined,
+            isCreator ? undefined : eq(wishlistOwnerTable.userId, ctx.userId),
           ),
         );
 

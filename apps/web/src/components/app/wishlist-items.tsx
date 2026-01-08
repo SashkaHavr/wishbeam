@@ -1,4 +1,3 @@
-import React from "react";
 import {
   ArchiveIcon,
   CircleSlash2Icon,
@@ -7,12 +6,14 @@ import {
   GiftIcon,
   PlusIcon,
 } from "lucide-react";
+import React from "react";
 
 import {
   useDeleteWishlistItemMutation,
   useSetStatusWishlistItemMutation,
 } from "~/hooks/mutations/wishlists.owned.items";
 import { cn } from "~/lib/utils";
+
 import { DeleteAlertDialog } from "../alerts/delete-alert-dialog";
 import { AppDialogTrigger } from "../app-dialog";
 import {
@@ -81,7 +82,7 @@ export function WishlistItemsEmptyPublic() {
           <CircleSlash2Icon />
         </EmptyMedia>
         <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
-        <EmptyDescription>There aren't any items in this wishlist.</EmptyDescription>
+        <EmptyDescription>There aren&apos;t any items in this wishlist.</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );
@@ -124,9 +125,9 @@ export function WishlistItem({
         )}
       </ItemActions>
       <ItemGroup className="basis-full gap-1">
-        {wishlistItem.links.map((link, index) => (
+        {wishlistItem.links.map((link) => (
           <Item
-            key={index}
+            key={link}
             size="sm"
             // oxlint-disable-next-line anchor-has-content
             render={<a href={link} target="_blank" rel="noopener noreferrer" />}

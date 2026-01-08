@@ -11,6 +11,7 @@ import {
 import { useCopyToClipboard } from "~/hooks/use-copy-to-clipboard";
 import { useTRPC } from "~/lib/trpc";
 import { getWishlistShareUrl } from "~/utils/share-url";
+
 import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
 import {
   AppDialog,
@@ -112,8 +113,8 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
                         <AddDeleteUsersByEmailForm
                           className="basis-full"
                           users={users.data?.users ?? []}
-                          addUser={({ email }) =>
-                            addUser.mutateAsync({
+                          addUser={async ({ email }) =>
+                            await addUser.mutateAsync({
                               email,
                               wishlistId: wishlist.id,
                             })

@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { revalidateLogic } from "@tanstack/react-form";
+import { useState } from "react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
-import { wishlistSchema } from "@wishbeam/utils/schemas";
 
+import { wishlistSchema } from "@wishbeam/utils/schemas";
 import {
   AppDialog,
   AppDialogBody,
@@ -15,6 +15,7 @@ import {
   AppDialogTitle,
 } from "~/components/app-dialog";
 import { useUpdateWishlistMutation } from "~/hooks/mutations/wishlists.owned";
+
 import { Form } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";

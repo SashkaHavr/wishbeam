@@ -1,9 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { ItemFooter } from "~/components/ui/item";
-import { Separator } from "~/components/ui/separator";
-
 import { AppDialogTrigger } from "~/components/app-dialog";
 import { LockButton } from "~/components/app/lock-button";
 import {
@@ -15,6 +12,8 @@ import {
 import { LoginDialog } from "~/components/login";
 import { Logo } from "~/components/logo";
 import { PageLayout } from "~/components/page-layout";
+import { ItemFooter } from "~/components/ui/item";
+import { Separator } from "~/components/ui/separator";
 import { usePublicWishlistCacheInvalidation } from "~/hooks/use-cache-invalidation";
 import { useTRPC } from "~/lib/trpc";
 import { seo } from "~/utils/seo";
@@ -35,13 +34,15 @@ export const Route = createFileRoute("/(public)/shared/$id")({
         queryKey: context.trpc.wishlists.public.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.public.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
     return {

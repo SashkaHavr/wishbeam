@@ -53,12 +53,15 @@ export async function invalidateCache(
   data: z.infer<typeof cacheInvalidationSchema>,
 ) {
   const userIdsToNotify = (await getUserIdsToNotify(data)).filter((id) => id !== currentUserId);
-  for (const userId of userIdsToNotify) {
-    await publish<z.infer<typeof cacheInvalidationSchema>>({
-      channel: getCacheInvalidationChannel(userId),
-      message: data,
-    });
-  }
+  await Promise.all(
+    userIdsToNotify.map(
+      async (userId) =>
+        await publish<z.infer<typeof cacheInvalidationSchema>>({
+          channel: getCacheInvalidationChannel(userId),
+          message: data,
+        }),
+    ),
+  );
 
   await publish<z.infer<typeof cacheInvalidationSchema>>({
     channel: getPublicCacheInvalidationChannel(data.wishlistId),

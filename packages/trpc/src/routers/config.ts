@@ -1,6 +1,7 @@
-import { publicProcedure, router } from "#init.ts";
-import { envServer } from "@wishbeam/env/server";
 import z from "zod";
+
+import { publicProcedure, router } from "#init.ts";
+import { envAuth } from "@wishbeam/env/auth";
 
 export const configRouter = router({
   general: publicProcedure
@@ -12,8 +13,8 @@ export const configRouter = router({
     .query(() => {
       return {
         auth: {
-          testAuth: envServer.TEST_AUTH,
-          googleOAuth: !!envServer.GOOGLE_CLIENT_ID && !!envServer.GOOGLE_CLIENT_SECRET,
+          testAuth: envAuth.TEST_AUTH,
+          googleOAuth: !!envAuth.GOOGLE_CLIENT_ID && !!envAuth.GOOGLE_CLIENT_SECRET,
         },
       };
     }),

@@ -1,9 +1,9 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
-export const envDB = createEnv({
+export const envRedis = createEnv({
   server: {
-    DATABASE_URL: z.string(),
+    REDIS_URL: z.string(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

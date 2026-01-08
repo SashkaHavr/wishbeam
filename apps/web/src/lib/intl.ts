@@ -1,10 +1,10 @@
-import type { Locale } from "use-intl";
+import type { Formats, Locale } from "use-intl";
 
-import { defaultLocale, isLocale, localeCookieName } from "@wishbeam/intl";
 import { useRouteContext, useRouter } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getCookie, getRequestHeader } from "@tanstack/react-start/server";
 
+import { defaultLocale, isLocale, localeCookieName } from "@wishbeam/intl";
 import { getClientCookie, setClientCookie } from "~/utils/cookie";
 
 import type baseMessages from "../../messages/en.json";
@@ -20,7 +20,7 @@ export const getLocale = createIsomorphicFn()
       getRequestHeader("accept-language")
         ?.split(",")
         .map((lang) => lang.split(";")[0]) ?? [];
-    return locales.find(isLocale) ?? defaultLocale;
+    return locales.find((value) => isLocale(value)) ?? defaultLocale;
   })
   .client(() => {
     const localeFromCookie = getClientCookie(localeCookieName);
@@ -29,7 +29,7 @@ export const getLocale = createIsomorphicFn()
     }
 
     const locales = navigator.languages;
-    return locales.find(isLocale) ?? defaultLocale;
+    return locales.find((value) => isLocale(value)) ?? defaultLocale;
   });
 
 export function useSetLocale() {
@@ -62,8 +62,22 @@ export const localeToString: Record<Locale, string> = {
   en: "English",
 };
 
+export const intlFormats = {
+  dateTime: {
+    full: {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    },
+  },
+} satisfies Formats;
+
 declare module "use-intl" {
   interface AppConfig {
     Messages: BaseMessages;
+    Formats: typeof intlFormats;
   }
 }

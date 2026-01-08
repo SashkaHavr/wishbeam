@@ -3,6 +3,7 @@ import { index, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { baseTable } from "#utils/base-table.ts";
 import { oneToMany, oneToManyCascadeOnDelete, oneToManyNullable } from "#utils/foreign-keys.ts";
+
 import { user } from "./auth";
 
 export const wishlistShareStatus = pgEnum("wishlist_share_status", ["private", "shared", "public"]);

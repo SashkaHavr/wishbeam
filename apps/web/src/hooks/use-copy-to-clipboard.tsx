@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { isServer } from "@tanstack/react-query";
+import { useState } from "react";
 
 export function useCopyToClipboard({
   timeout = 2000,

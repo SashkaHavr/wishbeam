@@ -1,17 +1,38 @@
-import type { auth } from "@wishbeam/auth";
 import type { QueryClient } from "@tanstack/react-query";
 
-import { permissions } from "@wishbeam/auth/permissions";
 import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-import { getSessionServerFn } from "./auth-server";
+import type { AuthType } from "@wishbeam/auth";
+
+import { auth } from "@wishbeam/auth";
+import { permissions } from "@wishbeam/auth/permissions";
+
+const authServerFnMiddleware = createMiddleware({
+  type: "function",
+}).server(async ({ next }) => {
+  return await next({
+    context: {
+      auth: auth.api,
+      headers: getRequest().headers,
+    },
+  });
+});
+
+const getSessionServerFn = createServerFn()
+  .middleware([authServerFnMiddleware])
+  .handler(async ({ context: { auth, headers } }) => {
+    const session = await auth.getSession({ headers });
+    return session ? { session: session.session, user: session.user } : null;
+  });
 
 export const authClient = createAuthClient({
   basePath: "/auth",
-  plugins: [inferAdditionalFields<typeof auth>(), adminClient(permissions)],
+  plugins: [inferAdditionalFields<AuthType>(), adminClient(permissions)],
   fetchOptions: { throw: true },
 });
 
@@ -25,16 +46,16 @@ export const authGetSessionOptions = queryOptions({
 export async function getAuthContext(queryClient: QueryClient) {
   try {
     const session = await queryClient.ensureQueryData(authGetSessionOptions);
-    return session !== null
+    return session === null
       ? {
+          available: true as const,
+          loggedIn: false as const,
+        }
+      : {
           available: true as const,
           loggedIn: true as const,
           session: session.session,
           user: session.user,
-        }
-      : {
-          available: true as const,
-          loggedIn: false as const,
         };
   } catch {
     return {
@@ -58,7 +79,7 @@ export function useResetAuth() {
 export function useSignout() {
   const resetAuth = useResetAuth();
   return useMutation({
-    mutationFn: () => authClient.signOut(),
+    mutationFn: async () => await authClient.signOut(),
     onSuccess: async () => {
       await resetAuth();
     },

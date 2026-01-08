@@ -1,6 +1,6 @@
 import type { LinkProps } from "@tanstack/react-router";
 import type React from "react";
-import { useEffect, useEffectEvent, useState } from "react";
+
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
@@ -14,12 +14,14 @@ import {
   Share2Icon,
   SunIcon,
 } from "lucide-react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 import { useLoggedInAuth } from "~/hooks/route-context";
 import { useNotMatchesBreakpoint } from "~/hooks/use-breakpoint";
 import { useIsClient } from "~/hooks/use-is-client";
 import { useSignout } from "~/lib/auth";
 import { cn } from "~/lib/utils";
+
 import { Logo } from "./logo";
 import { useTheme } from "./theme/context";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -136,9 +138,9 @@ function SidebarAdaptiveButton({
       size={open ? size : "icon"}
       {...props}
     >
-      {children ? undefined : (
+      {children === undefined ? (
         <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />
-      )}
+      ) : undefined}
     </SidebarButton>
   );
 
@@ -385,7 +387,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
   const allLinks = [...mainLinks, ...bottomLinks, ...profileMenuLinks];
-  const fullPath = routerState.matches[routerState.matches.length - 1]?.fullPath;
+  const fullPath = routerState.matches.at(-1)?.fullPath;
   const exactMatch = allLinks.find((link) => {
     if (!fullPath) return false;
     const trimmedPath = fullPath.replace(/\/+$/, "");

@@ -1,4 +1,5 @@
 import type { LinkProps } from "@tanstack/react-router";
+
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 
@@ -7,7 +8,7 @@ const route = "/shared/$id" satisfies LinkProps["to"];
 export const getWishlistShareUrl = createIsomorphicFn()
   .server((wishlistId: string) => {
     const request = getRequest();
-    const url = new URL(request.url); // to ensure it's a valid URL
+    const url = new URL(request.url);
     return `${url.origin}${route.replace("$id", wishlistId)}`;
   })
   .client((wishlistId: string) => {

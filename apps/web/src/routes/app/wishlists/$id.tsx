@@ -3,8 +3,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
-import { ItemActions, ItemFooter } from "~/components/ui/item";
-import { Separator } from "~/components/ui/separator";
 
 import { DeleteAlertDialog } from "~/components/alerts/delete-alert-dialog";
 import { AppDialogTrigger } from "~/components/app-dialog";
@@ -22,6 +20,8 @@ import {
   WishlistItemsList,
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
+import { ItemActions, ItemFooter } from "~/components/ui/item";
+import { Separator } from "~/components/ui/separator";
 import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 import { useTRPC } from "~/lib/trpc";
 import {
@@ -36,13 +36,15 @@ export const Route = createFileRoute("/app/wishlists/$id")({
         queryKey: context.trpc.wishlists.owned.getById.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: context.trpc.wishlists.owned.items.getAll.queryKey({
           wishlistId: params.id,
         }),
-        queryFn: () => wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
+        queryFn: async () =>
+          await wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
       }),
     ]);
   },

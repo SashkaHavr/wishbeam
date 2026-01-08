@@ -10,8 +10,8 @@ export function FormRadioGroupItem({
   const field = useFieldContext();
   return (
     <RadioGroupItem
-      value={value}
-      id={getRadioGroupFieldId(field, value)}
+      value={value as string}
+      id={getRadioGroupFieldId(field, value as string)}
       aria-invalid={!field.state.meta.isValid}
       {...props}
     />

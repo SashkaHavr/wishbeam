@@ -5,6 +5,7 @@ import {
   useDeleteWishlistOwnerMutation,
 } from "~/hooks/mutations/wishlists.owned.owners";
 import { useTRPC } from "~/lib/trpc";
+
 import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
 import {
   AppDialog,
@@ -40,7 +41,7 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
         <AppDialogBody>
           <AddDeleteUsersByEmailForm
             users={owners.data?.owners.filter((user) => user.role === "owner") ?? []}
-            addUser={({ email }) => addOwner.mutateAsync({ email, wishlistId })}
+            addUser={async ({ email }) => await addOwner.mutateAsync({ email, wishlistId })}
             deleteUser={({ userId }) => deleteOwner.mutate({ userId, wishlistId })}
           />
         </AppDialogBody>

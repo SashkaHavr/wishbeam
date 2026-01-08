@@ -2,6 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CircleSlash2Icon } from "lucide-react";
 
+import { Wishlist, WishlistList } from "~/components/app/wishlist";
+import { PageLayout } from "~/components/page-layout";
 import {
   Empty,
   EmptyDescription,
@@ -9,9 +11,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/components/ui/empty";
-
-import { Wishlist, WishlistList } from "~/components/app/wishlist";
-import { PageLayout } from "~/components/page-layout";
 import { useTRPC } from "~/lib/trpc";
 import { wishlistsSharedGetAllServerFn } from "~/utils/trpc-server-fns";
 
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/app/shared/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       queryKey: context.trpc.wishlists.shared.getAll.queryKey(),
-      queryFn: () => wishlistsSharedGetAllServerFn(),
+      queryFn: async () => await wishlistsSharedGetAllServerFn(),
     });
   },
   component: RouteComponent,

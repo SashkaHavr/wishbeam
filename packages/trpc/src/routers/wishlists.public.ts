@@ -1,11 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { db } from "@wishbeam/db";
-
 import { publicProcedure, router } from "#init.ts";
 import { getWishlistItemLockStatus } from "#utils/utils.ts";
 import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
+import { db } from "@wishbeam/db";
 
 const wishlistOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -34,7 +33,7 @@ const publicWishlistProcedure = publicProcedure
         message: "Wishlist not found",
       });
     }
-    return next({
+    return await next({
       ctx: {
         ...ctx,
         wishlist,

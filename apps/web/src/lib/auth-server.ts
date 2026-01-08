@@ -1,11 +1,12 @@
-import { auth } from "@wishbeam/auth";
 import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 
+import { auth } from "@wishbeam/auth";
+
 export const authServerFnMiddleware = createMiddleware({
   type: "function",
-}).server(({ next }) => {
-  return next({
+}).server(async ({ next }) => {
+  return await next({
     context: {
       auth: auth.api,
       headers: getRequest().headers,

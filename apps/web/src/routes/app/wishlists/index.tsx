@@ -2,6 +2,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CircleSlash2Icon, GiftIcon } from "lucide-react";
 
+import { AppDialogTrigger } from "~/components/app-dialog";
+import { CreateWishlistDialog } from "~/components/app/create-wishlist-dialog";
+import { CreateWishlistButton, Wishlist, WishlistList } from "~/components/app/wishlist";
+import { PageLayout } from "~/components/page-layout";
 import {
   Empty,
   EmptyContent,
@@ -10,11 +14,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/components/ui/empty";
-
-import { AppDialogTrigger } from "~/components/app-dialog";
-import { CreateWishlistDialog } from "~/components/app/create-wishlist-dialog";
-import { CreateWishlistButton, Wishlist, WishlistList } from "~/components/app/wishlist";
-import { PageLayout } from "~/components/page-layout";
 import { useTRPC } from "~/lib/trpc";
 import { wishlistsOwnedGetAllServerFn } from "~/utils/trpc-server-fns";
 
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/app/wishlists/")({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       queryKey: context.trpc.wishlists.owned.getAll.queryKey(),
-      queryFn: () => wishlistsOwnedGetAllServerFn(),
+      queryFn: async () => await wishlistsOwnedGetAllServerFn(),
     });
   },
   component: RouteComponent,

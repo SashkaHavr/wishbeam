@@ -1,6 +1,6 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
 import { ListTodo } from "lucide-react";
+import React from "react";
 
 import { AnimatedGroup } from "~/components/ui/animated-group";
 import { Button } from "~/components/ui/button";

@@ -1,11 +1,12 @@
 // oxlint-disable anchor-is-valid
-import { useState } from "react";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { UserIcon } from "lucide-react";
+import { useState } from "react";
 
 import { authClient, useResetAuth } from "~/lib/auth";
 import { useTRPC } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
+
 import {
   AppDialog,
   AppDialogBody,
@@ -43,8 +44,8 @@ export function LoginButtons() {
   });
 
   const loginGoogle = useMutation({
-    mutationFn: () =>
-      authClient.signIn.social({
+    mutationFn: async () =>
+      await authClient.signIn.social({
         provider: "google",
         callbackURL: window.location.href,
       }),
@@ -53,39 +54,37 @@ export function LoginButtons() {
   return (
     <FieldGroup>
       {authConfig.data.testAuth && (
-        <>
-          <Field className="grid grid-cols-2">
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() =>
-                loginAsTestUser.mutate({
-                  user: parseInt(selectedTestUser),
-                })
-              }
-              disabled={loginAsTestUser.isPending}
-            >
-              {loginAsTestUser.isPending && <Spinner />}
-              <UserIcon />
-              Login with
-            </Button>
-            <Select
-              value={selectedTestUser}
-              onValueChange={(value) => setSelectedTestUser(value as string)}
-            >
-              <SelectTrigger>
-                <span>{`Test User ${selectedTestUser}`}</span>
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from(Array(100).keys()).map((user) => (
-                  <SelectItem key={user} value={user.toString()}>
-                    Test User {user}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        </>
+        <Field className="grid grid-cols-2">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() =>
+              loginAsTestUser.mutate({
+                user: parseInt(selectedTestUser, 10),
+              })
+            }
+            disabled={loginAsTestUser.isPending}
+          >
+            {loginAsTestUser.isPending && <Spinner />}
+            <UserIcon />
+            Login with
+          </Button>
+          <Select
+            value={selectedTestUser}
+            onValueChange={(value) => setSelectedTestUser(value as string)}
+          >
+            <SelectTrigger>
+              <span>{`Test User ${selectedTestUser}`}</span>
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from(Array.from({ length: 100 }).keys()).map((user) => (
+                <SelectItem key={user} value={user.toString()}>
+                  Test User {user}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
       )}
       {authConfig.data.googleOAuth && (
         <Field>

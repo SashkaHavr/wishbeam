@@ -1,5 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+
 import type { TRPCInput } from "@wishbeam/trpc";
 
 import { trpcServerFnMiddleware } from "~/lib/trpc-server";
@@ -73,11 +74,11 @@ export const wishlistSharedGetItemsServerFn = createServerFn()
 export const wishlistsSharedGetAllServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .handler(async ({ context }) => {
-    return context.trpc.wishlists.shared.getAll();
+    return await context.trpc.wishlists.shared.getAll();
   });
 
 export const wishlistsOwnedGetAllServerFn = createServerFn()
   .middleware([trpcServerFnMiddleware])
   .handler(async ({ context }) => {
-    return context.trpc.wishlists.owned.getAll();
+    return await context.trpc.wishlists.owned.getAll();
   });

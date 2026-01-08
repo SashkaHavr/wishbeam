@@ -2,12 +2,11 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
 
-import { db } from "@wishbeam/db";
-import { wishlistOwner as wishlistOwnerTable } from "@wishbeam/db/schema";
-
 import { ownedWishlistProcedure, router } from "#init.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
 import { getUserByEmail, getUserById } from "#utils/db-utils.ts";
+import { db } from "@wishbeam/db";
+import { wishlistOwner as wishlistOwnerTable } from "@wishbeam/db/schema";
 
 const creatorProcedure = ownedWishlistProcedure.use(async ({ ctx, next }) => {
   if (ctx.currentOwner.role !== "creator") {
@@ -16,7 +15,7 @@ const creatorProcedure = ownedWishlistProcedure.use(async ({ ctx, next }) => {
       code: "FORBIDDEN",
     });
   }
-  return next();
+  return await next();
 });
 
 const wishlistOwnerOutputSchema = z.object({

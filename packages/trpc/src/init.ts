@@ -1,13 +1,14 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 import superjson from "superjson";
 import z, { ZodError } from "zod";
 
+import type { Context } from "#context.ts";
+
+import { base62ToUuidv7 } from "#utils/zod-utils.ts";
 import { auth } from "@wishbeam/auth";
 import { db } from "@wishbeam/db";
-
-import type { Context } from "#context.ts";
-import { base62ToUuidv7 } from "#utils/zod-utils.ts";
-import { getHTTPStatusCodeFromError } from "@trpc/server/http";
+import { getActiveSpan, SpanStatusCode, startActiveSpan } from "@wishbeam/otel";
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -25,23 +26,46 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 
-export const publicProcedure = t.procedure.use(async ({ next }) => {
-  const result = await next();
-  if (result.ok) {
-    return result;
-  }
+export const publicProcedure = t.procedure.use(async ({ next, path, type, ctx: { request } }) => {
+  return await startActiveSpan(path, async (span) => {
+    const url = new URL(request.url);
+    span.setAttributes({
+      "http.request.method": request.method,
+      "url.path": url.pathname,
+      "url.query": decodeURIComponent(url.search),
+      "trpc.type": type,
+      "trpc.path": path,
+    });
 
-  const statusCode = getHTTPStatusCodeFromError(result.error);
-  if (statusCode >= 500) {
-    console.error(`${result.error.code}: ${result.error.message}`);
-  }
-  if (statusCode >= 400 && statusCode < 500) {
-    console.warn(`${result.error.code}: ${result.error.message}`);
-  }
-  return result;
+    const result = await next();
+
+    if (result.ok) {
+      span.setAttributes({
+        "http.response.status_code": 200,
+      });
+      span.setStatus({ code: SpanStatusCode.OK });
+    } else {
+      span.setAttributes({
+        "http.response.status_code": getHTTPStatusCodeFromError(result.error),
+        "trpc.error_code": result.error.code,
+      });
+      span.recordException(result.error);
+      span.setStatus({ code: SpanStatusCode.ERROR, message: result.error.message });
+
+      if (result.error.cause instanceof ZodError) {
+        span.recordException(z.prettifyError(result.error.cause));
+      } else if (result.error.cause !== undefined) {
+        span.recordException(result.error.cause);
+      }
+    }
+
+    return result;
+  });
 });
 
 export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  const span = getActiveSpan();
+
   const session = await auth.api.getSession({
     headers: ctx.request.headers,
   });
@@ -51,7 +75,14 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
       code: "UNAUTHORIZED",
     });
   }
-  return next({
+
+  span?.setAttributes({
+    "user.id": session.user.id,
+    "user.email": session.user.email,
+    "user.role": session.user.role ?? undefined,
+  });
+
+  return await next({
     ctx: {
       ...ctx,
       session: session,
@@ -61,13 +92,32 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
 });
 
 export function adminProcedure(
-  permission: NonNullable<
-    NonNullable<Parameters<typeof auth.api.userHasPermission>[0]>["body"]["permission"]
+  permissions: NonNullable<
+    NonNullable<Parameters<typeof auth.api.userHasPermission>[0]>["body"]["permissions"]
   >,
 ) {
   return protectedProcedure.use(async ({ ctx, next }) => {
+    const span = getActiveSpan();
+
+    const requestPermissionsList = (
+      Object.entries(permissions) as [
+        keyof typeof permissions,
+        NonNullable<(typeof permissions)[keyof typeof permissions]>,
+      ][]
+    )
+      .flatMap(([key, value]) =>
+        value.map((p): `${keyof typeof permissions}.${typeof p}` => `${key}.${p}`),
+      )
+      .flat();
+    if (requestPermissionsList.length === 0) {
+      throw new TRPCError({
+        message: "No permissions specified for adminProcedure",
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+
     const hasPermission = await auth.api.userHasPermission({
-      body: { userId: ctx.userId, permission: permission },
+      body: { userId: ctx.userId, permissions: permissions },
     });
     if (!hasPermission.success) {
       throw new TRPCError({
@@ -75,7 +125,12 @@ export function adminProcedure(
         code: "FORBIDDEN",
       });
     }
-    return next();
+
+    span?.setAttributes({
+      "trpc.permissions": requestPermissionsList,
+    });
+
+    return await next();
   });
 }
 
@@ -93,7 +148,7 @@ export const ownedWishlistProcedure = protectedProcedure
         code: "NOT_FOUND",
       });
     }
-    return next({
+    return await next({
       ctx: {
         ...ctx,
         wishlist,
@@ -127,7 +182,7 @@ export const sharedWishlistProcedure = protectedProcedure
         message: "Owners cannot access shared wishlist endpoints",
       });
     }
-    return next({
+    return await next({
       ctx: {
         ...ctx,
         wishlist,
