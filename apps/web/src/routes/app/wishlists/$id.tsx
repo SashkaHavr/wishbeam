@@ -20,6 +20,7 @@ import {
   WishlistItemsList,
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
+import { Button } from "~/components/ui/button";
 import { ItemActions, ItemFooter } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
@@ -79,7 +80,7 @@ function RouteComponent() {
           <>
             <ItemActions>
               <ShareWishlistDialog wishlist={wishlist}>
-                <AppDialogTrigger>
+                <AppDialogTrigger render={<Button />}>
                   <Share2Icon />
                   Share
                 </AppDialogTrigger>
@@ -87,14 +88,14 @@ function RouteComponent() {
             </ItemActions>
             <ItemFooter className="grid grid-cols-2 pt-2">
               <UpdateWishlistDialog wishlist={wishlist}>
-                <AppDialogTrigger variant="outline">
+                <AppDialogTrigger render={<Button variant="outline" />}>
                   <EditIcon />
                   <span>Edit</span>
                 </AppDialogTrigger>
               </UpdateWishlistDialog>
               {wishlist.currentUserIsCreator && (
                 <UpdateOwnersDialog wishlistId={wishlist.id}>
-                  <AppDialogTrigger variant="outline">
+                  <AppDialogTrigger render={<Button variant="outline" />}>
                     <UserPlusIcon />
                     <span>Add Owner</span>
                   </AppDialogTrigger>

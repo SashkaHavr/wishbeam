@@ -7,6 +7,7 @@ import { ChevronRightIcon, PlusIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 import { AppDialogTrigger } from "../app-dialog";
+import { Button } from "../ui/button";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 import { CreateWishlistDialog } from "./create-wishlist-dialog";
 
@@ -40,10 +41,10 @@ export function WishlistList({ className, ...props }: React.ComponentProps<"div"
   return <ItemGroup className={cn("gap-4", className)} {...props} />;
 }
 
-export function CreateWishlistButton(props: React.ComponentProps<typeof AppDialogTrigger>) {
+export function CreateWishlistButton(props: React.ComponentProps<typeof Button>) {
   return (
     <CreateWishlistDialog>
-      <AppDialogTrigger size="lg" variant="outline" {...props}>
+      <AppDialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
         <PlusIcon />
         <span>Create new wishlist</span>
       </AppDialogTrigger>

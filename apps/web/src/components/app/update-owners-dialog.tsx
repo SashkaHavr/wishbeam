@@ -17,6 +17,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from "../app-dialog";
+import { Button } from "../ui/button";
 
 interface Props {
   children?: React.ReactNode;
@@ -46,7 +47,7 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
           />
         </AppDialogBody>
         <AppDialogFooter>
-          <AppDialogClose variant="outline">Close</AppDialogClose>
+          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
         </AppDialogFooter>
       </AppDialogContent>
     </AppDialog>

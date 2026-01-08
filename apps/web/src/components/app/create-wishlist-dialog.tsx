@@ -18,6 +18,7 @@ import { Form } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistFields } from "../form/wishlist-form.components";
+import { Button } from "../ui/button";
 
 export function CreateWishlistDialog({
   defaultTitle = "",
@@ -64,7 +65,7 @@ export function CreateWishlistDialog({
               <WishlistFields form={form} />
             </AppDialogBody>
             <AppDialogFooter>
-              <AppDialogClose variant="outline">Cancel</AppDialogClose>
+              <AppDialogClose render={<Button variant="outline" />}>Cancel</AppDialogClose>
               <FormSubmitButton>Create wishlist</FormSubmitButton>
             </AppDialogFooter>
           </Form>

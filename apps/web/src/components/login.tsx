@@ -134,7 +134,7 @@ export function LoginDialog({
           <LoginButtons />
         </AppDialogBody>
         <AppDialogFooter>
-          <AppDialogClose variant="outline">Close</AppDialogClose>
+          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
         </AppDialogFooter>
       </AppDialogContent>
     </AppDialog>

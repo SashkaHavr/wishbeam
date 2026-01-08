@@ -18,6 +18,7 @@ import { Form } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistItemFields } from "../form/wishlist-item-form.components";
+import { Button } from "../ui/button";
 
 export function UpdateWishlistItemDialog({
   children,
@@ -85,7 +86,7 @@ export function UpdateWishlistItemDialog({
               <WishlistItemFields form={form} />
             </AppDialogBody>
             <AppDialogFooter>
-              <AppDialogClose variant="outline">Cancel</AppDialogClose>
+              <AppDialogClose render={<Button variant="outline" />}>Cancel</AppDialogClose>
               <FormSubmitButton>Update wishlist item</FormSubmitButton>
             </AppDialogFooter>
           </Form>

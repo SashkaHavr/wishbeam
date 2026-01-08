@@ -23,6 +23,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
 } from "../app-dialog";
+import { Button } from "../ui/button";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "../ui/field";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
@@ -167,7 +168,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
           </RadioGroup>
         </AppDialogBody>
         <AppDialogFooter>
-          <AppDialogClose variant="outline">Close</AppDialogClose>
+          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
         </AppDialogFooter>
       </AppDialogContent>
     </AppDialog>

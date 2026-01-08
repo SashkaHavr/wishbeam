@@ -6,6 +6,7 @@ import { AppDialogTrigger } from "~/components/app-dialog";
 import { CreateWishlistDialog } from "~/components/app/create-wishlist-dialog";
 import { CreateWishlistButton, Wishlist, WishlistList } from "~/components/app/wishlist";
 import { PageLayout } from "~/components/page-layout";
+import { Button } from "~/components/ui/button";
 import {
   Empty,
   EmptyContent,
@@ -51,7 +52,7 @@ function RouteComponent() {
           </EmptyHeader>
           <EmptyContent>
             <CreateWishlistDialog>
-              <AppDialogTrigger className="mx-4 w-full">
+              <AppDialogTrigger className="mx-4 w-full" render={<Button />}>
                 <GiftIcon />
                 <span>Create Wishlist</span>
               </AppDialogTrigger>

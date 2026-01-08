@@ -3,7 +3,6 @@ import React, { use } from "react";
 import { useMatchesBreakpoint } from "~/hooks/use-breakpoint";
 import { cn } from "~/lib/utils";
 
-import { Button } from "./ui/button";
 import {
   Dialog,
   DialogClose,
@@ -90,17 +89,17 @@ export function AppDialogDescription(
   return <Component {...props} />;
 }
 
-export function AppDialogTrigger(props: React.ComponentProps<typeof Button>) {
+export function AppDialogTrigger(props: React.ComponentProps<typeof DialogTrigger>) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogTrigger : SheetTrigger;
 
-  return <Component render={<Button {...props} />} />;
+  return <Component {...props} />;
 }
 
-export function AppDialogClose(props: React.ComponentProps<typeof Button>) {
+export function AppDialogClose(props: React.ComponentProps<typeof DialogClose>) {
   const { desktop } = use(AppDialogContext);
   const Component = desktop ? DialogClose : SheetClose;
-  return <Component render={<Button {...props} />} />;
+  return <Component {...props} />;
 }
 
 export function AppDialogBody({

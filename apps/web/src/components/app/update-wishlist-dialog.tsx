@@ -20,6 +20,7 @@ import { Form } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistFields } from "../form/wishlist-form.components";
+import { Button } from "../ui/button";
 
 interface Props {
   wishlist: TRPCOutput["wishlists"]["owned"]["getById"]["wishlist"];
@@ -64,7 +65,7 @@ export function UpdateWishlistDialog({ wishlist, children }: Props) {
               <WishlistFields form={form} />
             </AppDialogBody>
             <AppDialogFooter>
-              <AppDialogClose variant="outline">Cancel</AppDialogClose>
+              <AppDialogClose render={<Button variant="outline" />}>Cancel</AppDialogClose>
               <FormSubmitButton>Update wishlist</FormSubmitButton>
             </AppDialogFooter>
           </Form>

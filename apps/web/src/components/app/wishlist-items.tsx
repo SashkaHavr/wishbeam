@@ -64,7 +64,7 @@ export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
       </EmptyHeader>
       <EmptyContent>
         <CreateWishlistItemDialog wishlistId={wishlistId}>
-          <AppDialogTrigger className="mx-4 w-full">
+          <AppDialogTrigger className="mx-4 w-full" render={<Button />}>
             <GiftIcon />
             <span>Create Wishlist Item</span>
           </AppDialogTrigger>
@@ -91,10 +91,10 @@ export function WishlistItemsEmptyPublic() {
 export function CreateWishlistItemButton({
   wishlistId,
   ...props
-}: { wishlistId: string } & React.ComponentProps<typeof AppDialogTrigger>) {
+}: { wishlistId: string } & React.ComponentProps<typeof Button>) {
   return (
     <CreateWishlistItemDialog wishlistId={wishlistId}>
-      <AppDialogTrigger size="lg" variant="outline" {...props}>
+      <AppDialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
         <PlusIcon />
         <span>Create new wishlist item</span>
       </AppDialogTrigger>
@@ -153,10 +153,10 @@ export function UpdateWishlistItemButton({
 }: {
   wishlistItem: WishlistItem;
   wishlistId: string;
-} & React.ComponentProps<typeof AppDialogTrigger>) {
+} & React.ComponentProps<typeof Button>) {
   return (
     <UpdateWishlistItemDialog wishlistItem={wishlistItem} wishlistId={wishlistId}>
-      <AppDialogTrigger variant="outline" {...props}>
+      <AppDialogTrigger render={<Button variant="outline" {...props} />}>
         <EditIcon />
         <span>Edit</span>
       </AppDialogTrigger>
