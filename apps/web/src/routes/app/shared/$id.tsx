@@ -22,7 +22,6 @@ export const Route = createFileRoute("/app/shared/$id")({
     const isOwnedWishlist = await context.queryClient.ensureQueryData(
       context.trpc.wishlists.owned.isOwned.queryOptions({ wishlistId: params.id }),
     );
-    console.log("isOwnedWishlist", isOwnedWishlist);
     if (isOwnedWishlist.isOwned) {
       throw redirect({ to: "/app/wishlists/$id", params: { id: params.id } });
     }
