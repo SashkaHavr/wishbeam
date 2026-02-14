@@ -123,7 +123,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
 
 function SheetFooter({
   className,
-  variant = "default",
+  variant = "bare",
   ...props
 }: React.ComponentProps<"div"> & {
   variant?: "default" | "bare";
