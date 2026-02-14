@@ -1,15 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { HeroSection } from "~/components/landing/hero-section";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(public)/")({
-  component: RouteComponent,
+  beforeLoad: () => {
+    throw redirect({ to: "/login" });
+  },
 });
-
-function RouteComponent() {
-  return (
-    <div className="flex flex-col">
-      <HeroSection />
-    </div>
-  );
-}

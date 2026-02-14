@@ -20,7 +20,7 @@ import {
 import { Google } from "./icons/brands";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Field, FieldDescription, FieldGroup } from "./ui/field";
+import { Field, FieldGroup } from "./ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { Spinner } from "./ui/spinner";
 
@@ -110,10 +110,6 @@ export function LoginCard({ className, ...props }: React.ComponentProps<"div">) 
           <LoginButtons />
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{" "}
-        <a href="#">Privacy Policy</a>.
-      </FieldDescription>
     </div>
   );
 }
