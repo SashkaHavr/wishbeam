@@ -88,12 +88,10 @@ export function LoginButtons() {
         </Field>
       )}
       {authConfig.data.googleOAuth && (
-        <Field>
-          <Button variant="outline" type="button" onClick={() => loginGoogle.mutate()}>
-            <Google />
-            Login with Google
-          </Button>
-        </Field>
+        <Button variant="outline" type="button" onClick={() => loginGoogle.mutate()}>
+          <Google />
+          Login with Google
+        </Button>
       )}
     </Fieldset>
   );
