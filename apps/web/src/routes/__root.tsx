@@ -9,42 +9,34 @@ import {
   Scripts,
   useMatches,
 } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 
 import type { TRPCRouteContext } from "~/lib/trpc";
 
 import { getTheme } from "~/components/theme/context";
 import { ThemeProvider, ThemeScript } from "~/components/theme/provider";
-import { getAuthContext } from "~/lib/auth";
+import { getSessionQueryOptions } from "~/lib/auth";
 import { getLocale, getMessages } from "~/lib/intl";
 import { IntlProvider } from "~/lib/intl-provider";
-import { trpcServerFnMiddleware } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
 import { seo } from "~/utils/seo";
 
 import indexCss from "../index.css?url";
 
-const getGeneralConfigServerFn = createServerFn()
-  .middleware([trpcServerFnMiddleware])
-  .handler(async ({ context: { trpc } }) => {
-    return await trpc.config.general();
-  });
-
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
   beforeLoad: async ({ context: { queryClient, trpc } }) => {
-    const locale = getLocale();
-    await queryClient.ensureQueryData({
-      queryKey: trpc.config.general.queryKey(),
-      queryFn: async () => await getGeneralConfigServerFn(),
-    });
+    const locale = await getLocale();
+    const data = await Promise.all([
+      queryClient.ensureQueryData(trpc.config.general.queryOptions()),
+      queryClient.ensureQueryData(getSessionQueryOptions),
+    ]);
 
     return {
-      auth: await getAuthContext(queryClient),
+      auth: data[1],
       intl: {
         messages: await getMessages(locale),
         locale: locale,
       },
-      theme: getTheme(),
+      theme: await getTheme(),
     };
   },
   component: RootComponent,

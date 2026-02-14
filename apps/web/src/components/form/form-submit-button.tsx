@@ -8,9 +8,7 @@ export function FormSubmitButton({
 }: Omit<React.ComponentProps<typeof Button>, "type" | "disabled">) {
   const form = useFormContext();
   return (
-    <form.Subscribe
-      selector={(state) => [state.canSubmit, state.isSubmitting, state.isDefaultValue] as const}
-    >
+    <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting] as const}>
       {([canSubmit, isSubmitting]) => {
         return (
           <Button type="submit" disabled={!canSubmit} {...props}>

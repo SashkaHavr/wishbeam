@@ -2,10 +2,11 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
 
-import { ownedWishlistProcedure, protectedProcedure, router } from "#init.ts";
+import { router } from "#init.ts";
+import { ownedWishlistProcedure } from "#procedures/owned-wishlist-procedure.ts";
+import { protectedProcedure } from "#procedures/protected-procedure.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
 import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
-import { db } from "@wishbeam/db";
 import {
   wishlistItem as wishlistItemTable,
   wishlistOwner as wishlistOwnerTable,
@@ -29,7 +30,7 @@ export const ownedWishlistsRouter = router({
   getAll: protectedProcedure
     .output(z.object({ wishlists: z.array(wishlistOutputSchema) }))
     .query(async ({ ctx }) => {
-      const wishlists = await db.query.wishlist.findMany({
+      const wishlists = await ctx.db.query.wishlist.findMany({
         where: { wishlistOwners: { userId: ctx.userId } },
         orderBy: { createdAt: "asc" },
         with: { wishlistOwners: true },
@@ -46,7 +47,7 @@ export const ownedWishlistsRouter = router({
     .input(wishlistSchema)
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .mutation(async ({ input, ctx }) => {
-      const wishlist = await db.transaction(async (tx) => {
+      const wishlist = await ctx.db.transaction(async (tx) => {
         const [wishlist] = await tx.insert(wishlistTable).values(input).returning();
         if (!wishlist) {
           throw new TRPCError({
@@ -61,7 +62,7 @@ export const ownedWishlistsRouter = router({
         });
         return wishlist;
       });
-      void invalidateCache(ctx.userId, {
+      void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: wishlist.id,
       });
@@ -87,18 +88,18 @@ export const ownedWishlistsRouter = router({
     .input(z.object({ data: wishlistSchema.partial() }))
     .output(z.undefined())
     .mutation(async ({ input, ctx }) => {
-      await db
+      await ctx.db
         .update(wishlistTable)
         .set({ ...input.data, updatedAt: new Date() })
         .where(eq(wishlistTable.id, ctx.wishlist.id));
-      void invalidateCache(ctx.userId, {
+      void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
     }),
   delete: ownedWishlistProcedure.output(z.undefined()).mutation(async ({ ctx }) => {
     const isCreator = ctx.currentOwner.role === "creator";
-    await db.transaction(async (tx) => {
+    await ctx.db.transaction(async (tx) => {
       await tx
         .delete(wishlistOwnerTable)
         .where(
@@ -112,7 +113,7 @@ export const ownedWishlistsRouter = router({
         await tx.delete(wishlistTable).where(eq(wishlistTable.id, ctx.wishlist.id));
       }
     });
-    void invalidateCache(ctx.userId, {
+    void invalidateCache(ctx.db, ctx.userId, {
       type: "wishlists",
       wishlistId: ctx.wishlist.id,
     });
@@ -127,7 +128,7 @@ export const ownedWishlistsRouter = router({
           message: `Wishlist is already ${input.shareStatus}`,
         });
       }
-      await db.transaction(async (tx) => {
+      await ctx.db.transaction(async (tx) => {
         await tx
           .update(wishlistTable)
           .set({ shareStatus: input.shareStatus, updatedAt: new Date() })
@@ -139,7 +140,7 @@ export const ownedWishlistsRouter = router({
             .where(eq(wishlistItemTable.wishlistId, ctx.wishlist.id));
         }
       });
-      void invalidateCache(ctx.userId, {
+      void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });

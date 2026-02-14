@@ -4,7 +4,6 @@ import z from "zod";
 import { publicProcedure, router } from "#init.ts";
 import { getWishlistItemLockStatus } from "#utils/utils.ts";
 import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
-import { db } from "@wishbeam/db";
 
 const wishlistOutputSchema = z.object({
   id: uuidv7ToBase62,
@@ -24,7 +23,7 @@ const wishlistItemOutputSchema = z.object({
 const publicWishlistProcedure = publicProcedure
   .input(z.object({ wishlistId: base62ToUuidv7 }))
   .use(async ({ input, ctx, next }) => {
-    const wishlist = await db.query.wishlist.findFirst({
+    const wishlist = await ctx.db.query.wishlist.findFirst({
       where: { id: input.wishlistId, shareStatus: "public" },
     });
     if (!wishlist) {
@@ -51,7 +50,7 @@ export const publicWishlistsRouter = router({
     getAll: publicWishlistProcedure
       .output(z.object({ wishlistItems: z.array(wishlistItemOutputSchema) }))
       .query(async ({ ctx }) => {
-        const wishlistItems = await db.query.wishlistItem.findMany({
+        const wishlistItems = await ctx.db.query.wishlistItem.findMany({
           where: { wishlistId: ctx.wishlist.id, status: "active" },
           orderBy: { createdAt: "asc" },
         });

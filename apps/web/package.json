@@ -9,7 +9,7 @@
     "start": "bun exec \"NODE_ENV=production bun run dist/server/index.mjs\""
   },
   "dependencies": {
-    "@base-ui/react": "1.0.0",
+    "@base-ui/react": "1.1.0",
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:trpc",
@@ -21,6 +21,7 @@
     "@trpc/tanstack-react-query": "catalog:trpc",
     "@vitejs/plugin-react": "catalog:vite",
     "@wishbeam/auth": "workspace:*",
+    "@wishbeam/env": "workspace:*",
     "@wishbeam/intl": "workspace:*",
     "@wishbeam/trpc": "workspace:*",
     "@wishbeam/utils": "workspace:*",
@@ -29,7 +30,6 @@
     "class-variance-authority": "catalog:tailwind",
     "clsx": "catalog:tailwind",
     "lucide-react": "catalog:",
-    "motion": "^12.23.22",
     "nitro": "catalog:vite",
     "react": "catalog:react",
     "react-dom": "catalog:react",
@@ -39,7 +39,6 @@
     "tw-animate-css": "catalog:tailwind",
     "use-intl": "catalog:",
     "vite": "catalog:vite",
-    "vite-tsconfig-paths": "catalog:vite",
     "zod": "catalog:"
   },
   "devDependencies": {

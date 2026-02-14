@@ -10,11 +10,11 @@
   },
   "scripts": {},
   "dependencies": {
+    "@tanstack/react-start": "catalog:vite",
     "@trpc/server": "catalog:trpc",
     "@wishbeam/auth": "workspace:*",
     "@wishbeam/db": "workspace:*",
     "@wishbeam/env": "workspace:*",
-    "@wishbeam/otel": "workspace:*",
     "@wishbeam/pubsub": "workspace:*",
     "@wishbeam/utils": "workspace:*",
     "base-x": "5.0.1",

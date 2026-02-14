@@ -5,7 +5,6 @@ import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 import type { TRPCOutput } from "@wishbeam/trpc";
 
 import { DeleteAlertDialog } from "~/components/alerts/delete-alert-dialog";
-import { AppDialogTrigger } from "~/components/app-dialog";
 import { ShareWishlistDialog } from "~/components/app/share-wishlist-dialog";
 import { UpdateOwnersDialog } from "~/components/app/update-owners-dialog";
 import { UpdateWishlistDialog } from "~/components/app/update-wishlist-dialog";
@@ -21,32 +20,25 @@ import {
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
 import { Button } from "~/components/ui/button";
+import { DialogTrigger } from "~/components/ui/dialog";
 import { ItemActions, ItemFooter } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 import { useTRPC } from "~/lib/trpc";
-import {
-  wishlistOwnedGetByIdServerFn,
-  wishlistOwnedGetItemsServerFn,
-} from "~/utils/trpc-server-fns";
 
 export const Route = createFileRoute("/app/wishlists/$id")({
   loader: async ({ context, params }) => {
     await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.owned.getById.queryKey({
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.owned.getById.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistOwnedGetByIdServerFn({ data: { wishlistId: params.id } }),
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.owned.items.getAll.queryKey({
+      ),
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.owned.items.getAll.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistOwnedGetItemsServerFn({ data: { wishlistId: params.id } }),
-      }),
+      ),
     ]);
   },
   component: RouteComponent,
@@ -80,25 +72,25 @@ function RouteComponent() {
           <>
             <ItemActions>
               <ShareWishlistDialog wishlist={wishlist}>
-                <AppDialogTrigger render={<Button />}>
+                <DialogTrigger render={<Button />}>
                   <Share2Icon />
                   Share
-                </AppDialogTrigger>
+                </DialogTrigger>
               </ShareWishlistDialog>
             </ItemActions>
             <ItemFooter className="grid grid-cols-2 pt-2">
               <UpdateWishlistDialog wishlist={wishlist}>
-                <AppDialogTrigger render={<Button variant="outline" />}>
+                <DialogTrigger render={<Button variant="outline" />}>
                   <EditIcon />
                   <span>Edit</span>
-                </AppDialogTrigger>
+                </DialogTrigger>
               </UpdateWishlistDialog>
               {wishlist.currentUserIsCreator && (
                 <UpdateOwnersDialog wishlistId={wishlist.id}>
-                  <AppDialogTrigger render={<Button variant="outline" />}>
+                  <DialogTrigger render={<Button variant="outline" />}>
                     <UserPlusIcon />
                     <span>Add Owner</span>
-                  </AppDialogTrigger>
+                  </DialogTrigger>
                 </UpdateOwnersDialog>
               )}
               {wishlist.currentUserIsCreator && (

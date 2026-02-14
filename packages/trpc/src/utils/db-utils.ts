@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
 
-import { db } from "@wishbeam/db";
+import type { db as dbType } from "@wishbeam/db";
 
-export async function getUserByEmail(email: string) {
+export async function getUserByEmail(db: typeof dbType, email: string) {
   const user = await db.query.user.findFirst({
     where: { email },
   });
@@ -15,7 +15,7 @@ export async function getUserByEmail(email: string) {
   return user;
 }
 
-export async function getUserById(userId: string) {
+export async function getUserById(db: typeof dbType, userId: string) {
   const user = await db.query.user.findFirst({
     where: { id: userId },
   });

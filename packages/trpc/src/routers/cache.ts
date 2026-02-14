@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { protectedProcedure, publicProcedure, router } from "#init.ts";
+import { publicProcedure, router } from "#init.ts";
+import { protectedProcedure } from "#procedures/protected-procedure.ts";
 import {
   cacheInvalidationSchema,
   getCacheInvalidationChannel,

@@ -4,21 +4,21 @@ import z from "zod";
 import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 import { useUpdateWishlistItemMutation } from "~/hooks/mutations/wishlists.owned.items";
 
-import {
-  AppDialog,
-  AppDialogBody,
-  AppDialogClose,
-  AppDialogContent,
-  AppDialogDescription,
-  AppDialogFooter,
-  AppDialogHeader,
-  AppDialogTitle,
-} from "../app-dialog";
 import { Form } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistItemFields } from "../form/wishlist-item-form.components";
 import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "../ui/dialog";
 
 export function UpdateWishlistItemDialog({
   children,
@@ -71,27 +71,25 @@ export function UpdateWishlistItemDialog({
   });
 
   return (
-    <AppDialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       {children}
-      <AppDialogContent>
+      <DialogContent>
         <form.AppForm>
           <Form className="flex w-full flex-col gap-4">
-            <AppDialogHeader>
-              <AppDialogTitle>Update wishlist item</AppDialogTitle>
-              <AppDialogDescription>
-                Update the details for your wishlist item.
-              </AppDialogDescription>
-            </AppDialogHeader>
-            <AppDialogBody>
+            <DialogHeader>
+              <DialogTitle>Update wishlist item</DialogTitle>
+              <DialogDescription>Update the details for your wishlist item.</DialogDescription>
+            </DialogHeader>
+            <DialogPanel>
               <WishlistItemFields form={form} />
-            </AppDialogBody>
-            <AppDialogFooter>
-              <AppDialogClose render={<Button variant="outline" />}>Cancel</AppDialogClose>
+            </DialogPanel>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
               <FormSubmitButton>Update wishlist item</FormSubmitButton>
-            </AppDialogFooter>
+            </DialogFooter>
           </Form>
         </form.AppForm>
-      </AppDialogContent>
-    </AppDialog>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -16,28 +16,20 @@ import {
 } from "~/hooks/mutations/wishlists.shared.items";
 import { useTRPC } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
-import {
-  wishlistSharedGetByIdServerFn,
-  wishlistSharedGetItemsServerFn,
-} from "~/utils/trpc-server-fns";
 
 export const Route = createFileRoute("/app/shared/$id")({
   loader: async ({ context, params }) => {
     await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.shared.getById.queryKey({
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.shared.getById.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistSharedGetByIdServerFn({ data: { wishlistId: params.id } }),
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.shared.items.getAll.queryKey({
+      ),
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.shared.items.getAll.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistSharedGetItemsServerFn({ data: { wishlistId: params.id } }),
-      }),
+      ),
     ]);
   },
   component: RouteComponent,

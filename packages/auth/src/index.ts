@@ -1,12 +1,15 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
-import { redis } from "bun";
+import { RedisClient } from "bun";
 
-import { permissions } from "#permissions.ts";
+import { logPlugin } from "#log-plugin.ts";
+import { ac, roles } from "#permissions.ts";
 import { db } from "@wishbeam/db";
 import { envAuth } from "@wishbeam/env/auth";
 import { envRedis } from "@wishbeam/env/redis";
+
+const redis = new RedisClient(envRedis.REDIS_URL, { autoReconnect: false });
 
 export const auth = betterAuth({
   basePath: "/auth",
@@ -43,11 +46,7 @@ export const auth = betterAuth({
           }
         : undefined,
   },
-  plugins: [
-    admin({
-      ...permissions,
-    }),
-  ],
+  plugins: [admin({ ac, roles }), logPlugin],
   emailAndPassword: {
     enabled: envAuth.TEST_AUTH,
     disableSignUp: true,
@@ -60,3 +59,7 @@ export const auth = betterAuth({
 });
 
 export type AuthType = typeof auth;
+
+export type Permissions = {
+  [K in keyof typeof ac.statements]?: (typeof ac.statements)[K][number][];
+};

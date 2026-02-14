@@ -1,5 +1,5 @@
 import { InputGroupInput } from "../ui/input-group";
-import { getFieldId, useFieldContext } from "./form-context";
+import { useFieldContext } from "./form-context";
 
 export function FormInputGroupInput(
   props: Omit<
@@ -10,12 +10,9 @@ export function FormInputGroupInput(
   const field = useFieldContext<string>();
   return (
     <InputGroupInput
-      id={getFieldId(field)}
-      name={field.name}
       value={field.state.value}
       onBlur={field.handleBlur}
       onChange={(e) => field.handleChange(e.target.value)}
-      aria-invalid={!field.state.meta.isValid}
       {...props}
     />
   );

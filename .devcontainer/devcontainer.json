@@ -3,10 +3,10 @@
   "dockerComposeFile": "docker-compose.yaml",
   "service": "devcontainer",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  // vite dev/bun start, drizzle studio
-  "forwardPorts": [3000, 4983],
+  // vite dev/bun start, drizzle studio, opencode
+  "forwardPorts": [3000, 4983, 4096],
   "postCreateCommand": "bun install && bun --filter '@wishbeam/db' db:migrate && bun --filter '@wishbeam/auth' generate-test-users",
-  "remoteUser": "root",
+  "remoteUser": "node",
   "customizations": {
     "vscode": {
       "extensions": [

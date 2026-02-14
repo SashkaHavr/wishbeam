@@ -3,8 +3,8 @@ import { XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 import { Button } from "../ui/button";
-import { FieldContent, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "../ui/field";
-import { InputGroup, InputGroupAddon, InputGroupButton } from "../ui/input-group";
+import { Fieldset, FieldsetLegend } from "../ui/fieldset";
+import { InputGroup, InputGroupAddon } from "../ui/input-group";
 import { FormField } from "./form-field";
 import { FormFieldError } from "./form-field-error";
 import { FormFieldLabel } from "./form-field-label";
@@ -52,30 +52,26 @@ export const WishlistItemFields = withForm({
         </form.AppField>
         <form.AppField name="links" mode="array">
           {(field) => (
-            <FieldSet className="gap-4">
-              <FieldLegend variant="label">Links</FieldLegend>
-              <FieldDescription>Add links related to this item.</FieldDescription>
-              <FieldGroup className="gap-4">
+            <Fieldset className="gap-4">
+              <FieldsetLegend>Links</FieldsetLegend>
+              <div className="flex flex-col gap-4">
                 {field.state.value.map((link, index) => (
                   <form.AppField key={link} name={`links[${index}]`}>
                     {() => (
-                      <FormField orientation="horizontal">
-                        <FieldContent>
-                          <InputGroup>
-                            <FormInputGroupInput placeholder="https://example.com/" />
-                            <InputGroupAddon align="inline-end">
-                              <InputGroupButton
-                                type="button"
-                                variant="ghost"
-                                size="icon-xs"
-                                onClick={() => field.removeValue(index)}
-                              >
-                                <XIcon />
-                              </InputGroupButton>
-                            </InputGroupAddon>
-                          </InputGroup>
-                          <FormFieldError />
-                        </FieldContent>
+                      <FormField>
+                        <InputGroup>
+                          <FormInputGroupInput placeholder="https://example.com/" />
+                          <InputGroupAddon align="inline-end">
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              onClick={() => field.removeValue(index)}
+                            >
+                              <XIcon />
+                            </Button>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <FormFieldError />
                       </FormField>
                     )}
                   </form.AppField>
@@ -100,8 +96,8 @@ export const WishlistItemFields = withForm({
                     Add Link
                   </Button>
                 )}
-              </FieldGroup>
-            </FieldSet>
+              </div>
+            </Fieldset>
           )}
         </form.AppField>
       </div>

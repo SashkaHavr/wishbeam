@@ -10,7 +10,7 @@ import { Form } from "./form/form";
 import { FormField } from "./form/form-field";
 import { FormFieldError } from "./form/form-field-error";
 import { FormInputGroupInput } from "./form/form-input-group-input";
-import { FormInputGroupSubmitButton } from "./form/form-input-group-submit-button";
+import { FormSubmitButton } from "./form/form-submit-button";
 import { useAppForm } from "./form/use-app-form";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon } from "./ui/input-group";
@@ -84,7 +84,7 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
                 <InputGroup>
                   <FormInputGroupInput placeholder="user@example.com" />
                   <InputGroupAddon align="inline-end">
-                    <FormInputGroupSubmitButton variant="default">Add</FormInputGroupSubmitButton>
+                    <FormSubmitButton variant="default">Add</FormSubmitButton>
                   </InputGroupAddon>
                 </InputGroup>
                 <FormFieldError />

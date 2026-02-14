@@ -12,14 +12,10 @@ import {
   EmptyTitle,
 } from "~/components/ui/empty";
 import { useTRPC } from "~/lib/trpc";
-import { wishlistsSharedGetAllServerFn } from "~/utils/trpc-server-fns";
 
 export const Route = createFileRoute("/app/shared/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.wishlists.shared.getAll.queryKey(),
-      queryFn: async () => await wishlistsSharedGetAllServerFn(),
-    });
+    await context.queryClient.ensureQueryData(context.trpc.wishlists.shared.getAll.queryOptions());
   },
   component: RouteComponent,
 });

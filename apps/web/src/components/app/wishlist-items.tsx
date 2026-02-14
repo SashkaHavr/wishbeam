@@ -15,11 +15,9 @@ import {
 import { cn } from "~/lib/utils";
 
 import { DeleteAlertDialog } from "../alerts/delete-alert-dialog";
-import { AppDialogTrigger } from "../app-dialog";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
+  AlertDialogClose,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -28,6 +26,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
+import { DialogTrigger } from "../ui/dialog";
 import {
   Empty,
   EmptyContent,
@@ -64,10 +63,10 @@ export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
       </EmptyHeader>
       <EmptyContent>
         <CreateWishlistItemDialog wishlistId={wishlistId}>
-          <AppDialogTrigger className="mx-4 w-full" render={<Button />}>
+          <DialogTrigger className="mx-4 w-full" render={<Button />}>
             <GiftIcon />
             <span>Create Wishlist Item</span>
-          </AppDialogTrigger>
+          </DialogTrigger>
         </CreateWishlistItemDialog>
       </EmptyContent>
     </Empty>
@@ -94,10 +93,10 @@ export function CreateWishlistItemButton({
 }: { wishlistId: string } & React.ComponentProps<typeof Button>) {
   return (
     <CreateWishlistItemDialog wishlistId={wishlistId}>
-      <AppDialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
+      <DialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
         <PlusIcon />
         <span>Create new wishlist item</span>
-      </AppDialogTrigger>
+      </DialogTrigger>
     </CreateWishlistItemDialog>
   );
 }
@@ -156,10 +155,10 @@ export function UpdateWishlistItemButton({
 } & React.ComponentProps<typeof Button>) {
   return (
     <UpdateWishlistItemDialog wishlistItem={wishlistItem} wishlistId={wishlistId}>
-      <AppDialogTrigger render={<Button variant="outline" {...props} />}>
+      <DialogTrigger render={<Button variant="outline" {...props} />}>
         <EditIcon />
         <span>Edit</span>
-      </AppDialogTrigger>
+      </DialogTrigger>
     </UpdateWishlistItemDialog>
   );
 }
@@ -204,8 +203,9 @@ export function ArchiveWishlistItemButton({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
+              <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+              <AlertDialogClose
+                render={<Button />}
                 onClick={() =>
                   archiveWishlistItem.mutate({
                     wishlistItemId: wishlistItem.id,
@@ -214,7 +214,7 @@ export function ArchiveWishlistItemButton({
                 }
               >
                 Continue
-              </AlertDialogAction>
+              </AlertDialogClose>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

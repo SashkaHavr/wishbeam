@@ -7,20 +7,21 @@ import { authClient, useResetAuth } from "~/lib/auth";
 import { useTRPC } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
 
-import {
-  AppDialog,
-  AppDialogBody,
-  AppDialogClose,
-  AppDialogContent,
-  AppDialogDescription,
-  AppDialogFooter,
-  AppDialogHeader,
-  AppDialogTitle,
-} from "./app-dialog";
 import { Google } from "./icons/brands";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Field, FieldGroup } from "./ui/field";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "./ui/dialog";
+import { Field } from "./ui/field";
+import { Fieldset } from "./ui/fieldset";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { Spinner } from "./ui/spinner";
 
@@ -52,7 +53,7 @@ export function LoginButtons() {
   });
 
   return (
-    <FieldGroup>
+    <Fieldset>
       {authConfig.data.testAuth && (
         <Field className="grid grid-cols-2">
           <Button
@@ -94,7 +95,7 @@ export function LoginButtons() {
           </Button>
         </Field>
       )}
-    </FieldGroup>
+    </Fieldset>
   );
 }
 
@@ -117,22 +118,22 @@ export function LoginCard({ className, ...props }: React.ComponentProps<"div">) 
 export function LoginDialog({
   children,
   ...props
-}: React.ComponentProps<typeof AppDialog> & { children?: React.ReactNode }) {
+}: React.ComponentProps<typeof Dialog> & { children?: React.ReactNode }) {
   return (
-    <AppDialog {...props}>
+    <Dialog {...props}>
       {children}
-      <AppDialogContent>
-        <AppDialogHeader>
-          <AppDialogTitle>Log in</AppDialogTitle>
-          <AppDialogDescription>Please log in to continue</AppDialogDescription>
-        </AppDialogHeader>
-        <AppDialogBody>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Log in</DialogTitle>
+          <DialogDescription>Please log in to continue</DialogDescription>
+        </DialogHeader>
+        <DialogPanel>
           <LoginButtons />
-        </AppDialogBody>
-        <AppDialogFooter>
-          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
-        </AppDialogFooter>
-      </AppDialogContent>
-    </AppDialog>
+        </DialogPanel>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

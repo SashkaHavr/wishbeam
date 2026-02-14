@@ -7,17 +7,17 @@ import {
 import { useTRPC } from "~/lib/trpc";
 
 import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
-import {
-  AppDialog,
-  AppDialogBody,
-  AppDialogClose,
-  AppDialogContent,
-  AppDialogDescription,
-  AppDialogFooter,
-  AppDialogHeader,
-  AppDialogTitle,
-} from "../app-dialog";
 import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "../ui/dialog";
 
 interface Props {
   children?: React.ReactNode;
@@ -32,24 +32,24 @@ export function UpdateOwnersDialog({ children, wishlistId }: Props) {
   const deleteOwner = useDeleteWishlistOwnerMutation();
 
   return (
-    <AppDialog>
+    <Dialog>
       {children}
-      <AppDialogContent>
-        <AppDialogHeader>
-          <AppDialogTitle>Manage owners</AppDialogTitle>
-          <AppDialogDescription>Add or remove owners from your wishlist.</AppDialogDescription>
-        </AppDialogHeader>
-        <AppDialogBody>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Manage owners</DialogTitle>
+          <DialogDescription>Add or remove owners from your wishlist.</DialogDescription>
+        </DialogHeader>
+        <DialogPanel>
           <AddDeleteUsersByEmailForm
             users={owners.data?.owners.filter((user) => user.role === "owner") ?? []}
             addUser={async ({ email }) => await addOwner.mutateAsync({ email, wishlistId })}
             deleteUser={({ userId }) => deleteOwner.mutate({ userId, wishlistId })}
           />
-        </AppDialogBody>
-        <AppDialogFooter>
-          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
-        </AppDialogFooter>
-      </AppDialogContent>
-    </AppDialog>
+        </DialogPanel>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

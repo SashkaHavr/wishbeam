@@ -5,7 +5,7 @@ const statement = {
   ...defaultStatements,
 } as const;
 
-const ac = createAccessControl(statement);
+export const ac = createAccessControl(statement);
 
 const user = ac.newRole({ user: [] });
 
@@ -13,7 +13,4 @@ const admin = ac.newRole({
   ...adminAc.statements,
 });
 
-export const permissions = {
-  ac,
-  roles: { admin, user },
-};
+export const roles = { admin, user } as const;

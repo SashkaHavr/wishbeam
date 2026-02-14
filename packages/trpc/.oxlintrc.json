@@ -1,0 +1,30 @@
+{
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@wishbeam/db",
+            "importNames": ["db"],
+            "allowTypeImports": true
+          },
+          {
+            "name": "@wishbeam/auth",
+            "importNames": ["auth"],
+            "allowTypeImports": true
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/context.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

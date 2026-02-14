@@ -13,21 +13,21 @@ import { useTRPC } from "~/lib/trpc";
 import { getWishlistShareUrl } from "~/utils/share-url";
 
 import { AddDeleteUsersByEmailForm } from "../add-delete-users-by-email-form";
-import {
-  AppDialog,
-  AppDialogBody,
-  AppDialogClose,
-  AppDialogContent,
-  AppDialogDescription,
-  AppDialogFooter,
-  AppDialogHeader,
-  AppDialogTitle,
-} from "../app-dialog";
 import { Button } from "../ui/button";
 import { Collapsible, CollapsibleContent } from "../ui/collapsible";
-import { Field, FieldContent, FieldDescription, FieldLabel, FieldTitle } from "../ui/field";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "../ui/dialog";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { Label } from "../ui/label";
+import { RadioGroup, Radio } from "../ui/radio-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface Props {
@@ -72,15 +72,16 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
   return (
-    <AppDialog>
+    <Dialog>
       {children}
-      <AppDialogContent>
-        <AppDialogHeader>
-          <AppDialogTitle>Manage sharing settings</AppDialogTitle>
-          <AppDialogDescription>Change visibility of your wishlist</AppDialogDescription>
-        </AppDialogHeader>
-        <AppDialogBody>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Manage sharing settings</DialogTitle>
+          <DialogDescription>Change visibility of your wishlist</DialogDescription>
+        </DialogHeader>
+        <DialogPanel>
           <RadioGroup
+            className="w-full"
             value={wishlist.shareStatus}
             onValueChange={(value) =>
               updateWishlist.mutate({
@@ -91,86 +92,85 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
             }
           >
             {shareItems.map((item) => (
-              <FieldLabel htmlFor={`radio-group-shareStatus-${item.value}`} key={item.value}>
-                <Field>
-                  <Collapsible
-                    open={
-                      (item.value === "shared" && wishlist.shareStatus === "shared") ||
-                      (item.value === "public" && wishlist.shareStatus === "public")
-                    }
-                  >
-                    <div className="flex">
-                      <FieldContent className="grow">
-                        <FieldTitle>{item.title}</FieldTitle>
-                        <FieldDescription>{item.description}</FieldDescription>
-                      </FieldContent>
-                      <RadioGroupItem
-                        id={`radio-group-shareStatus-${item.value}`}
-                        value={item.value}
-                      />
+              <Label
+                className="flex items-start gap-2 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
+                key={item.value}
+              >
+                <Collapsible
+                  className="w-full"
+                  open={
+                    (item.value === "shared" && wishlist.shareStatus === "shared") ||
+                    (item.value === "public" && wishlist.shareStatus === "public")
+                  }
+                >
+                  <div className="flex w-full gap-2">
+                    <div className="flex grow flex-col gap-1">
+                      <p>{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.description}</p>
                     </div>
-                    <CollapsibleContent>
-                      {item.value === "shared" && (
-                        <AddDeleteUsersByEmailForm
-                          className="basis-full"
-                          users={users.data?.users ?? []}
-                          addUser={async ({ email }) =>
-                            await addUser.mutateAsync({
-                              email,
-                              wishlistId: wishlist.id,
-                            })
-                          }
-                          deleteUser={({ userId }) =>
-                            deleteUser.mutate({
-                              userId,
-                              wishlistId: wishlist.id,
-                            })
-                          }
-                        />
-                      )}
-                      {item.value === "public" && (
-                        <div className="mt-2 p-1">
-                          <InputGroup>
-                            <InputGroupInput
-                              id="public-link"
-                              value={getWishlistShareUrl(wishlist.id)}
-                              readOnly
-                            />
-                            <InputGroupAddon align="inline-end">
-                              <Tooltip>
-                                <TooltipTrigger
-                                  render={
-                                    <InputGroupButton
-                                      aria-label="Copy"
-                                      title="Copy"
-                                      size="icon-xs"
-                                      onClick={() => {
-                                        copyToClipboard(getWishlistShareUrl(wishlist.id));
-                                      }}
-                                    />
-                                  }
-                                >
-                                  {isCopied ? <CheckIcon /> : <CopyIcon />}
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  {isCopied ? "Copied" : "Copy to clipboard"}
-                                </TooltipContent>
-                              </Tooltip>
-                            </InputGroupAddon>
-                          </InputGroup>
-                        </div>
-                      )}
-                    </CollapsibleContent>
-                  </Collapsible>
-                </Field>
-              </FieldLabel>
+                    <Radio value={item.value} />
+                  </div>
+                  <CollapsibleContent>
+                    {item.value === "shared" && (
+                      <AddDeleteUsersByEmailForm
+                        className="basis-full"
+                        users={users.data?.users ?? []}
+                        addUser={async ({ email }) =>
+                          await addUser.mutateAsync({
+                            email,
+                            wishlistId: wishlist.id,
+                          })
+                        }
+                        deleteUser={({ userId }) =>
+                          deleteUser.mutate({
+                            userId,
+                            wishlistId: wishlist.id,
+                          })
+                        }
+                      />
+                    )}
+                    {item.value === "public" && (
+                      <div className="mt-2 p-1">
+                        <InputGroup>
+                          <InputGroupInput
+                            id="public-link"
+                            value={getWishlistShareUrl(wishlist.id)}
+                            readOnly
+                          />
+                          <InputGroupAddon align="inline-end">
+                            <Tooltip>
+                              <TooltipTrigger
+                                render={
+                                  <Button
+                                    aria-label="Copy"
+                                    size="icon-xs"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      copyToClipboard(getWishlistShareUrl(wishlist.id));
+                                    }}
+                                  />
+                                }
+                              >
+                                {isCopied ? <CheckIcon /> : <CopyIcon />}
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {isCopied ? "Copied" : "Copy to clipboard"}
+                              </TooltipContent>
+                            </Tooltip>
+                          </InputGroupAddon>
+                        </InputGroup>
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
+              </Label>
             ))}
           </RadioGroup>
-        </AppDialogBody>
-        <AppDialogFooter>
-          <AppDialogClose render={<Button variant="outline" />}>Close</AppDialogClose>
-        </AppDialogFooter>
-      </AppDialogContent>
-    </AppDialog>
+        </DialogPanel>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

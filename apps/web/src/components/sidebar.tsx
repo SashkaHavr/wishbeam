@@ -95,6 +95,7 @@ function SidebarLink({
     <SidebarAdaptiveButton
       className="data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground data-[status=active]:hover:bg-sidebar-primary/90 data-[status=active]:dark:hover:bg-sidebar-primary/50"
       icon={<IconProp />}
+      nativeButton={false}
       {...props}
     >
       <Link to={props.to}>
@@ -312,6 +313,7 @@ function ProfileButtonWithPopover({
               variant="ghost"
               size="sm"
               className="w-full justify-start"
+              nativeButton={false}
               render={
                 <Link
                   to={item.to}
@@ -397,11 +399,11 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div className={cn("flex w-full items-center px-4 py-2.5 md:hidden", className)} {...props}>
       {exactMatch ? (
-        <Button variant="ghost" render={<Link to={exactMatch.to} />}>
+        <Button variant="ghost" nativeButton={false} render={<Link to={exactMatch.to} />}>
           {exactMatch.label}
         </Button>
       ) : (
-        <Button variant="ghost" render={<Link to={".."} />}>
+        <Button variant="ghost" nativeButton={false} render={<Link to={".."} />}>
           <ChevronLeftIcon />
           <span>Back</span>
         </Button>

@@ -1,9 +1,10 @@
 import z from "zod";
 
-import { protectedProcedure, router, sharedWishlistProcedure } from "#init.ts";
+import { router } from "#init.ts";
+import { protectedProcedure } from "#procedures/protected-procedure.ts";
+import { sharedWishlistProcedure } from "#procedures/shared-wishlist-procedure.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
 import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
-import { db } from "@wishbeam/db";
 import { wishlistPublicUsersSavedShare as wishlistPublicUsersSavedShareTable } from "@wishbeam/db/schema";
 
 import { sharedWishlistItemsRouter } from "./wishlists.shared.items";
@@ -22,7 +23,7 @@ export const sharedWishlistsRouter = router({
       }),
     )
     .query(async ({ ctx }) => {
-      const wishlists = await db.query.wishlist.findMany({
+      const wishlists = await ctx.db.query.wishlist.findMany({
         where: {
           OR: [
             {
@@ -46,17 +47,17 @@ export const sharedWishlistsRouter = router({
     .output(z.object({ wishlist: wishlistOutputSchema }))
     .query(({ ctx }) => {
       if (ctx.wishlist.shareStatus === "public") {
-        void db.query.wishlistPublicUsersSavedShare
+        void ctx.db.query.wishlistPublicUsersSavedShare
           .findFirst({
             where: { wishlistId: ctx.wishlist.id, userId: ctx.userId },
           })
           .then(async (res) => {
             if (!res) {
-              await db.insert(wishlistPublicUsersSavedShareTable).values({
+              await ctx.db.insert(wishlistPublicUsersSavedShareTable).values({
                 wishlistId: ctx.wishlist.id,
                 userId: ctx.userId,
               });
-              await invalidateCache(ctx.userId, {
+              await invalidateCache(ctx.db, ctx.userId, {
                 type: "wishlists",
                 wishlistId: ctx.wishlist.id,
               });

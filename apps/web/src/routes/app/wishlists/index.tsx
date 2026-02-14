@@ -2,11 +2,11 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CircleSlash2Icon, GiftIcon } from "lucide-react";
 
-import { AppDialogTrigger } from "~/components/app-dialog";
 import { CreateWishlistDialog } from "~/components/app/create-wishlist-dialog";
 import { CreateWishlistButton, Wishlist, WishlistList } from "~/components/app/wishlist";
 import { PageLayout } from "~/components/page-layout";
 import { Button } from "~/components/ui/button";
+import { DialogTrigger } from "~/components/ui/dialog";
 import {
   Empty,
   EmptyContent,
@@ -16,14 +16,10 @@ import {
   EmptyTitle,
 } from "~/components/ui/empty";
 import { useTRPC } from "~/lib/trpc";
-import { wishlistsOwnedGetAllServerFn } from "~/utils/trpc-server-fns";
 
 export const Route = createFileRoute("/app/wishlists/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData({
-      queryKey: context.trpc.wishlists.owned.getAll.queryKey(),
-      queryFn: async () => await wishlistsOwnedGetAllServerFn(),
-    });
+    await context.queryClient.ensureQueryData(context.trpc.wishlists.owned.getAll.queryOptions());
   },
   component: RouteComponent,
 });
@@ -52,10 +48,10 @@ function RouteComponent() {
           </EmptyHeader>
           <EmptyContent>
             <CreateWishlistDialog>
-              <AppDialogTrigger className="mx-4 w-full" render={<Button />}>
+              <DialogTrigger className="mx-4 w-full" render={<Button />}>
                 <GiftIcon />
                 <span>Create Wishlist</span>
-              </AppDialogTrigger>
+              </DialogTrigger>
             </CreateWishlistDialog>
           </EmptyContent>
         </Empty>

@@ -3,7 +3,7 @@ import type { Locale } from "use-intl";
 import { useRouteContext, useRouter } from "@tanstack/react-router";
 
 import { isLocale, localeCookieName, locales } from "@wishbeam/intl";
-import { setClientCookie } from "~/utils/cookie";
+import { setCookie } from "~/utils/cookie";
 
 import {
   Select,
@@ -29,7 +29,7 @@ export function LocaleSelect({ className }: { className?: string }) {
       value={locale}
       onValueChange={(e) => {
         if (isLocale(e)) {
-          setClientCookie(localeCookieName, e);
+          void setCookie(localeCookieName, e);
           void router.invalidate();
         }
       }}

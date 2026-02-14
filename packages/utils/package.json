@@ -6,16 +6,18 @@
     "#*": "./src/*"
   },
   "exports": {
-    "./schemas": "./src/schemas.ts"
+    "./*": "./src/*.ts"
   },
   "scripts": {},
   "dependencies": {
+    "@wishbeam/env": "workspace:*",
+    "pino": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
     "@wishbeam/typescript-config": "workspace:*",
+    "pino-pretty": "catalog:",
     "typescript": "catalog:"
-  },
-  "prettier": "@wishbeam/prettier-config"
+  }
 }

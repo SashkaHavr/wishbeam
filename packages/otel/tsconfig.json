@@ -1,4 +1,0 @@
-{
-  "extends": "@wishbeam/typescript-config",
-  "include": ["./src"]
-}

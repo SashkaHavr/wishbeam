@@ -92,8 +92,8 @@ export interface FileRoutesByFullPath {
   '/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
-  '/app/shared': typeof AppSharedIndexRoute
-  '/app/wishlists': typeof AppWishlistsIndexRoute
+  '/app/shared/': typeof AppSharedIndexRoute
+  '/app/wishlists/': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof publicLoginRoute
@@ -134,8 +134,8 @@ export interface FileRouteTypes {
     | '/shared/$id'
     | '/app/shared/$id'
     | '/app/wishlists/$id'
-    | '/app/shared'
-    | '/app/wishlists'
+    | '/app/shared/'
+    | '/app/wishlists/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -225,14 +225,14 @@ declare module '@tanstack/react-router' {
     '/app/wishlists/': {
       id: '/app/wishlists/'
       path: '/wishlists'
-      fullPath: '/app/wishlists'
+      fullPath: '/app/wishlists/'
       preLoaderRoute: typeof AppWishlistsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/shared/': {
       id: '/app/shared/'
       path: '/shared'
-      fullPath: '/app/shared'
+      fullPath: '/app/shared/'
       preLoaderRoute: typeof AppSharedIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }

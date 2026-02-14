@@ -1,6 +1,7 @@
 import z from "zod";
 
-import { db } from "@wishbeam/db";
+import type { db as dbType } from "@wishbeam/db";
+
 import { publish } from "@wishbeam/pubsub";
 
 import { uuidv7ToBase62 } from "./zod-utils";
@@ -23,6 +24,7 @@ export const cacheInvalidationSchema = z.discriminatedUnion("type", [
 ]);
 
 async function getUserIdsToNotify(
+  db: typeof dbType,
   data: z.infer<typeof cacheInvalidationSchema>,
 ): Promise<string[]> {
   switch (data.type) {
@@ -49,10 +51,11 @@ async function getUserIdsToNotify(
 }
 
 export async function invalidateCache(
+  db: typeof dbType,
   currentUserId: string,
   data: z.infer<typeof cacheInvalidationSchema>,
 ) {
-  const userIdsToNotify = (await getUserIdsToNotify(data)).filter((id) => id !== currentUserId);
+  const userIdsToNotify = (await getUserIdsToNotify(db, data)).filter((id) => id !== currentUserId);
   await Promise.all(
     userIdsToNotify.map(
       async (userId) =>

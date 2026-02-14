@@ -5,15 +5,15 @@ import type { TRPCOutput } from "@wishbeam/trpc";
 
 import { wishlistSchema } from "@wishbeam/utils/schemas";
 import {
-  AppDialog,
-  AppDialogBody,
-  AppDialogClose,
-  AppDialogContent,
-  AppDialogDescription,
-  AppDialogFooter,
-  AppDialogHeader,
-  AppDialogTitle,
-} from "~/components/app-dialog";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPanel,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { useUpdateWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 
 import { Form } from "../form/form";
@@ -50,27 +50,25 @@ export function UpdateWishlistDialog({ wishlist, children }: Props) {
   });
 
   return (
-    <AppDialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       {children}
-      <AppDialogContent>
+      <DialogContent>
         <form.AppForm>
           <Form className="flex w-full flex-col gap-4">
-            <AppDialogHeader>
-              <AppDialogTitle>Update wishlist</AppDialogTitle>
-              <AppDialogDescription>
-                Edit a title and description for your wishlist.
-              </AppDialogDescription>
-            </AppDialogHeader>
-            <AppDialogBody>
+            <DialogHeader>
+              <DialogTitle>Update wishlist</DialogTitle>
+              <DialogDescription>Edit a title and description for your wishlist.</DialogDescription>
+            </DialogHeader>
+            <DialogPanel>
               <WishlistFields form={form} />
-            </AppDialogBody>
-            <AppDialogFooter>
-              <AppDialogClose render={<Button variant="outline" />}>Cancel</AppDialogClose>
+            </DialogPanel>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
               <FormSubmitButton>Update wishlist</FormSubmitButton>
-            </AppDialogFooter>
+            </DialogFooter>
           </Form>
         </form.AppForm>
-      </AppDialogContent>
-    </AppDialog>
+      </DialogContent>
+    </Dialog>
   );
 }

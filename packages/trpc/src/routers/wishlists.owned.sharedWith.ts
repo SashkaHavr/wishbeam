@@ -2,10 +2,10 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
 
-import { ownedWishlistProcedure, router } from "#init.ts";
+import { router } from "#init.ts";
+import { ownedWishlistProcedure } from "#procedures/owned-wishlist-procedure.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
 import { getUserByEmail, getUserById } from "#utils/db-utils.ts";
-import { db } from "@wishbeam/db";
 import { wishlistUsersSharedWith as wishlistUsersSharedWithTable } from "@wishbeam/db/schema";
 
 const wishlistSharedWithOutputSchema = z.object({
@@ -18,7 +18,7 @@ export const ownedWishlistSharedWithRouter = router({
   getAll: ownedWishlistProcedure
     .output(z.object({ users: z.array(wishlistSharedWithOutputSchema) }))
     .query(async ({ ctx }) => {
-      const users = await db.query.wishlistUsersSharedWith.findMany({
+      const users = await ctx.db.query.wishlistUsersSharedWith.findMany({
         where: { wishlistId: ctx.wishlist.id },
         with: { user: true },
       });
@@ -40,8 +40,8 @@ export const ownedWishlistSharedWithRouter = router({
           code: "UNPROCESSABLE_CONTENT",
         });
       }
-      const newOwnerUser = await getUserByEmail(input.email);
-      const existingOwner = await db.query.wishlistUsersSharedWith.findFirst({
+      const newOwnerUser = await getUserByEmail(ctx.db, input.email);
+      const existingOwner = await ctx.db.query.wishlistUsersSharedWith.findFirst({
         where: {
           wishlistId: ctx.wishlist.id,
           userId: newOwnerUser.id,
@@ -54,7 +54,7 @@ export const ownedWishlistSharedWithRouter = router({
         });
       }
       const newSharedWithUser = (
-        await db
+        await ctx.db
           .insert(wishlistUsersSharedWithTable)
           .values({
             userId: newOwnerUser.id,
@@ -68,7 +68,7 @@ export const ownedWishlistSharedWithRouter = router({
           code: "INTERNAL_SERVER_ERROR",
         });
       }
-      void invalidateCache(ctx.userId, {
+      void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
@@ -79,14 +79,14 @@ export const ownedWishlistSharedWithRouter = router({
   delete: ownedWishlistProcedure
     .input(z.object({ userId: z.uuidv7() }))
     .mutation(async ({ input, ctx }) => {
-      const userToDelete = await getUserById(input.userId);
+      const userToDelete = await getUserById(ctx.db, input.userId);
       if (userToDelete.id === ctx.userId) {
         throw new TRPCError({
           message: "You cannot remove yourself as an owner",
           code: "UNPROCESSABLE_CONTENT",
         });
       }
-      await db
+      await ctx.db
         .delete(wishlistUsersSharedWithTable)
         .where(
           and(
@@ -94,7 +94,7 @@ export const ownedWishlistSharedWithRouter = router({
             eq(wishlistUsersSharedWithTable.userId, userToDelete.id),
           ),
         );
-      void invalidateCache(ctx.userId, {
+      void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });

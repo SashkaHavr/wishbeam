@@ -2,8 +2,7 @@ import { TrashIcon } from "lucide-react";
 
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
+  AlertDialogClose,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -32,10 +31,10 @@ export function DeleteAlertDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={onClick}>
+          <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+          <AlertDialogClose render={<Button variant="destructive" />} onClick={onClick}>
             Continue
-          </AlertDialogAction>
+          </AlertDialogClose>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

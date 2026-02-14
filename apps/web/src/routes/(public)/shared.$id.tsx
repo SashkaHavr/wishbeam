@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { AppDialogTrigger } from "~/components/app-dialog";
 import { LockButton } from "~/components/app/lock-button";
 import {
   WishlistItem,
@@ -12,15 +11,12 @@ import {
 import { LoginDialog } from "~/components/login";
 import { Logo } from "~/components/logo";
 import { PageLayout } from "~/components/page-layout";
+import { DialogTrigger } from "~/components/ui/dialog";
 import { ItemFooter } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { usePublicWishlistCacheInvalidation } from "~/hooks/use-cache-invalidation";
 import { useTRPC } from "~/lib/trpc";
 import { seo } from "~/utils/seo";
-import {
-  wishlistPublicGetByIdServerFn,
-  wishlistPublicGetItemsServerFn,
-} from "~/utils/trpc-server-fns";
 
 export const Route = createFileRoute("/(public)/shared/$id")({
   beforeLoad: ({ context, params }) => {
@@ -30,20 +26,16 @@ export const Route = createFileRoute("/(public)/shared/$id")({
   },
   loader: async ({ context, params }) => {
     const [wishlist, _] = await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.public.getById.queryKey({
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.public.getById.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistPublicGetByIdServerFn({ data: { wishlistId: params.id } }),
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: context.trpc.wishlists.public.items.getAll.queryKey({
+      ),
+      context.queryClient.ensureQueryData(
+        context.trpc.wishlists.public.items.getAll.queryOptions({
           wishlistId: params.id,
         }),
-        queryFn: async () =>
-          await wishlistPublicGetItemsServerFn({ data: { wishlistId: params.id } }),
-      }),
+      ),
     ]);
     return {
       title: wishlist.wishlist.title,
@@ -96,7 +88,7 @@ function RouteComponent() {
                   <WishlistItem key={wishlistItem.id} wishlistItem={wishlistItem}>
                     <ItemFooter className="flex">
                       <LoginDialog>
-                        <AppDialogTrigger
+                        <DialogTrigger
                           className="grow"
                           render={<LockButton lockStatus={wishlistItem.lockStatus} />}
                         />
