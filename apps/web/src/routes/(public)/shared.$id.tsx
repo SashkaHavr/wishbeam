@@ -13,7 +13,6 @@ import { Logo } from "~/components/logo";
 import { PageLayout } from "~/components/page-layout";
 import { DialogTrigger } from "~/components/ui/dialog";
 import { ItemFooter } from "~/components/ui/item";
-import { Separator } from "~/components/ui/separator";
 import { usePublicWishlistCacheInvalidation } from "~/hooks/use-cache-invalidation";
 import { useTRPC } from "~/lib/trpc";
 import { seo } from "~/utils/seo";
@@ -74,10 +73,9 @@ function RouteComponent() {
 
   return (
     <div className="flex h-[100svh] flex-col">
-      <div className="flex w-full items-center px-4 py-2.5">
-        <Logo withName />
+      <div className="flex h-14 w-full shrink-0 items-center border-b border-border bg-card/80 px-4 backdrop-blur dark:bg-background/80">
+        <Logo withName size="md" />
       </div>
-      <Separator />
       <main className="grow overflow-y-auto">
         <PageLayout>
           <WishlistItemExpanded wishlist={wishlist}>

@@ -4,20 +4,16 @@ import type React from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
-  EllipsisVerticalIcon,
   ListCheckIcon,
   LogOutIcon,
   MenuIcon,
   MoonIcon,
-  PanelLeftCloseIcon,
-  PanelLeftOpenIcon,
   Share2Icon,
   SunIcon,
 } from "lucide-react";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useState } from "react";
 
 import { useLoggedInAuth } from "~/hooks/route-context";
-import { useNotMatchesBreakpoint } from "~/hooks/use-breakpoint";
 import { useIsClient } from "~/hooks/use-is-client";
 import { useSignout } from "~/lib/auth";
 import { cn } from "~/lib/utils";
@@ -34,10 +30,10 @@ import {
   SheetDescription,
   SheetFooter,
   SheetHeader,
+  SheetPanel,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface NavLinkProps {
   to: LinkProps["to"];
@@ -53,288 +49,106 @@ const mainLinks: NavLinkProps[] = [
   },
   {
     to: "/app/shared",
-    label: "Shared with me wishlists",
+    label: "Shared with me",
     icon: Share2Icon,
   },
 ];
 
-const bottomLinks: NavLinkProps[] = [
-  // { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
-];
-
-const profileMenuLinks: NavLinkProps[] = [
-  // { to: '/app/account', label: 'Account', icon: CircleUserIcon },
-];
-
-function useKeyboardShortcut({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
-    if (event.key === "b" && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      onOpenChange(!open);
-    }
-  });
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-}
-
-function SidebarLink({
-  icon: IconProp,
-  ...props
-}: Omit<React.ComponentProps<typeof SidebarButton>, "children"> &
-  NavLinkProps & { open?: boolean }) {
+function NavTab({ to, label, icon: IconProp }: NavLinkProps) {
   return (
-    <SidebarAdaptiveButton
-      className="data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground data-[status=active]:hover:bg-sidebar-primary/90 data-[status=active]:dark:hover:bg-sidebar-primary/50"
-      icon={<IconProp />}
-      nativeButton={false}
-      {...props}
+    <Link
+      to={to}
+      className="group/tab relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-topnav-foreground transition-colors hover:bg-accent hover:text-accent-foreground data-[status=active]:text-accent-foreground"
     >
-      <Link to={props.to}>
-        <SidebarAdaptiveButtonContent open={props.open} label={props.label} icon={<IconProp />} />
-      </Link>
-    </SidebarAdaptiveButton>
+      <IconProp />
+      <span>{label}</span>
+      <span className="absolute inset-x-1 -bottom-[9px] h-0.5 scale-x-0 rounded-full bg-primary transition-transform group-data-[status=active]/tab:scale-x-100" />
+    </Link>
   );
 }
 
-function SidebarAdaptiveButtonContent({
-  open = true,
-  label,
-  icon,
-}: {
-  open?: boolean;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <>
-      {icon}
-      {open && <span>{label}</span>}
-    </>
-  );
-}
-
-function SidebarAdaptiveButton({
-  className,
-  open = true,
-  size,
-  label,
-  icon,
-  children,
-  ...props
-}: React.ComponentProps<typeof SidebarButton> &
-  React.ComponentProps<typeof SidebarAdaptiveButtonContent> & { children?: React.ReactElement }) {
-  const button = (
-    <SidebarButton
-      render={children}
-      className={cn(open && "justify-start", className)}
-      size={open ? size : "icon"}
-      {...props}
-    >
-      {children === undefined ? (
-        <SidebarAdaptiveButtonContent open={open} label={label} icon={icon} />
-      ) : undefined}
-    </SidebarButton>
-  );
-
-  return open ? (
-    button
-  ) : (
-    <Tooltip>
-      <TooltipTrigger render={button} />
-      <TooltipContent side="right">
-        <span>{label}</span>
-      </TooltipContent>
-    </Tooltip>
-  );
-}
-
-function SidebarButton({
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof Button>, "variant">) {
-  return (
-    <Button
-      variant="ghost"
-      className={cn(
-        "transition-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:border-sidebar-ring has-[>svg]:px-2 dark:hover:bg-sidebar-accent/50",
-        className,
-      )}
-      {...props}
-    ></Button>
-  );
-}
-
-function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("flex flex-col gap-1 p-2", className)} {...props}></div>;
-}
-
-function SidebarHeader({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <SidebarGroup className={cn(open ? "flex-row" : "gap-1")}>
-      <Logo withName={open} className="p-0.5" />
-      <div className="grow" />
-      <SidebarButton size="icon" onClick={() => onOpenChange(!open)}>
-        <div className="grid grid-cols-1 grid-rows-1">
-          <PanelLeftCloseIcon
-            className={cn(
-              "col-end-1 row-end-1 self-center justify-self-end transition-opacity",
-              open ? "opacity-100" : "opacity-0",
-            )}
-          />
-          <PanelLeftOpenIcon
-            className={cn(
-              "col-end-1 row-end-1 self-center justify-self-end transition-opacity",
-              open ? "opacity-0" : "opacity-100",
-            )}
-          />
-        </div>
-      </SidebarButton>
-    </SidebarGroup>
-  );
-}
-
-function ThemeSwitcher({ desktopOpen }: { desktopOpen: boolean }) {
+function ThemeSwitcher() {
   const theme = useTheme();
   const isClient = useIsClient();
 
   return (
     <>
       {(!isClient || theme.resolvedTheme === "light") && (
-        <SidebarAdaptiveButton
-          className="dark:hidden"
-          open={desktopOpen}
-          label={"Dark mode"}
-          icon={<MoonIcon />}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-topnav-foreground hover:bg-accent hover:text-accent-foreground dark:hidden"
           onClick={() => theme.setTheme("dark")}
-          size={desktopOpen ? undefined : "icon"}
-        />
+        >
+          <MoonIcon />
+        </Button>
       )}
       {(!isClient || theme.resolvedTheme === "dark") && (
-        <SidebarAdaptiveButton
-          className="hidden dark:inline-flex"
-          open={desktopOpen}
-          label={"Light mode"}
-          icon={<SunIcon />}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden text-topnav-foreground hover:bg-accent hover:text-accent-foreground dark:inline-flex"
           onClick={() => theme.setTheme("light")}
-          size={desktopOpen ? undefined : "icon"}
-        />
+        >
+          <SunIcon />
+        </Button>
       )}
     </>
   );
 }
 
-function ProfileAvatar({ imgSrc, label }: { imgSrc?: string; label: string }) {
+function MobileThemeSwitcher() {
+  const theme = useTheme();
+  const isClient = useIsClient();
+
   return (
-    <Avatar className="rounded-lg grayscale">
-      {imgSrc ? (
-        <AvatarImage src={imgSrc} alt={label} />
-      ) : (
-        <AvatarFallback className="rounded-lg uppercase">{label.slice(0, 2)}</AvatarFallback>
+    <>
+      {(!isClient || theme.resolvedTheme === "light") && (
+        <Button
+          variant="ghost"
+          className="justify-start text-muted-foreground dark:hidden"
+          onClick={() => theme.setTheme("dark")}
+        >
+          <MoonIcon />
+          <span>Dark mode</span>
+        </Button>
       )}
-    </Avatar>
+      {(!isClient || theme.resolvedTheme === "dark") && (
+        <Button
+          variant="ghost"
+          className="hidden justify-start text-muted-foreground dark:inline-flex"
+          onClick={() => theme.setTheme("light")}
+        >
+          <SunIcon />
+          <span>Light mode</span>
+        </Button>
+      )}
+    </>
   );
 }
 
-function ProfileButton({
-  open = true,
-  label,
-  endIcon,
-  imgSrc,
-  className,
-  ...props
-}: Omit<React.ComponentProps<typeof SidebarButton>, "children" | "size"> & {
-  open?: boolean;
-  label: string;
-  endIcon?: React.ReactNode;
-  imgSrc?: string;
-}) {
-  return (
-    <SidebarButton
-      className={cn("h-12 items-center font-normal", open && "justify-start p-2", className)}
-      size={open ? "lg" : "icon"}
-      {...props}
-    >
-      <ProfileAvatar imgSrc={imgSrc} label={label} />
-      {open && (
-        <>
-          <span className="truncate font-medium">{label}</span>
-          <div className="grow" />
-          {endIcon}
-        </>
-      )}
-    </SidebarButton>
-  );
-}
-
-function ProfileButtonWithPopover({
-  open,
-  onLinkClick,
-}: {
-  open?: boolean;
-  onLinkClick?: () => void;
-}) {
+function MobileProfileButton({ onLinkClick }: { onLinkClick?: () => void }) {
   const signout = useSignout();
-  const mobile = useNotMatchesBreakpoint("md");
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const auth = useLoggedInAuth();
 
   return (
-    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger
-        render={
-          <ProfileButton label={auth.user.name} endIcon={<EllipsisVerticalIcon />} open={open} />
-        }
-      />
-      <PopoverContent side={mobile ? "top" : "right"} className="p-1">
-        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm leading-tight">
-          <ProfileAvatar label={auth.user.name} />
-          <span className="truncate font-medium">{auth.user.name}</span>
-        </div>
-        <Separator className="m-1" />
-        <div>
-          {profileMenuLinks.map((item) => (
-            <Button
-              key={item.label}
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start"
-              nativeButton={false}
-              render={
-                <Link
-                  to={item.to}
-                  onClick={() => {
-                    setPopoverOpen(false);
-                    onLinkClick?.();
-                  }}
-                />
-              }
-            >
-              <item.icon />
-              <span>{item.label}</span>
-            </Button>
-          ))}
-        </div>
-        {profileMenuLinks.length > 0 && <Separator className="m-1" />}
+    <Popover>
+      <PopoverTrigger render={<Button variant="ghost" className="justify-start" />}>
+        <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
+        <span>{auth.user.name}</span>
+      </PopoverTrigger>
+      <PopoverContent
+        side="left"
+        align="start"
+        className="w-48 p-0 [&_[data-slot=popover-viewport]]:px-1 [&_[data-slot=popover-viewport]]:py-2"
+      >
         <Button
           variant="ghost"
-          size="sm"
           className="w-full justify-start"
-          onClick={() => signout.mutate()}
+          onClick={() => {
+            signout.mutate();
+            onLinkClick?.();
+          }}
         >
           <LogOutIcon />
           <span>Log out</span>
@@ -344,43 +158,80 @@ function ProfileButtonWithPopover({
   );
 }
 
-export function Sidebar({
-  className,
-  open = true,
-  onOpenChange,
-  ...props
-}: React.ComponentProps<"div"> & {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  useKeyboardShortcut({ open, onOpenChange });
+function ProfileAvatar({ imgSrc, label }: { imgSrc?: string; label: string }) {
+  return (
+    <Avatar className="rounded-lg">
+      {imgSrc ? (
+        <AvatarImage src={imgSrc} alt={label} />
+      ) : (
+        <AvatarFallback className="rounded-lg uppercase">{label.slice(0, 2)}</AvatarFallback>
+      )}
+    </Avatar>
+  );
+}
+
+function ProfileButtonWithPopover({ onLinkClick }: { onLinkClick?: () => void }) {
+  const signout = useSignout();
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const auth = useLoggedInAuth();
 
   return (
-    <div
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <PopoverTrigger
+        render={
+          <Button variant="ghost" size="icon" className="hover:bg-accent dark:hover:bg-accent" />
+        }
+      >
+        <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
+      </PopoverTrigger>
+      <PopoverContent
+        side="bottom"
+        align="end"
+        className="w-48 p-0 [&_[data-slot=popover-viewport]]:px-1 [&_[data-slot=popover-viewport]]:py-1"
+      >
+        <div className="flex items-center gap-2 px-2 py-2 text-left text-sm leading-tight">
+          <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
+          <span className="truncate font-medium">{auth.user.name}</span>
+        </div>
+        <Separator className="mx-1" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full justify-start"
+          onClick={() => {
+            signout.mutate();
+            onLinkClick?.();
+          }}
+        >
+          <LogOutIcon />
+          <span>Log out</span>
+        </Button>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export function TopNav({ className, ...props }: React.ComponentProps<"nav">) {
+  return (
+    <nav
       className={cn(
-        "hidden h-full flex-col bg-sidebar p-2 text-sidebar-foreground transition-all md:flex",
-        open ? "w-64 min-w-64" : "w-17 min-w-17",
+        "hidden h-14 w-full shrink-0 items-center gap-1 border-b border-border bg-gradient-to-r from-topnav via-topnav to-primary/4 px-4 md:flex",
         className,
       )}
       {...props}
     >
-      <SidebarHeader open={open} onOpenChange={onOpenChange} />
-      <SidebarGroup>
+      <Logo withName size="md" className="mr-6" />
+      <div className="flex items-center gap-1">
         {mainLinks.map((link) => (
-          <SidebarLink key={link.to} {...link} open={open} />
+          <NavTab key={link.to} {...link} />
         ))}
-      </SidebarGroup>
+      </div>
       <div className="grow" />
-      <SidebarGroup>
-        {bottomLinks.map((link) => (
-          <SidebarLink key={link.to} {...link} open={open} />
-        ))}
-        <ThemeSwitcher desktopOpen={open} />
-      </SidebarGroup>
-      <SidebarGroup>
-        <ProfileButtonWithPopover open={open} />
-      </SidebarGroup>
-    </div>
+      <div className="flex items-center gap-1">
+        <ThemeSwitcher />
+        <ProfileButtonWithPopover />
+      </div>
+    </nav>
   );
 }
 
@@ -388,29 +239,45 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
-  const allLinks = [...mainLinks, ...bottomLinks, ...profileMenuLinks];
   const fullPath = routerState.matches.at(-1)?.fullPath;
-  const exactMatch = allLinks.find((link) => {
+  const exactMatch = mainLinks.find((link) => {
     if (!fullPath) return false;
     const trimmedPath = fullPath.replace(/\/+$/, "");
     return link.to === trimmedPath;
   });
 
   return (
-    <div className={cn("flex w-full items-center px-4 py-2.5 md:hidden", className)} {...props}>
+    <div
+      className={cn(
+        "flex h-14 w-full shrink-0 items-center border-b border-border bg-topnav px-4 md:hidden",
+        className,
+      )}
+      {...props}
+    >
       {exactMatch ? (
-        <Button variant="ghost" nativeButton={false} render={<Link to={exactMatch.to} />}>
-          {exactMatch.label}
-        </Button>
+        <Logo withName size="md" />
       ) : (
-        <Button variant="ghost" nativeButton={false} render={<Link to={".."} />}>
+        <Button
+          variant="ghost"
+          nativeButton={false}
+          className="text-topnav-foreground"
+          render={<Link to={".."} />}
+        >
           <ChevronLeftIcon />
           <span>Back</span>
         </Button>
       )}
       <div className="grow" />
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger render={<Button size="icon" variant="ghost" />}>
+        <SheetTrigger
+          render={
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-topnav-foreground hover:bg-accent dark:hover:bg-accent"
+            />
+          }
+        >
           <MenuIcon />
         </SheetTrigger>
         <SheetContent side="right" className="w-64.25 px-2">
@@ -420,21 +287,24 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
             </SheetTitle>
             <SheetDescription className="sr-only">Navigation menu</SheetDescription>
           </SheetHeader>
-          <SidebarGroup>
-            {mainLinks.map((link) => (
-              <SidebarLink key={link.to} onClick={closeNav} {...link} />
-            ))}
-          </SidebarGroup>
-          <SheetFooter className="p-0 py-4">
-            <SidebarGroup>
-              {bottomLinks.map((link) => (
-                <SidebarLink key={link.to} onClick={closeNav} {...link} />
+          <SheetPanel className="p-2">
+            <div className="flex flex-col gap-1">
+              {mainLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={closeNav}
+                  className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
+                >
+                  <link.icon />
+                  <span>{link.label}</span>
+                </Link>
               ))}
-              <ThemeSwitcher desktopOpen={true} />
-            </SidebarGroup>
-            <SidebarGroup>
-              <ProfileButtonWithPopover open={open} onLinkClick={closeNav} />
-            </SidebarGroup>
+            </div>
+          </SheetPanel>
+          <SheetFooter className="flex-col items-stretch gap-4 px-2">
+            <MobileThemeSwitcher />
+            <MobileProfileButton onLinkClick={closeNav} />
           </SheetFooter>
         </SheetContent>
       </Sheet>

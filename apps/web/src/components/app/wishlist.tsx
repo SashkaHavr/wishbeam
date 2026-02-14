@@ -25,7 +25,10 @@ export function Wishlist({
   targetPage: (typeof _wishlistPages)[number];
 }) {
   return (
-    <Item variant="outline" render={<Link to={targetPage} params={{ id: wishlist.id }} />}>
+    <Item
+      variant="outline"
+      render={<Link to={targetPage} resetScroll={false} params={{ id: wishlist.id }} />}
+    >
       <ItemContent>
         <ItemTitle>{wishlist.title}</ItemTitle>
         <ItemDescription>{wishlist.description}</ItemDescription>

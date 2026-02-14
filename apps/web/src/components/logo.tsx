@@ -23,13 +23,13 @@ export function Logo({
     >
       <div
         className={cn(
-          "flex items-center justify-center rounded-md",
-          { md: "size-6", lg: "size-8" }[size],
+          "flex items-center justify-center rounded-lg bg-primary/16 shadow-[0_0_12px] shadow-primary/20",
+          { md: "size-7", lg: "size-9" }[size],
         )}
       >
-        <Gift className={cn({ md: "size-4", lg: "size-6" }[size])} />
+        <Gift className={cn("text-primary", { md: "size-4", lg: "size-5" }[size])} />
       </div>
-      <span className={cn(!withName && "sr-only")}>Wishbeam</span>
+      <span className={cn("tracking-tight", !withName && "sr-only")}>Wishbeam</span>
     </Link>
   );
 }

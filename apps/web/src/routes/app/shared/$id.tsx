@@ -65,8 +65,9 @@ function RouteComponent() {
                 wishlistItem={wishlistItem}
                 className={cn(
                   "transition-shadow",
-                  wishlistItem.lockStatus === "lockedByAnotherUser" && "bg-muted/50",
-                  wishlistItem.lockStatus === "lockedByCurrentUser" && "shadow-lg",
+                  wishlistItem.lockStatus === "lockedByAnotherUser" && "bg-muted opacity-75",
+                  wishlistItem.lockStatus === "lockedByCurrentUser" &&
+                    "ring-2 ring-success/30 shadow-[0_0_12px] shadow-success/12",
                 )}
               >
                 <ItemFooter className="flex">
