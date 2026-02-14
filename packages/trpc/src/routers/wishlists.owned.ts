@@ -6,7 +6,7 @@ import { router } from "#init.ts";
 import { ownedWishlistProcedure } from "#procedures/owned-wishlist-procedure.ts";
 import { protectedProcedure } from "#procedures/protected-procedure.ts";
 import { invalidateCache } from "#utils/cache-invalidation.ts";
-import { uuidv7ToBase62 } from "#utils/zod-utils.ts";
+import { base62ToUuidv7, uuidv7ToBase62 } from "#utils/zod-utils.ts";
 import {
   wishlistItem as wishlistItemTable,
   wishlistOwner as wishlistOwnerTable,
@@ -144,6 +144,17 @@ export const ownedWishlistsRouter = router({
         type: "wishlists",
         wishlistId: ctx.wishlist.id,
       });
+    }),
+  isOwned: protectedProcedure
+    .input(z.object({ wishlistId: base62ToUuidv7 }))
+    .output(z.object({ isOwned: z.boolean() }))
+    .query(async ({ input, ctx }) => {
+      const wishlist = await ctx.db.query.wishlist.findFirst({
+        where: { id: input.wishlistId, wishlistOwners: { userId: ctx.userId } },
+      });
+      return {
+        isOwned: !!wishlist,
+      };
     }),
 
   sharedWith: ownedWishlistSharedWithRouter,

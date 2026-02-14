@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { LockButton } from "~/components/app/lock-button";
 import {
@@ -18,6 +18,15 @@ import { useTRPC } from "~/lib/trpc";
 import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/app/shared/$id")({
+  beforeLoad: async ({ context, params }) => {
+    const isOwnedWishlist = await context.queryClient.ensureQueryData(
+      context.trpc.wishlists.owned.isOwned.queryOptions({ wishlistId: params.id }),
+    );
+    console.log("isOwnedWishlist", isOwnedWishlist);
+    if (isOwnedWishlist.isOwned) {
+      throw redirect({ to: "/app/wishlists/$id", params: { id: params.id } });
+    }
+  },
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData(
