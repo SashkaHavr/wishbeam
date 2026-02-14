@@ -58,7 +58,7 @@ function NavTab({ to, label, icon: IconProp }: NavLinkProps) {
   return (
     <Link
       to={to}
-      className="group/tab relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-topnav-foreground transition-colors hover:bg-accent hover:text-accent-foreground data-[status=active]:text-accent-foreground"
+      className="group/tab relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground data-[status=active]:text-accent-foreground"
     >
       <IconProp />
       <span>{label}</span>
@@ -77,7 +77,7 @@ function ThemeSwitcher() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-topnav-foreground hover:bg-accent hover:text-accent-foreground dark:hidden"
+          className="hover:bg-accent hover:text-accent-foreground dark:hidden"
           onClick={() => theme.setTheme("dark")}
         >
           <MoonIcon />
@@ -87,7 +87,7 @@ function ThemeSwitcher() {
         <Button
           variant="ghost"
           size="icon"
-          className="hidden text-topnav-foreground hover:bg-accent hover:text-accent-foreground dark:inline-flex"
+          className="hidden hover:bg-accent hover:text-accent-foreground dark:inline-flex"
           onClick={() => theme.setTheme("light")}
         >
           <SunIcon />
@@ -215,7 +215,7 @@ export function TopNav({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
       className={cn(
-        "hidden h-14 w-full shrink-0 items-center gap-1 border-b border-border bg-gradient-to-r from-topnav via-topnav to-primary/4 px-4 md:flex",
+        "hidden h-14 w-full shrink-0 items-center gap-1 border-b border-border px-4 md:flex",
         className,
       )}
       {...props}
@@ -249,7 +249,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       className={cn(
-        "flex h-14 w-full shrink-0 items-center border-b border-border bg-topnav px-4 md:hidden",
+        "flex h-14 w-full shrink-0 items-center border-b border-border px-4 md:hidden",
         className,
       )}
       {...props}
@@ -257,12 +257,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
       {exactMatch ? (
         <Logo withName size="md" />
       ) : (
-        <Button
-          variant="ghost"
-          nativeButton={false}
-          className="text-topnav-foreground"
-          render={<Link to={".."} />}
-        >
+        <Button variant="ghost" nativeButton={false} render={<Link to={".."} />}>
           <ChevronLeftIcon />
           <span>Back</span>
         </Button>
@@ -271,11 +266,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-topnav-foreground hover:bg-accent dark:hover:bg-accent"
-            />
+            <Button size="icon" variant="ghost" className="hover:bg-accent dark:hover:bg-accent" />
           }
         >
           <MenuIcon />
