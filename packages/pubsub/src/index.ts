@@ -5,7 +5,10 @@ import { on } from "events";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 
-const subscriber = new RedisClient(envPubSub.REDIS_URL, { autoReconnect: false });
+const subscriber = new RedisClient(envPubSub.REDIS_URL, {
+  autoReconnect: false,
+  idleTimeout: 30 * 1000,
+});
 const publisher = await subscriber.duplicate();
 
 export async function* subscribe<Output>({
