@@ -1,5 +1,5 @@
 import { isServer, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
 import { createServerOnlyFn } from "@tanstack/react-start";
 import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
@@ -73,10 +73,12 @@ export function useResetAuth() {
 
 export function useSignout() {
   const resetAuth = useResetAuth();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: async () => await authClient.signOut(),
     onSettled: async () => {
       await resetAuth();
+      await navigate({ to: "/" });
     },
   });
 }
