@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
@@ -27,6 +27,14 @@ import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 import { useTRPC } from "~/lib/trpc";
 
 export const Route = createFileRoute("/app/wishlists/$id")({
+  beforeLoad: async ({ context, params }) => {
+    const isOwnedWishlist = await context.queryClient.ensureQueryData(
+      context.trpc.wishlists.owned.isOwned.queryOptions({ wishlistId: params.id }),
+    );
+    if (!isOwnedWishlist.isOwned) {
+      throw redirect({ to: "/app/shared/$id", params: { id: params.id } });
+    }
+  },
   loader: async ({ context, params }) => {
     await Promise.all([
       context.queryClient.ensureQueryData(
