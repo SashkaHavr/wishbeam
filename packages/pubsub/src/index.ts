@@ -1,15 +1,14 @@
 import type z from "zod";
 
-import { RedisClient } from "bun";
 import { on } from "events";
+import { createClient } from "redis";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 
-const subscriber = new RedisClient(envPubSub.REDIS_URL, {
-  autoReconnect: false,
-  idleTimeout: 30 * 1000,
-});
-const publisher = await subscriber.duplicate();
+const subscriber = createClient({ url: envPubSub.REDIS_URL });
+const publisher = subscriber.duplicate();
+await subscriber.connect();
+await publisher.connect();
 
 export async function* subscribe<Output>({
   channel,

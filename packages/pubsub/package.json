@@ -11,6 +11,7 @@
   "scripts": {},
   "dependencies": {
     "@wishbeam/env": "workspace:*",
+    "redis": "5.10.0",
     "zod": "catalog:"
   },
   "devDependencies": {
