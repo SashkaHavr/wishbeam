@@ -56,6 +56,20 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
     links: [
       { rel: "stylesheet", href: indexCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      {
+        rel: "preload",
+        as: "font",
+        crossOrigin: "",
+        type: "font/woff2",
+        href: "/fonts/inter.woff2",
+      },
+      {
+        rel: "preload",
+        as: "font",
+        crossOrigin: "",
+        type: "font/woff2",
+        href: "/fonts/source-serif-4.woff2",
+      },
     ],
   }),
 });

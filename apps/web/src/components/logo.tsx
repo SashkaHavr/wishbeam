@@ -18,7 +18,7 @@ export function Logo({
     <Link
       to="/"
       aria-label="home"
-      className={cn("flex items-center gap-2 font-medium text-secondary-foreground", className)}
+      className={cn("flex items-center gap-2  text-secondary-foreground", className)}
       {...props}
     >
       <div
@@ -29,7 +29,11 @@ export function Logo({
       >
         <Gift className={cn("text-primary", { md: "size-4", lg: "size-5" }[size])} />
       </div>
-      <span className={cn("tracking-tight", !withName && "sr-only")}>Wishbeam</span>
+      <span
+        className={cn("tracking-tight font-heading font-medium text-lg", !withName && "sr-only")}
+      >
+        Wishbeam
+      </span>
     </Link>
   );
 }

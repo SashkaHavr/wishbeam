@@ -93,7 +93,7 @@ export function ShareWishlistDialog({ children, wishlist }: Props) {
           >
             {shareItems.map((item) => (
               <Label
-                className="flex items-start gap-2 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50"
+                className="flex items-start gap-2 rounded-lg border p-3 hover:bg-accent/50 has-data-checked:border-primary/48 has-data-checked:bg-accent/50 dark:hover:bg-accent/20 dark:has-data-checked:bg-accent/20"
                 key={item.value}
               >
                 <Collapsible

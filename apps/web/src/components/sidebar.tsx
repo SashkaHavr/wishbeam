@@ -216,10 +216,8 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
           <MenuIcon />
         </SheetTrigger>
         <SheetPopup side="right" className="w-64.25 px-2" showCloseButton={false}>
-          <SheetHeader>
-            <SheetTitle>
-              <Logo withName onClick={closeNav} />
-            </SheetTitle>
+          <SheetHeader className="items-center">
+            <Logo withName onClick={closeNav} />
             <SheetDescription className="sr-only">Navigation menu</SheetDescription>
           </SheetHeader>
           <SheetPanel className="p-2">
