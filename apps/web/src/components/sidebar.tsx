@@ -1,7 +1,7 @@
 import type { LinkProps } from "@tanstack/react-router";
 import type React from "react";
 
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
   ListCheckIcon,
@@ -22,7 +22,6 @@ import { Logo } from "./logo";
 import { useTheme } from "./theme/context";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button, LinkButton } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 import {
   Sheet,
@@ -31,7 +30,6 @@ import {
   SheetHeader,
   SheetPanel,
   SheetPopup,
-  SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
 
@@ -54,20 +52,13 @@ const mainLinks: NavLinkProps[] = [
   },
 ];
 
-function NavTab({ to, label, icon: IconProp }: NavLinkProps) {
-  return (
-    <Link
-      to={to}
-      className="group/tab relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground data-[status=active]:text-accent-foreground"
-    >
-      <IconProp />
-      <span>{label}</span>
-      <span className="absolute inset-x-1 -bottom-[9px] h-0.5 scale-x-0 rounded-full bg-primary transition-transform group-data-[status=active]/tab:scale-x-100" />
-    </Link>
-  );
+export function isMainLinkPath(path?: string) {
+  if (!path) return false;
+  const trimmedPath = path.replace(/\/+$/, "");
+  return mainLinks.some((link) => link.to === trimmedPath);
 }
 
-function ThemeSwitcher({ mobile = false }: { mobile?: boolean }) {
+function ThemeSwitcher() {
   const theme = useTheme();
   const isClient = useIsClient();
 
@@ -76,23 +67,21 @@ function ThemeSwitcher({ mobile = false }: { mobile?: boolean }) {
       {(!isClient || theme.resolvedTheme === "light") && (
         <Button
           variant="ghost"
-          size="icon"
-          className={cn("dark:hidden", mobile && "w-full justify-start")}
+          className="w-full justify-start dark:hidden"
           onClick={() => theme.setTheme("dark")}
         >
           <MoonIcon />
-          {mobile && <span>Dark mode</span>}
+          <span>Dark mode</span>
         </Button>
       )}
       {(!isClient || theme.resolvedTheme === "dark") && (
         <Button
           variant="ghost"
-          size="icon"
-          className={cn("hidden dark:inline-flex", mobile && "w-full justify-start")}
+          className="hidden w-full justify-start dark:inline-flex"
           onClick={() => theme.setTheme("light")}
         >
           <SunIcon />
-          {mobile && <span>Light mode</span>}
+          <span>Light mode</span>
         </Button>
       )}
     </>
@@ -111,84 +100,88 @@ function ProfileAvatar({ imgSrc, label }: { imgSrc?: string; label: string }) {
   );
 }
 
-function ProfileButtonWithPopover({ onLinkClick }: { onLinkClick?: () => void }) {
-  const signout = useSignout();
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const auth = useLoggedInAuth();
-
+export function SidebarLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger
-        render={
-          <Button variant="ghost" size="icon" className="hover:bg-accent dark:hover:bg-accent" />
-        }
-      >
-        <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
-      </PopoverTrigger>
-      <PopoverContent
-        side="bottom"
-        align="end"
-        className="w-48 p-0 [&_[data-slot=popover-viewport]]:px-1 [&_[data-slot=popover-viewport]]:py-1"
-      >
-        <div className="flex items-center gap-2 px-2 py-2 text-left text-sm leading-tight">
-          <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
-          <span className="truncate font-medium">{auth.user.name}</span>
-        </div>
-        <Separator className="mx-1" />
-        <Button
+    <div className="flex flex-col gap-1">
+      {mainLinks.map((link) => (
+        <LinkButton
+          key={link.to}
+          to={link.to}
+          onClick={onNavigate}
           variant="ghost"
-          size="sm"
-          className="w-full justify-start"
-          onClick={() => {
-            signout.mutate();
-            onLinkClick?.();
-          }}
+          className="justify-start data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
         >
-          <LogOutIcon />
-          <span>Log out</span>
-        </Button>
-      </PopoverContent>
-    </Popover>
+          <link.icon />
+          <span>{link.label}</span>
+        </LinkButton>
+      ))}
+    </div>
   );
 }
 
-export function TopNav({ className, ...props }: React.ComponentProps<"nav">) {
+export function SidebarFooter() {
+  const auth = useLoggedInAuth();
+  const signout = useSignout();
+
   return (
-    <nav
+    <div className="flex flex-col gap-4">
+      <ThemeSwitcher />
+      <Separator />
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 px-1 font-medium">
+          <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
+          <span>{auth.user.name}</span>
+        </div>
+        <Button onClick={() => signout.mutate()} variant="ghost" className="justify-start">
+          <LogOutIcon />
+          <span>Log out</span>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function DesktopNav({ className, ...props }: React.ComponentProps<"aside">) {
+  const routerState = useRouterState();
+  const fullPath = routerState.matches.at(-1)?.fullPath;
+  const isMainPath = isMainLinkPath(fullPath);
+
+  return (
+    <aside
       className={cn(
-        "hidden h-14 w-full shrink-0 items-center gap-1 border-b border-border px-4 md:flex",
+        "hidden h-[100svh] w-64.25 shrink-0 border-r border-border px-2 py-4 md:flex md:flex-col",
         className,
       )}
       {...props}
     >
-      <Logo withName size="md" className="mr-6" />
-      <div className="flex items-center gap-1">
-        {mainLinks.map((link) => (
-          <NavTab key={link.to} {...link} />
-        ))}
+      <div className="px-2 pb-4">
+        {isMainPath ? (
+          <div className="flex h-8 flex-col justify-center">
+            <Logo withName size="md" />
+          </div>
+        ) : (
+          <LinkButton variant="ghost" to=".." className="justify-start">
+            <ChevronLeftIcon />
+            <span>Back</span>
+          </LinkButton>
+        )}
       </div>
-      <div className="grow" />
-      <div className="flex items-center gap-1">
-        <ThemeSwitcher />
-        <ProfileButtonWithPopover />
+      <div className="flex-1 overflow-y-auto p-2">
+        <SidebarLinks />
       </div>
-    </nav>
+      <div className="px-2 pb-2">
+        <SidebarFooter />
+      </div>
+    </aside>
   );
 }
 
 export function MobileNav({ className, ...props }: React.ComponentProps<"div">) {
-  const auth = useLoggedInAuth();
-  const signout = useSignout();
-
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
   const fullPath = routerState.matches.at(-1)?.fullPath;
-  const exactMatch = mainLinks.find((link) => {
-    if (!fullPath) return false;
-    const trimmedPath = fullPath.replace(/\/+$/, "");
-    return link.to === trimmedPath;
-  });
+  const isMainPath = isMainLinkPath(fullPath);
 
   return (
     <div
@@ -198,7 +191,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
       )}
       {...props}
     >
-      {exactMatch ? (
+      {isMainPath ? (
         <Logo withName size="md" />
       ) : (
         <LinkButton variant="ghost" to="..">
@@ -221,36 +214,10 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
             <SheetDescription className="sr-only">Navigation menu</SheetDescription>
           </SheetHeader>
           <SheetPanel className="p-2">
-            <div className="flex flex-col gap-1">
-              {mainLinks.map((link) => (
-                <LinkButton
-                  key={link.to}
-                  to={link.to}
-                  onClick={closeNav}
-                  variant="ghost"
-                  className="justify-start data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
-                >
-                  <link.icon />
-                  <span>{link.label}</span>
-                </LinkButton>
-              ))}
-            </div>
+            <SidebarLinks onNavigate={closeNav} />
           </SheetPanel>
-          <SheetFooter className="flex-col items-stretch gap-4 px-2">
-            <div className="flex flex-col px-2">
-              <ThemeSwitcher mobile />
-            </div>
-            <Separator />
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 px-1 font-medium">
-                <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
-                <span>{auth.user.name}</span>
-              </div>
-              <Button onClick={() => signout.mutate()} variant="ghost" className="justify-start">
-                <LogOutIcon />
-                <span>Log out</span>
-              </Button>
-            </div>
+          <SheetFooter className="flex-col items-stretch gap-4 px-2 sm:flex-col">
+            <SidebarFooter />
           </SheetFooter>
         </SheetPopup>
       </Sheet>
