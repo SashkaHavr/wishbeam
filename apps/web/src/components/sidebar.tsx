@@ -21,16 +21,16 @@ import { cn } from "~/lib/utils";
 import { Logo } from "./logo";
 import { useTheme } from "./theme/context";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Button, LinkButton } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Separator } from "./ui/separator";
 import {
   Sheet,
-  SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetPanel,
+  SheetPopup,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
@@ -67,7 +67,7 @@ function NavTab({ to, label, icon: IconProp }: NavLinkProps) {
   );
 }
 
-function ThemeSwitcher() {
+function ThemeSwitcher({ mobile = false }: { mobile?: boolean }) {
   const theme = useTheme();
   const isClient = useIsClient();
 
@@ -77,84 +77,25 @@ function ThemeSwitcher() {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-accent hover:text-accent-foreground dark:hidden"
+          className={cn("dark:hidden", mobile && "w-full justify-start")}
           onClick={() => theme.setTheme("dark")}
         >
           <MoonIcon />
+          {mobile && <span>Dark mode</span>}
         </Button>
       )}
       {(!isClient || theme.resolvedTheme === "dark") && (
         <Button
           variant="ghost"
           size="icon"
-          className="hidden hover:bg-accent hover:text-accent-foreground dark:inline-flex"
+          className={cn("hidden dark:inline-flex", mobile && "w-full justify-start")}
           onClick={() => theme.setTheme("light")}
         >
           <SunIcon />
+          {mobile && <span>Light mode</span>}
         </Button>
       )}
     </>
-  );
-}
-
-function MobileThemeSwitcher() {
-  const theme = useTheme();
-  const isClient = useIsClient();
-
-  return (
-    <>
-      {(!isClient || theme.resolvedTheme === "light") && (
-        <Button
-          variant="ghost"
-          className="justify-start text-muted-foreground dark:hidden"
-          onClick={() => theme.setTheme("dark")}
-        >
-          <MoonIcon />
-          <span>Dark mode</span>
-        </Button>
-      )}
-      {(!isClient || theme.resolvedTheme === "dark") && (
-        <Button
-          variant="ghost"
-          className="hidden justify-start text-muted-foreground dark:inline-flex"
-          onClick={() => theme.setTheme("light")}
-        >
-          <SunIcon />
-          <span>Light mode</span>
-        </Button>
-      )}
-    </>
-  );
-}
-
-function MobileProfileButton({ onLinkClick }: { onLinkClick?: () => void }) {
-  const signout = useSignout();
-  const auth = useLoggedInAuth();
-
-  return (
-    <Popover>
-      <PopoverTrigger render={<Button variant="ghost" className="justify-start" />}>
-        <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
-        <span>{auth.user.name}</span>
-      </PopoverTrigger>
-      <PopoverContent
-        side="left"
-        align="start"
-        className="w-48 p-0 [&_[data-slot=popover-viewport]]:px-1 [&_[data-slot=popover-viewport]]:py-2"
-      >
-        <Button
-          variant="ghost"
-          className="w-full justify-start"
-          onClick={() => {
-            signout.mutate();
-            onLinkClick?.();
-          }}
-        >
-          <LogOutIcon />
-          <span>Log out</span>
-        </Button>
-      </PopoverContent>
-    </Popover>
   );
 }
 
@@ -236,6 +177,9 @@ export function TopNav({ className, ...props }: React.ComponentProps<"nav">) {
 }
 
 export function MobileNav({ className, ...props }: React.ComponentProps<"div">) {
+  const auth = useLoggedInAuth();
+  const signout = useSignout();
+
   const [open, setOpen] = useState(false);
   const closeNav = () => setOpen(false);
   const routerState = useRouterState();
@@ -257,10 +201,10 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
       {exactMatch ? (
         <Logo withName size="md" />
       ) : (
-        <Button variant="ghost" nativeButton={false} render={<Link to={".."} />}>
+        <LinkButton variant="ghost" to="..">
           <ChevronLeftIcon />
           <span>Back</span>
-        </Button>
+        </LinkButton>
       )}
       <div className="grow" />
       <Sheet open={open} onOpenChange={setOpen}>
@@ -271,7 +215,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
         >
           <MenuIcon />
         </SheetTrigger>
-        <SheetContent side="right" className="w-64.25 px-2">
+        <SheetPopup side="right" className="w-64.25 px-2" showCloseButton={false}>
           <SheetHeader>
             <SheetTitle>
               <Logo withName onClick={closeNav} />
@@ -281,23 +225,36 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
           <SheetPanel className="p-2">
             <div className="flex flex-col gap-1">
               {mainLinks.map((link) => (
-                <Link
+                <LinkButton
                   key={link.to}
                   to={link.to}
                   onClick={closeNav}
-                  className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
+                  variant="ghost"
+                  className="justify-start data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
                 >
                   <link.icon />
                   <span>{link.label}</span>
-                </Link>
+                </LinkButton>
               ))}
             </div>
           </SheetPanel>
           <SheetFooter className="flex-col items-stretch gap-4 px-2">
-            <MobileThemeSwitcher />
-            <MobileProfileButton onLinkClick={closeNav} />
+            <div className="flex flex-col px-2">
+              <ThemeSwitcher mobile />
+            </div>
+            <Separator />
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 px-1 font-medium">
+                <ProfileAvatar label={auth.user.name} imgSrc={auth.user.image ?? undefined} />
+                <span>{auth.user.name}</span>
+              </div>
+              <Button onClick={() => signout.mutate()} variant="ghost" className="justify-start">
+                <LogOutIcon />
+                <span>Log out</span>
+              </Button>
+            </div>
           </SheetFooter>
-        </SheetContent>
+        </SheetPopup>
       </Sheet>
     </div>
   );

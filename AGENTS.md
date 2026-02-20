@@ -26,8 +26,7 @@ Bun-based TypeScript monorepo with a TanStack React Start app and shared package
 - Use `~/lib/utils` `cn(...)` for className composition in React components.
 - Use base components from `src/components/ui/*` whenever possible.
 - Base components are created with base-ui primitives and do not have `asChild`. Use the `render` prop instead.
-  Example: `<Button className="..." render={<Link to="..." />}>Click me!</Button>`.
-- When rendering links inside buttons, pass `nativeButton={false}` and use `render={<Link ... />}`.
+  Example: `<DialogTrigger render={<Button />}>Click me!</Button>`.
 - Use form components and hooks from `src/components/form/*` for forms.
 
 #### Example form usage:
