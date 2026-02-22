@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/dialog";
 import { useCreateWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 
-import { Form } from "../form/form";
+import { FormForm } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistFields } from "../form/wishlist-form.components";
@@ -54,7 +54,7 @@ export function CreateWishlistDialog({
       {children}
       <DialogContent>
         <form.AppForm>
-          <Form className="flex w-full flex-col gap-4">
+          <FormForm>
             <DialogHeader>
               <DialogTitle>Create new wishlist</DialogTitle>
               <DialogDescription>Add a title and description to your wishlist.</DialogDescription>
@@ -66,7 +66,7 @@ export function CreateWishlistDialog({
               <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
               <FormSubmitButton>Create wishlist</FormSubmitButton>
             </DialogFooter>
-          </Form>
+          </FormForm>
         </form.AppForm>
       </DialogContent>
     </Dialog>

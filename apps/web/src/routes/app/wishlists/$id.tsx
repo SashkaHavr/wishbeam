@@ -3,7 +3,6 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
-
 import { DeleteAlertDialog } from "~/components/alerts/delete-alert-dialog";
 import { ShareWishlistDialog } from "~/components/app/share-wishlist-dialog";
 import { UpdateOwnersDialog } from "~/components/app/update-owners-dialog";

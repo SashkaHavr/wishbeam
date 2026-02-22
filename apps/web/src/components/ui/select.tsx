@@ -1,13 +1,10 @@
-"use client";
-
-import type { VariantProps } from "class-variance-authority";
-import type * as React from "react";
-
 import { mergeProps } from "@base-ui/react/merge-props";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import { useRender } from "@base-ui/react/use-render";
+import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import { ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon } from "lucide-react";
+import type * as React from "react";
 
 import { cn } from "~/lib/utils";
 
@@ -49,7 +46,7 @@ function SelectButton({ className, size, render, children, ...props }: SelectBut
         <ChevronsUpDownIcon className={selectTriggerIconClassName} />
       </>
     ),
-    className: cn(selectTriggerVariants({ size }), "min-w-none", className),
+    className: cn(selectTriggerVariants({ size }), "min-w-0", className),
     "data-slot": "select-button",
     type: typeValue,
   };

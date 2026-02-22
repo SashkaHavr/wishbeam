@@ -6,7 +6,7 @@ import z from "zod";
 import { useLoggedInAuth } from "~/hooks/route-context";
 import { cn } from "~/lib/utils";
 
-import { Form } from "./form/form";
+import { FormForm } from "./form/form";
 import { FormField } from "./form/form-field";
 import { FormFieldError } from "./form/form-field-error";
 import { FormInputGroupInput } from "./form/form-input-group-input";
@@ -77,7 +77,7 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
         </ItemGroup>
       )}
       <form.AppForm>
-        <Form className="flex w-full flex-col gap-4">
+        <FormForm>
           <form.AppField name="email">
             {() => (
               <FormField>
@@ -91,7 +91,7 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
               </FormField>
             )}
           </form.AppField>
-        </Form>
+        </FormForm>
       </form.AppForm>
     </div>
   );

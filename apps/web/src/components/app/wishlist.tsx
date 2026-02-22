@@ -1,8 +1,7 @@
 import type { LinkProps } from "@tanstack/react-router";
-import type React from "react";
-
 import { Link } from "@tanstack/react-router";
 import { ChevronRightIcon, PlusIcon } from "lucide-react";
+import type React from "react";
 
 import { cn } from "~/lib/utils";
 

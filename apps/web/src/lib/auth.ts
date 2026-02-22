@@ -5,7 +5,6 @@ import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 import type { AuthType } from "@wishbeam/auth";
-
 import { auth } from "@wishbeam/auth";
 import { ac, roles } from "@wishbeam/auth/permissions";
 import { createSSRRequest } from "~/utils/create-ssr-request";
@@ -17,7 +16,8 @@ const authServerFetch = createServerOnlyFn(
 
 export const authClient = createAuthClient({
   basePath: "/auth",
-  plugins: [inferAdditionalFields<AuthType>(), adminClient({ ac: ac, roles: roles })],
+  // @ts-expect-error type error in tsgo?
+  plugins: [inferAdditionalFields<AuthType>(), adminClient({ ac, roles })],
   fetchOptions: { throw: true, customFetchImpl: isServer ? authServerFetch : undefined },
 });
 

@@ -5,7 +5,6 @@ import { createTRPCContext, createTRPCOptionsProxy } from "@trpc/tanstack-react-
 import superjson from "superjson";
 
 import type { TRPCRouter } from "@wishbeam/trpc";
-
 import { trpcHandler } from "@wishbeam/trpc";
 import { createSSRRequest } from "~/utils/create-ssr-request";
 

@@ -1,7 +1,7 @@
-import type z from "zod";
-
 import { on } from "events";
+
 import { createClient } from "redis";
+import type z from "zod";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 

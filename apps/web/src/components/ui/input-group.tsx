@@ -1,14 +1,12 @@
 "use client";
 
 import type { VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import type * as React from "react";
 
-import { cva } from "class-variance-authority";
-
 import type { InputProps } from "~/components/ui/input";
-import type { TextareaProps } from "~/components/ui/textarea";
-
 import { Input } from "~/components/ui/input";
+import type { TextareaProps } from "~/components/ui/textarea";
 import { Textarea } from "~/components/ui/textarea";
 import { cn } from "~/lib/utils";
 
@@ -57,6 +55,7 @@ function InputGroupAddon({
       className={cn(inputGroupAddonVariants({ align }), className)}
       data-align={align}
       data-slot="input-group-addon"
+      role="group"
       onMouseDown={(e) => {
         const target = e.target as HTMLElement;
         const isInteractive = target.closest(

@@ -1,6 +1,4 @@
 import type { LinkProps } from "@tanstack/react-router";
-import type React from "react";
-
 import { useRouterState } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
@@ -11,6 +9,7 @@ import {
   Share2Icon,
   SunIcon,
 } from "lucide-react";
+import type React from "react";
 import { useState } from "react";
 
 import { useLoggedInAuth } from "~/hooks/route-context";

@@ -12,6 +12,7 @@
   "dependencies": {
     "@wishbeam/env": "workspace:*",
     "pino": "catalog:",
+    "use-intl": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

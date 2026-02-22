@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckIcon, CopyIcon } from "lucide-react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
-
 import { useSetShareStatusWishlistMutation } from "~/hooks/mutations/wishlists.owned";
 import {
   useAddWishlistSharedWithMutation,

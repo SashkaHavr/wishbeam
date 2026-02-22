@@ -1,8 +1,7 @@
+import { useRouteContext, useRouter } from "@tanstack/react-router";
 import type { Locale } from "use-intl";
 
-import { useRouteContext, useRouter } from "@tanstack/react-router";
-
-import { isLocale, localeCookieName, locales } from "@wishbeam/intl";
+import { isLocale, localeCookieName, locales } from "@wishbeam/utils/intl";
 import { setCookie } from "~/utils/cookie";
 
 import {

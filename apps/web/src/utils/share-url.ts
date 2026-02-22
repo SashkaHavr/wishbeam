@@ -1,5 +1,4 @@
 import type { LinkProps } from "@tanstack/react-router";
-
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 

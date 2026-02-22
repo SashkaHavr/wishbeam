@@ -4,7 +4,7 @@ import z from "zod";
 import { wishlistItemSchema } from "@wishbeam/utils/schemas";
 import { useUpdateWishlistItemMutation } from "~/hooks/mutations/wishlists.owned.items";
 
-import { Form } from "../form/form";
+import { FormForm } from "../form/form";
 import { FormSubmitButton } from "../form/form-submit-button";
 import { useAppForm } from "../form/use-app-form";
 import { WishlistItemFields } from "../form/wishlist-item-form.components";
@@ -75,7 +75,7 @@ export function UpdateWishlistItemDialog({
       {children}
       <DialogContent>
         <form.AppForm>
-          <Form className="flex w-full flex-col gap-4">
+          <FormForm>
             <DialogHeader>
               <DialogTitle>Update wishlist item</DialogTitle>
               <DialogDescription>Update the details for your wishlist item.</DialogDescription>
@@ -87,7 +87,7 @@ export function UpdateWishlistItemDialog({
               <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
               <FormSubmitButton>Update wishlist item</FormSubmitButton>
             </DialogFooter>
-          </Form>
+          </FormForm>
         </form.AppForm>
       </DialogContent>
     </Dialog>
