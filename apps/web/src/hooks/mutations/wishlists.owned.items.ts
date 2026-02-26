@@ -189,3 +189,76 @@ export function useSetStatusWishlistItemMutation({ wishlistId }: { wishlistId: s
     }),
   );
 }
+
+export function useMoveWishlistItemUpMutation({ wishlistId }: { wishlistId: string }) {
+  const trpc = useTRPC();
+  return useMutation(
+    trpc.wishlists.owned.items.move.mutationOptions({
+      onMutate: async (input, context) => {
+        await context.client.cancelQueries({
+          queryKey: trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        });
+
+        const previous = context.client.getQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        );
+
+        context.client.setQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+          (old) => {
+            if (!old) return old;
+
+            const currentIndex = old.wishlistItems.findIndex(
+              (wishlistItem) => wishlistItem.id === input.wishlistItemId,
+            );
+            if (
+              currentIndex === 0 ||
+              currentIndex === old.wishlistItems.length - 1 ||
+              currentIndex === -1
+            ) {
+              return old;
+            }
+
+            const newItems = [...old.wishlistItems];
+
+            if (input.direction === "up") {
+              const t = newItems[currentIndex - 1]!;
+              newItems[currentIndex - 1] = newItems[currentIndex]!;
+              newItems[currentIndex] = t;
+            } else {
+              const t = newItems[currentIndex + 1]!;
+              newItems[currentIndex + 1] = newItems[currentIndex]!;
+              newItems[currentIndex] = t;
+            }
+
+            return { wishlistItems: newItems };
+          },
+        );
+
+        return { previous };
+      },
+      onError: (err, input, onMutateResult, context) => {
+        if (!onMutateResult) return;
+        context.client.setQueryData(
+          trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+          onMutateResult.previous,
+        );
+      },
+      onSettled: (response, error, input, onMutateResult, context) => {
+        void context.client.invalidateQueries({
+          queryKey: trpc.wishlists.owned.items.getAll.queryKey({
+            wishlistId: wishlistId,
+          }),
+        });
+      },
+    }),
+  );
+}

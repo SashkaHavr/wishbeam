@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { index, integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { baseTable } from "#utils/base-table.ts";
 import { oneToMany, oneToManyCascadeOnDelete, oneToManyNullable } from "#utils/foreign-keys.ts";
@@ -35,6 +35,7 @@ export const wishlistItem = pgTable(
   {
     ...baseTable,
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
+    order: integer().generatedByDefaultAsIdentity().notNull(),
     title: text().notNull(),
     description: text().notNull(),
     links: text()

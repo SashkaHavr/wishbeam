@@ -60,7 +60,7 @@ export const sharedWishlistItemsRouter = router({
     .query(async ({ ctx }) => {
       const wishlistItems = await ctx.db.query.wishlistItem.findMany({
         where: { wishlistId: ctx.wishlist.id, status: "active" },
-        orderBy: { createdAt: "asc" },
+        orderBy: { order: "asc" },
       });
       return {
         wishlistItems: wishlistItems.map((item) => ({

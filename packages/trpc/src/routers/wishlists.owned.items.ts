@@ -51,7 +51,7 @@ export const ownedWishlistItemsRouter = router({
     .query(async ({ ctx }) => {
       const wishlistItems = await ctx.db.query.wishlistItem.findMany({
         where: { wishlistId: ctx.wishlist.id },
-        orderBy: { createdAt: "asc" },
+        orderBy: { order: "asc" },
       });
       return { wishlistItems };
     }),
@@ -118,6 +118,56 @@ export const ownedWishlistItemsRouter = router({
           lockChangedAt: new Date(),
         })
         .where(eq(wishlistItemTable.id, ctx.wishlistItem.id));
+      void invalidateCache(ctx.db, ctx.userId, {
+        type: "wishlists",
+        wishlistId: ctx.wishlist.id,
+      });
+    }),
+  move: ownedWishlistItemProcedure
+    .input(z.object({ direction: z.enum(["up", "down"]) }))
+    .output(z.undefined())
+    .mutation(async ({ input, ctx }) => {
+      const items = await ctx.db.query.wishlistItem.findMany({
+        where: { wishlistId: ctx.wishlist.id },
+        orderBy: { order: "asc" },
+      });
+      const currentItem = items.find((item) => item.id === ctx.wishlistItem.id);
+      if (!currentItem) {
+        throw new TRPCError({
+          message: "Wishlist item not found",
+          code: "NOT_FOUND",
+        });
+      }
+      const anotherItem =
+        input.direction === "up"
+          ? items.findLast((item) => item.order < currentItem.order)
+          : items.find((item) => item.order > currentItem.order);
+      if (!anotherItem) {
+        return;
+      }
+
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .select()
+          .from(wishlistItemTable)
+          .where(eq(wishlistItemTable.id, currentItem.id))
+          .for("update");
+        await tx
+          .select()
+          .from(wishlistItemTable)
+          .where(eq(wishlistItemTable.id, anotherItem.id))
+          .for("update");
+
+        await tx
+          .update(wishlistItemTable)
+          .set({ order: anotherItem.order })
+          .where(eq(wishlistItemTable.id, currentItem.id));
+        await tx
+          .update(wishlistItemTable)
+          .set({ order: currentItem.order })
+          .where(eq(wishlistItemTable.id, anotherItem.id));
+      });
+
       void invalidateCache(ctx.db, ctx.userId, {
         type: "wishlists",
         wishlistId: ctx.wishlist.id,

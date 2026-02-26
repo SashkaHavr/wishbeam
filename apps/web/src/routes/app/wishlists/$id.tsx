@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, EditIcon, Share2Icon, UserPlusIcon } from "lucide-react";
 
 import type { TRPCOutput } from "@wishbeam/trpc";
 import { DeleteAlertDialog } from "~/components/alerts/delete-alert-dialog";
@@ -20,9 +20,11 @@ import {
 import { PageLayout } from "~/components/page-layout";
 import { Button } from "~/components/ui/button";
 import { DialogTrigger } from "~/components/ui/dialog";
+import { Group, GroupSeparator } from "~/components/ui/group";
 import { ItemActions, ItemFooter } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { useDeleteWishlistMutation } from "~/hooks/mutations/wishlists.owned";
+import { useMoveWishlistItemUpMutation } from "~/hooks/mutations/wishlists.owned.items";
 import { useTRPC } from "~/lib/trpc";
 
 export const Route = createFileRoute("/app/wishlists/$id")({
@@ -162,7 +164,38 @@ function WishlistItemComposed({
         <UpdateWishlistItemButton wishlistItem={wishlistItem} wishlistId={wishlistId} />
         <DeleteWishlistItemButton wishlistItemId={wishlistItem.id} wishlistId={wishlistId} />
         <ArchiveWishlistItemButton wishlistItem={wishlistItem} wishlistId={wishlistId} />
+        <WishlistItemOrderButtons wishlistId={wishlistId} wishlistItemId={wishlistItem.id} />
       </ItemFooter>
     </WishlistItem>
+  );
+}
+
+function WishlistItemOrderButtons({
+  wishlistId,
+  wishlistItemId,
+}: {
+  wishlistId: string;
+  wishlistItemId: string;
+}) {
+  const move = useMoveWishlistItemUpMutation({ wishlistId });
+
+  return (
+    <Group className="w-full">
+      <Button
+        className="grow"
+        variant="outline"
+        onClick={() => move.mutate({ wishlistItemId, direction: "up" })}
+      >
+        <ArrowUpIcon />
+      </Button>
+      <GroupSeparator />
+      <Button
+        className="grow"
+        variant="outline"
+        onClick={() => move.mutate({ wishlistItemId, direction: "down" })}
+      >
+        <ArrowDownIcon />
+      </Button>
+    </Group>
   );
 }
