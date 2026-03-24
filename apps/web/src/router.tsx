@@ -14,6 +14,7 @@ export function getRouter() {
     context: { ...trpcRouteContext },
     routeTree,
     scrollRestoration: true,
+    scrollToTopSelectors: ["#main-scrollable-area"],
     defaultPreloadStaleTime: 0,
     defaultPreload: "intent",
     defaultPendingComponent: PendingComponent,

@@ -12,7 +12,9 @@ export function AppNav({ className, children, ...props }: React.ComponentProps<"
     <div className={cn("flex h-[100svh] flex-col md:flex-row", className)} {...props}>
       {mobile && <MobileNav />}
       {desktop && <DesktopNav />}
-      <main className="grow overflow-y-auto">{children}</main>
+      <main id="main-scrollable-area" className="grow overflow-y-auto">
+        {children}
+      </main>
     </div>
   );
 }
