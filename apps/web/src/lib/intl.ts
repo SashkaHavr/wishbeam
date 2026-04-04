@@ -59,18 +59,7 @@ export const localeToString: Record<Locale, string> = {
   en: "English",
 };
 
-export const intlFormats = {
-  dateTime: {
-    full: {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    },
-  },
-} satisfies Formats;
+export const intlFormats = {} satisfies Formats;
 
 declare module "use-intl" {
   interface AppConfig {

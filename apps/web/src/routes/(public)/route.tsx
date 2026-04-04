@@ -4,7 +4,7 @@ export const Route = createFileRoute("/(public)")({
   beforeLoad: ({ context, matches }) => {
     if (matches.some((m) => m.routeId === "/(public)/shared/$id")) return;
 
-    if (context.auth.user) {
+    if (context.auth.loggedIn) {
       throw redirect({ to: "/app" });
     }
   },

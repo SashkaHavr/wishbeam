@@ -42,7 +42,7 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
         formApi.reset();
       } catch (error) {
         if (error instanceof TRPCClientError) {
-          formApi.fieldInfo.email.instance?.setErrorMap({
+          formApi.fieldInfo.email?.instance?.setErrorMap({
             onSubmit: { message: error.message },
           });
         }

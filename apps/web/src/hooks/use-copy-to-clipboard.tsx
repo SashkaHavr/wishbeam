@@ -1,4 +1,4 @@
-import { isServer } from "@tanstack/react-query";
+import { environmentManager } from "@tanstack/react-query";
 import { useState } from "react";
 
 export function useCopyToClipboard({
@@ -11,7 +11,7 @@ export function useCopyToClipboard({
   const [isCopied, setIsCopied] = useState(false);
 
   const copyToClipboard = (value: string) => {
-    if (isServer || !value) {
+    if (environmentManager.isServer() || !value) {
       return;
     }
 

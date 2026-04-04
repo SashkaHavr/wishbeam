@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
     networks:
       - db-network
       - redis-network
@@ -11,8 +13,8 @@ services:
       DATABASE_URL: postgresql://postgres:mysecretpassword@db:5432/postgres
       REDIS_URL: redis://redis:6379
       TEST_AUTH: true
-      BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: abcdefghijklmnopqrstuvwxyz123456789
+      BETTER_AUTH_ALLOWED_HOSTS: '["localhost:*", "127.0.0.1:*"]'
     depends_on:
       db:
         condition: service_healthy

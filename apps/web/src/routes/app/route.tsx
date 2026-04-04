@@ -5,7 +5,7 @@ import { useCacheInvalidation } from "~/hooks/use-cache-invalidation";
 
 export const Route = createFileRoute("/app")({
   beforeLoad: ({ context, params, matches }) => {
-    if (!context.auth.user) {
+    if (!context.auth.loggedIn) {
       const wishlistPage = matches.find(
         (match) => match.routeId === "/app/wishlists/$id" || match.routeId === "/app/shared/$id",
       );
