@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import fontHeadingHref from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+import fontSansHref from "@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2?url";
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -65,17 +67,17 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       {
         rel: "preload",
+        href: fontSansHref,
         as: "font",
-        crossOrigin: "",
         type: "font/woff2",
-        href: "/fonts/inter.woff2",
+        crossOrigin: "anonymous",
       },
       {
         rel: "preload",
+        href: fontHeadingHref,
         as: "font",
-        crossOrigin: "",
         type: "font/woff2",
-        href: "/fonts/source-serif-4.woff2",
+        crossOrigin: "anonymous",
       },
     ],
   }),
