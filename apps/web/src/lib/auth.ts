@@ -1,51 +1,46 @@
-import { isServer, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
-import { createServerOnlyFn } from "@tanstack/react-start";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 import type { AuthType } from "@wishbeam/auth";
 import { auth } from "@wishbeam/auth";
 import { ac, roles } from "@wishbeam/auth/permissions";
-import { createSSRRequest } from "~/utils/create-ssr-request";
-
-const authServerFetch = createServerOnlyFn(
-  async (input: RequestInfo | URL, init?: RequestInit) =>
-    await auth.handler(createSSRRequest(input, init)),
-);
 
 export const authClient = createAuthClient({
   basePath: "/auth",
-  // @ts-expect-error type error in tsgo?
   plugins: [inferAdditionalFields<AuthType>(), adminClient({ ac, roles })],
-  fetchOptions: { throw: true, customFetchImpl: isServer ? authServerFetch : undefined },
+  fetchOptions: {
+    throw: true,
+  },
 });
+
+const getSession = createIsomorphicFn()
+  .server(async () => await auth.api.getSession({ headers: getRequest().headers }))
+  .client(async () => await authClient.getSession());
 
 export const baseAuthKey = "auth" as const;
 
 export const getSessionQueryOptions = queryOptions({
   queryKey: [baseAuthKey, "getSession"] as const,
   queryFn: async () => {
-    try {
-      const session = await authClient.getSession();
-      return session === null
-        ? {
-            available: true as const,
-            loggedIn: false as const,
-          }
-        : {
-            available: true as const,
-            loggedIn: true as const,
-            session: session.session,
-            user: session.user,
-          };
-    } catch {
+    const session = await getSession();
+    if (session === null) {
       return {
-        available: false as const,
         loggedIn: false as const,
       };
     }
+    return {
+      loggedIn: true as const,
+      ...session,
+    };
   },
+  retry: 20,
+  retryDelay: 500,
+  gcTime: Infinity,
+  staleTime: Infinity,
 });
 
 export function useAuth() {

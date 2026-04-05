@@ -10,17 +10,13 @@ const screens = {
 
 export function useMatchesBreakpoint(breakpoint: keyof typeof screens) {
   const isClient = useIsClient();
-  const matches = useMediaQuery(`(min-width: ${screens[breakpoint]})`, {
-    defaultValue: true,
-  });
+  const matches = useMediaQuery(`(min-width: ${screens[breakpoint]})`);
   return !isClient || matches;
 }
 
 export function useNotMatchesBreakpoint(breakpoint: keyof typeof screens) {
   const isClient = useIsClient();
-  const matches = useMediaQuery(`(min-width: ${screens[breakpoint]})`, {
-    defaultValue: true,
-  });
+  const matches = useMediaQuery(`(min-width: ${screens[breakpoint]})`);
   return !isClient || !matches;
 }
 

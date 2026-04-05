@@ -1,4 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { skipToken, useQueryClient } from "@tanstack/react-query";
+import { useRouteContext } from "@tanstack/react-router";
 import { useSubscription } from "@trpc/tanstack-react-query";
 
 import { useTRPC } from "~/lib/trpc";
@@ -6,8 +7,9 @@ import { useTRPC } from "~/lib/trpc";
 export function useCacheInvalidation() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const auth = useRouteContext({ from: "__root__", select: (s) => s.auth });
   useSubscription(
-    trpc.cache.invalidations.subscriptionOptions(void 0, {
+    trpc.cache.invalidations.subscriptionOptions(auth.loggedIn ? void 0 : skipToken, {
       onData: (data) => {
         switch (data.type) {
           case "wishlists":
