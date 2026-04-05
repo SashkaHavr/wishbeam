@@ -1,11 +1,10 @@
 import { on } from "events";
 
-import { RedisClient } from "bun";
 import type { ZodType } from "zod";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 
-const redis = new RedisClient(envPubSub.REDIS_URL);
+const redis = new Bun.RedisClient(envPubSub.REDIS_URL);
 await redis.connect();
 const publisher = await redis.duplicate();
 
