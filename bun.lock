@@ -76,6 +76,7 @@
         "drizzle-kit": "catalog:drizzle",
         "drizzle-orm": "catalog:drizzle",
         "uuid": "catalog:",
+        "zod": "catalog:",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
