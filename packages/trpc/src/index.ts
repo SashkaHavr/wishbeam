@@ -14,12 +14,27 @@ import { configRouter } from "#routers/config.ts";
 import { ownedWishlistsRouter } from "#routers/wishlists.owned.ts";
 import { publicWishlistsRouter } from "#routers/wishlists.public.ts";
 import { sharedWishlistsRouter } from "#routers/wishlists.shared.ts";
+import { ping as pingPubSub } from "@wishbeam/pubsub";
 
 const appRouter = router({
   health: publicProcedure.output(z.null()).query(async ({ ctx }) => {
-    const res = await Result.tryPromise(() => ctx.db.execute(sql`select 1`));
-    if (!res.isOk()) {
-      throw new TRPCError({ message: "DB connection failed", code: "INTERNAL_SERVER_ERROR" });
+    const res = await Promise.all([
+      Result.tryPromise(async () => await ctx.db.execute(sql`select 1`)),
+      Result.tryPromise(async () => await pingPubSub()),
+    ]);
+    if (res[0].isErr()) {
+      throw new TRPCError({
+        message: "Healthcheck: DB connection failed",
+        code: "INTERNAL_SERVER_ERROR",
+        cause: res[0].error,
+      });
+    }
+    if (res[1].isErr()) {
+      throw new TRPCError({
+        message: "Healthcheck: Redis connection failed",
+        code: "INTERNAL_SERVER_ERROR",
+        cause: res[1].error,
+      });
     }
     return null;
   }),

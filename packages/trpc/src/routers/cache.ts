@@ -11,40 +11,44 @@ import {
 import { base62ToUuidv7 } from "#utils/zod-utils.ts";
 import { subscribe } from "@wishbeam/pubsub";
 
+function getSubscriptionAbortSignal(abortSignal?: AbortSignal) {
+  if (!abortSignal) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Abort signal is required",
+    });
+  }
+
+  return abortSignal;
+}
+
+async function* subscribeToCacheInvalidations({
+  channel,
+  abortSignal,
+}: {
+  channel: string;
+  abortSignal?: AbortSignal;
+}): AsyncGenerator<z.infer<typeof cacheInvalidationSchema>, void, unknown> {
+  yield* subscribe({
+    channel,
+    abortSignal: getSubscriptionAbortSignal(abortSignal),
+    schema: cacheInvalidationSchema,
+  });
+}
+
 export const cacheRouter = router({
-  invalidations: protectedProcedure.subscription(async function* ({
-    ctx: { userId },
-    signal: abortSignal,
-  }) {
-    if (!abortSignal) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Abort signal is required",
-      });
-    }
-    for await (const message of subscribe({
+  invalidations: protectedProcedure.subscription(({ ctx: { userId }, signal: abortSignal }) => {
+    return subscribeToCacheInvalidations({
       channel: getCacheInvalidationChannel(userId),
       abortSignal,
-      schema: cacheInvalidationSchema,
-    })) {
-      yield message;
-    }
+    });
   }),
   invalidationsPublic: publicProcedure
     .input(z.object({ wishlistId: base62ToUuidv7 }))
-    .subscription(async function* ({ input, signal: abortSignal }) {
-      if (!abortSignal) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Abort signal is required",
-        });
-      }
-      for await (const message of subscribe({
+    .subscription(({ input, signal: abortSignal }) => {
+      return subscribeToCacheInvalidations({
         channel: getPublicCacheInvalidationChannel(input.wishlistId),
         abortSignal,
-        schema: cacheInvalidationSchema,
-      })) {
-        yield message;
-      }
+      });
     }),
 });
