@@ -1,0 +1,11 @@
+--- a/dist/presets/bun/runtime/bun.mjs
++++ b/dist/presets/bun/runtime/bun.mjs
+@@ -30,7 +30,7 @@ const server = serve({
+ 		key
+ 	} : undefined,
+ 	fetch: _fetch,
+-	bun: { websocket: import.meta._websocket ? ws?.websocket : undefined }
++	bun: { websocket: import.meta._websocket ? ws?.websocket : undefined, idleTimeout: 0 }
+ });
+ trapUnhandledErrors();
+ // Scheduled tasks

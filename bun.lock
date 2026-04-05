@@ -161,6 +161,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "nitro@3.0.260311-beta": "patches/nitro@3.0.260311-beta.patch",
+  },
   "catalog": {
     "@t3-oss/env-core": "0.13.11",
     "@tanstack/react-form": "1.28.6",
