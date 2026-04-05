@@ -4,10 +4,6 @@ import type { ZodType } from "zod";
 
 import { envPubSub } from "@wishbeam/env/pubsub";
 
-const redis = new Bun.RedisClient(envPubSub.REDIS_URL);
-await redis.connect();
-const publisher = await redis.duplicate();
-
 function isAbortError(error: unknown) {
   return error instanceof Error && error.name === "AbortError";
 }
@@ -25,14 +21,14 @@ export async function* subscribe<Output>({
     return;
   }
 
-  const subscriber = await redis.duplicate();
   const events = new EventTarget();
   const listener = (message: string) => {
     events.dispatchEvent(new MessageEvent("message", { data: message }));
   };
 
+  const redis = new Bun.RedisClient(envPubSub.REDIS_URL);
   try {
-    await subscriber.subscribe(channel, listener);
+    await redis.subscribe(channel, listener);
 
     for await (const [event] of on(events, "message", { signal: abortSignal })) {
       if (!(event instanceof MessageEvent)) {
@@ -46,16 +42,25 @@ export async function* subscribe<Output>({
       throw error;
     }
   } finally {
-    await Promise.allSettled([subscriber.unsubscribe(channel, listener)]);
-    subscriber.close();
+    await Promise.allSettled([redis.unsubscribe(channel, listener)]);
+    redis.close();
   }
 }
 
 export async function publish<T>({ channel, message }: { channel: string; message: T }) {
-  await publisher.publish(channel, JSON.stringify(message));
+  const redis = new Bun.RedisClient(envPubSub.REDIS_URL);
+  try {
+    await redis.publish(channel, JSON.stringify(message));
+  } finally {
+    redis.close();
+  }
 }
 
 export async function ping() {
-  await redis.ping();
-  await publisher.ping();
+  const redis = new Bun.RedisClient(envPubSub.REDIS_URL);
+  try {
+    await redis.ping();
+  } finally {
+    redis.close();
+  }
 }
