@@ -1,16 +1,10 @@
 /// <reference types="vite/client" />
 
-import fontHeadingHref from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
-import fontSansHref from "@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2?url";
-import {
-  createRootRouteWithContext,
-  HeadContent,
-  Outlet,
-  Scripts,
-  useMatches,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
 import type { ReactNode } from "react";
 
+import { envNode } from "@wishbeam/env/node";
 import { getTheme } from "~/components/theme/context";
 import { ThemeProvider, ThemeScript } from "~/components/theme/provider";
 import { getSessionQueryOptions } from "~/lib/auth";
@@ -22,16 +16,22 @@ import { seo } from "~/utils/seo";
 
 import indexCss from "../index.css?url";
 
+const envRunHealthcheck = createIsomorphicFn()
+  .server(() => envNode.HEALTHCHECK_ON_SSR)
+  .client(() => false);
+
 export const Route = createRootRouteWithContext<TRPCRouteContext>()({
   beforeLoad: async ({ context: { queryClient, trpc } }) => {
-    await queryClient.ensureQueryData(
-      trpc.health.queryOptions(void 0, {
-        staleTime: "static",
-        gcTime: Infinity,
-        retry: 20,
-        retryDelay: 500,
-      }),
-    );
+    if (envRunHealthcheck()) {
+      await queryClient.ensureQueryData(
+        trpc.health.queryOptions(void 0, {
+          staleTime: "static",
+          gcTime: Infinity,
+          retry: 20,
+          retryDelay: 500,
+        }),
+      );
+    }
 
     const locale = await getLocale();
     const data = await Promise.all([
@@ -59,26 +59,12 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         content: "width=device-width, initial-scale=1",
       },
       { name: "theme-color" },
-      ...seo({ title: "Wishbeam" }),
+      ...seo({ title: "wishbeam" }),
       { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
       { rel: "stylesheet", href: indexCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      {
-        rel: "preload",
-        href: fontSansHref,
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "preload",
-        href: fontHeadingHref,
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      },
     ],
   }),
 });
@@ -95,19 +81,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   const { locale, theme } = Route.useRouteContext({
     select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
   });
-  const matches = useMatches();
-  const lastRoute = matches.at(-1)?.routeId;
-  const overscrollClass =
-    lastRoute !== undefined &&
-    (lastRoute.startsWith("/app") ?? lastRoute.startsWith("/(public)/shared")) &&
-    "overscroll-y-none";
 
   return (
-    <html
-      suppressHydrationWarning
-      lang={locale}
-      className={cn(theme !== "system" && theme, overscrollClass)}
-    >
+    <html suppressHydrationWarning lang={locale} className={cn(theme !== "system" && theme)}>
       <head>
         <HeadContent />
         <ThemeScript />
