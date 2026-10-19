@@ -1,0 +1,128 @@
+// oxlint-disable import/no-default-export no-restricted-imports
+
+import { Readable } from "node:stream";
+import { constants, createBrotliCompress, createGzip } from "node:zlib";
+
+import { getRequest } from "@tanstack/react-start/server";
+import handler, { createServerEntry } from "@tanstack/react-start/server-entry";
+import { Config, Effect, Layer, Option } from "effect";
+import { FetchHttpClient, HttpClient, Headers as HttpHeaders, HttpTraceContext } from "effect/http";
+import { HttpApiClient } from "effect/http-api";
+import type { AuditableLogger } from "evlog";
+import { serverFetch } from "nitro/app";
+
+import { Api } from "@wishbeam/api-contract";
+import { createAuthClient } from "@wishbeam/auth/client";
+import { paraglideMiddleware } from "@wishbeam/intl/server";
+import { getRequestLog } from "~/utils/log";
+
+const serverConfig = Effect.runSync(
+  Config.all({
+    publicUrl: Config.URL("PUBLIC_URL"),
+  }),
+);
+
+const ssrFetch: typeof fetch = async (input, init) => {
+  const request = new Request(
+    input instanceof Request ? input : new URL(input, serverConfig.publicUrl),
+    init,
+  );
+  const headers = new Headers(getRequest().headers);
+  request.headers.forEach((value, key) => headers.set(key, value));
+  return serverFetch(new Request(request, { headers }));
+};
+
+const authClient = createAuthClient({
+  baseURL: serverConfig.publicUrl.href,
+  customFetchImpl: ssrFetch,
+});
+
+const apiClient = Effect.runSync(
+  HttpApiClient.make(Api, { baseUrl: serverConfig.publicUrl }).pipe(
+    Effect.provide(
+      FetchHttpClient.layer.pipe(
+        Layer.provide(Layer.succeed(FetchHttpClient.Fetch, ssrFetch)),
+        Layer.provide(Layer.succeed(HttpClient.TracerPropagationEnabled, false)),
+      ),
+    ),
+  ),
+);
+
+type RequestContext = {
+  log: AuditableLogger | undefined;
+  apiClient: typeof apiClient;
+  authClient: typeof authClient;
+};
+
+declare module "@tanstack/react-start" {
+  interface Register {
+    server: {
+      requestContext: RequestContext;
+    };
+  }
+}
+
+function createCompressionTransform(encoding: "br" | "gzip") {
+  switch (encoding) {
+    case "br":
+      return createBrotliCompress({ flush: constants.BROTLI_OPERATION_FLUSH });
+    case "gzip":
+      return createGzip({ flush: constants.Z_SYNC_FLUSH });
+  }
+}
+
+function compressStream(request: Request, response: Response) {
+  if (
+    !response.body ||
+    !response.headers.get("Content-Type")?.includes("text/html") ||
+    response.status !== 200 ||
+    request.method !== "GET"
+  ) {
+    return response;
+  }
+  const acceptEncoding = request.headers
+    .get("Accept-Encoding")
+    ?.split(",")
+    .map((s) => s.trim());
+  const encoding = acceptEncoding?.find((s) => s === "br" || s === "gzip");
+
+  const headers = new Headers(response.headers);
+  headers.append("Vary", "Accept-Encoding");
+  if (!encoding) {
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
+
+  headers.set("Content-Encoding", encoding);
+  return new Response(
+    Readable.toWeb(
+      Readable.fromWeb(response.body as never).pipe(createCompressionTransform(encoding)),
+    ) as never,
+    {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    },
+  );
+}
+
+export default createServerEntry({
+  async fetch(request) {
+    const log = getRequestLog(request);
+    const requestId = request.headers.get("x-railway-request-id");
+    const traceId = HttpTraceContext.fromHeaders(HttpHeaders.fromInput(request.headers)).pipe(
+      Option.map((span) => span.traceId),
+      Option.getOrUndefined,
+    );
+    log?.set({ requestId, traceId });
+    const response = await paraglideMiddleware(request, async () =>
+      handler.fetch(request, {
+        context: { apiClient, log, authClient },
+      }),
+    );
+    return compressStream(request, response);
+  },
+});

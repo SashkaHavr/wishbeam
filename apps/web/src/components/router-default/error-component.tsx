@@ -1,35 +1,14 @@
-import {
-  ErrorComponent as DefaultErrorComponent,
-  isMatch,
-  useRouterState,
-} from "@tanstack/react-router";
-import { createTranslator } from "use-intl";
+import { ErrorComponent as DefaultErrorComponent } from "@tanstack/react-router";
+import type { ErrorComponentProps } from "@tanstack/react-router";
+
+import { m } from "@wishbeam/intl/messages";
+import { logError } from "~/utils/log";
 
 import { LinkButton } from "../ui/button";
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
 
-function useOptionalIntl() {
-  return useRouterState({ select: (s) => s.matches }).find((m) =>
-    isMatch(m, "context.intl.messages"),
-  )?.context.intl;
-}
-
-export function ErrorComponent({ error }: { error: Error }) {
-  const intl = useOptionalIntl();
-  const t = intl
-    ? createTranslator(intl)
-    : (key: string) =>
-        ({
-          "routeComponents.error": "Something went wrong",
-          "routeComponents.returnToHomePage": "Return to Home page",
-        })[key] ?? key;
-
-  console.error(
-    JSON.stringify(error, [
-      ...Object.getOwnPropertyNames(error).filter((k) => k !== "line" && k !== "column"),
-      "name",
-    ]),
-  );
+export function ErrorComponent({ error }: ErrorComponentProps) {
+  logError(error);
 
   return (
     <Empty>
@@ -37,11 +16,11 @@ export function ErrorComponent({ error }: { error: Error }) {
         <EmptyMedia variant="default">
           {import.meta.env.DEV && <DefaultErrorComponent error={error} />}
         </EmptyMedia>
-        <EmptyTitle>{t("routeComponents.error")}</EmptyTitle>
+        <EmptyTitle>{m.routeDefault_error()}</EmptyTitle>
       </EmptyHeader>
       <EmptyContent>
         <div className="flex gap-2">
-          <LinkButton to="/">{t("routeComponents.returnToHomePage")}</LinkButton>
+          <LinkButton to="/">{m.routeDefault_returnToHomePage()}</LinkButton>
         </div>
       </EmptyContent>
     </Empty>

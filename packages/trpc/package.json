@@ -22,7 +22,7 @@
     "better-result": "catalog:",
     "drizzle-orm": "catalog:drizzle",
     "superjson": "catalog:",
-    "uuid": "catalog:",
+    "uuid": "14.0.3",
     "zod": "catalog:"
   },
   "devDependencies": {

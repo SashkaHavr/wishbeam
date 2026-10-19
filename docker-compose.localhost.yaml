@@ -1,0 +1,30 @@
+services:
+  drizzle-gateway:
+    networks:
+      - devcontainer-proxy
+      - db-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wishbeam-db-staging.rule=Host(`db.staging.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-db-staging.service=wishbeam-db-staging
+      - traefik.http.services.wishbeam-db-staging.loadbalancer.server.port=4983
+  web:
+    networks:
+      - devcontainer-proxy
+    environment:
+      BETTER_AUTH_SECRET: abcdefghijklmnopqrstuvwxyz123456789
+      BETTER_AUTH_ALLOWED_HOSTS: http://web.staging.wishbeam.localhost
+      GOOGLE_CLIENT_ID: my-client-id.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: GOCSPX-secret
+      GOOGLE_EMULATE_URL: http://emulate.localhost
+      GOOGLE_EMULATE_INTERNAL_URL: http://emulate
+      PUBLIC_URL: http://web.staging.wishbeam.localhost
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wishbeam-web-staging.rule=Host(`web.staging.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-web-staging.service=wishbeam-web-staging
+      - traefik.http.services.wishbeam-web-staging.loadbalancer.server.port=3000
+
+networks:
+  devcontainer-proxy:
+    external: true

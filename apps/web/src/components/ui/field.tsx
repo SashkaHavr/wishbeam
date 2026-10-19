@@ -1,7 +1,6 @@
 import { Field as FieldPrimitive } from "@base-ui/react/field";
+import { cn } from "cn";
 import type React from "react";
-
-import { cn } from "~/lib/utils";
 
 export function Field({ className, ...props }: FieldPrimitive.Root.Props): React.ReactElement {
   return (
@@ -20,7 +19,7 @@ export function FieldLabel({
   return (
     <FieldPrimitive.Label
       className={cn(
-        "inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground sm:text-sm/4",
+        "inline-flex items-center gap-2 font-medium text-base/4.5 text-foreground data-disabled:opacity-64 sm:text-sm/4",
         className,
       )}
       data-slot="field-label"

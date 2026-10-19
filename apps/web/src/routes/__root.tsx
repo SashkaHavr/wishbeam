@@ -1,54 +1,38 @@
 /// <reference types="vite/client" />
 
+import { environmentManager } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
-import { createIsomorphicFn } from "@tanstack/react-start";
+import { setIdentity, clearIdentity } from "evlog/client";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 
-import { envNode } from "@wishbeam/env/node";
-import { getTheme } from "~/components/theme/context";
-import { ThemeProvider, ThemeScript } from "~/components/theme/provider";
+import { getLocale } from "@wishbeam/intl/runtime";
+import { getTheme, syncMetaThemeColor, ThemeScript, useSyncTheme } from "~/components/theme";
+import { AnchoredToastProvider, ToastProvider } from "~/components/ui/toast";
 import { getSessionQueryOptions } from "~/lib/auth";
-import { getLocale, getMessages } from "~/lib/intl";
-import { IntlProvider } from "~/lib/intl-provider";
-import type { TRPCRouteContext } from "~/lib/trpc";
-import { cn } from "~/lib/utils";
-import { seo } from "~/utils/seo";
+import type { RouterContext } from "~/lib/context";
+import { authConfigQueryOptions } from "~/queries/config";
+import { getServerLog } from "~/utils/log";
 
 import indexCss from "../index.css?url";
 
-const envRunHealthcheck = createIsomorphicFn()
-  .server(() => envNode.HEALTHCHECK_ON_SSR)
-  .client(() => false);
-
-export const Route = createRootRouteWithContext<TRPCRouteContext>()({
-  beforeLoad: async ({ context: { queryClient, trpc } }) => {
-    if (envRunHealthcheck()) {
-      await queryClient.ensureQueryData(
-        trpc.health.queryOptions(void 0, {
-          staleTime: "static",
-          gcTime: Infinity,
-          retry: 20,
-          retryDelay: 500,
-        }),
-      );
-    }
-
-    const locale = await getLocale();
-    const data = await Promise.all([
-      queryClient.ensureQueryData(trpc.config.general.queryOptions()),
-      queryClient.ensureQueryData(getSessionQueryOptions),
+export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const [authConfig, session] = await Promise.all([
+      queryClient.query({ ...authConfigQueryOptions, staleTime: "static" }),
+      queryClient.query({ ...getSessionQueryOptions, staleTime: "static" }),
     ]);
 
+    if (session.loggedIn) {
+      getServerLog()?.set({ user: { id: session.user.id, role: session.user.role } });
+    }
+
     return {
-      auth: data[1],
-      intl: {
-        messages: await getMessages(locale),
-        locale: locale,
-      },
-      theme: await getTheme(),
+      session,
+      authConfig,
+      theme: environmentManager.isServer() ? undefined : getTheme(),
     };
   },
-  component: RootComponent,
   head: () => ({
     meta: [
       {
@@ -58,42 +42,63 @@ export const Route = createRootRouteWithContext<TRPCRouteContext>()({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      { name: "theme-color" },
-      ...seo({ title: "wishbeam" }),
       { name: "robots", content: "noindex, nofollow" },
+      { title: "wishbeam" },
     ],
     links: [
       { rel: "stylesheet", href: indexCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
+  scripts: () => [{ children: `(${syncMetaThemeColor.toString()})()` }],
+  shellComponent: RootShell,
+  component: RouteComponent,
 });
 
-function RootComponent() {
+function RouteComponent() {
+  useSetLogIdentity();
+  useSyncTheme();
+
   return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
+    <>
+      <ToastProvider>
+        <AnchoredToastProvider>
+          <div className="isolate">
+            <Outlet />
+          </div>
+        </AnchoredToastProvider>
+      </ToastProvider>
+    </>
   );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
-  const { locale, theme } = Route.useRouteContext({
-    select: (s) => ({ locale: s.intl.locale, theme: s.theme }),
+function useSetLogIdentity() {
+  const session = Route.useRouteContext({
+    select: (s) => s.session,
+  });
+
+  useEffect(() => {
+    if (session.loggedIn) {
+      setIdentity({ user: { id: session.user.id, role: session.user.role } });
+    } else {
+      clearIdentity();
+    }
+  }, [session]);
+}
+
+function RootShell({ children }: Readonly<{ children: ReactNode }>) {
+  const theme = Route.useRouteContext({
+    select: (s) => s.theme,
   });
 
   return (
-    <html suppressHydrationWarning lang={locale} className={cn(theme !== "system" && theme)}>
+    <html suppressHydrationWarning lang={getLocale()} className={theme}>
       <head>
         <HeadContent />
         <ThemeScript />
       </head>
       <body>
-        <ThemeProvider>
-          <IntlProvider>
-            <div className="isolate">{children}</div>
-          </IntlProvider>
-        </ThemeProvider>
+        {children}
         <Scripts />
       </body>
     </html>
