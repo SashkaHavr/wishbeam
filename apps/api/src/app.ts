@@ -10,6 +10,14 @@ import { initLoggerLayer, loggerLayer, routerLayer } from "evlog/effect";
 
 import { ApiConfig } from "#config";
 import { ConfigApiLiveWithServices } from "#features/config/layer";
+import { EventsApiLive, PublicEventsApiLive } from "#features/events/layer";
+import { WishlistEvents } from "#features/events/service";
+import { WishlistItemsApiLive, PublicWishlistItemsApiLive } from "#features/wishlist-items/layer";
+import {
+  WishlistsApiLive,
+  PublicWishlistsApiLive,
+  WishlistServices,
+} from "#features/wishlists/layer";
 import { AuthenticationMiddlewareLive } from "#middleware/authentication/layer";
 import { GlobalMiddlewareLive } from "#middleware/global/layer";
 import { AuthorizationMiddlewareLive } from "#middleware/permission/layer";
@@ -46,7 +54,17 @@ const AuthRoutes = HttpRouter.use(
   }),
 );
 
-const ApiLive = Layer.mergeAll(ConfigApiLiveWithServices).pipe(
+const ApiLive = Layer.mergeAll(
+  ConfigApiLiveWithServices,
+  WishlistsApiLive,
+  PublicWishlistsApiLive,
+  WishlistItemsApiLive,
+  PublicWishlistItemsApiLive,
+  EventsApiLive,
+  PublicEventsApiLive,
+).pipe(
+  Layer.provide(WishlistServices),
+  Layer.provide(WishlistEvents.layer),
   Layer.provideMerge(AuthorizationMiddlewareLive),
   Layer.provideMerge(AuthenticationMiddlewareLive),
   Layer.provideMerge(GlobalMiddlewareLive),

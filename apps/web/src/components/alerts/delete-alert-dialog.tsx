@@ -1,5 +1,7 @@
 import { TrashIcon } from "lucide-react";
 
+import { m } from "@wishbeam/intl/messages";
+
 import {
   AlertDialog,
   AlertDialogClose,
@@ -21,19 +23,21 @@ export function DeleteAlertDialog({
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="outline" {...props} />}>
         <TrashIcon />
-        <span>Delete</span>
+        <span>{m.action_delete()}</span>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{m.action_deleteTitle()}</AlertDialogTitle>
           <AlertDialogDescription>
-            {description ?? "This action cannot be undone. This will permanently delete this item."}
+            {description ?? m.action_deleteDescription()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+          <AlertDialogClose render={<Button variant="ghost" />}>
+            {m.action_cancel()}
+          </AlertDialogClose>
           <AlertDialogClose render={<Button variant="destructive" />} onClick={onClick}>
-            Continue
+            {m.action_continue()}
           </AlertDialogClose>
         </AlertDialogFooter>
       </AlertDialogContent>

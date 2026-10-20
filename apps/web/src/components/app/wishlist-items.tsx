@@ -8,11 +8,14 @@ import {
 } from "lucide-react";
 import React from "react";
 
-import {
-  useDeleteWishlistItemMutation,
-  useSetStatusWishlistItemMutation,
-} from "~/hooks/mutations/wishlists.owned.items";
+import type { IdBranded } from "@wishbeam/db/id-branded";
+import { m } from "@wishbeam/intl/messages";
 import { cn } from "~/lib/utils";
+import { useDeleteWishlistItem, useSetItemStatus } from "~/queries/wishlists";
+import {
+  CreateWishlistItemDialog,
+  UpdateWishlistItemDialog,
+} from "~/routes/app/wishlists/-/item-form";
 
 import { DeleteAlertDialog } from "../alerts/delete-alert-dialog";
 import {
@@ -37,35 +40,30 @@ import {
 } from "../ui/empty";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
 import { Separator } from "../ui/separator";
-import { CreateWishlistItemDialog } from "./create-wishlist-item-dialog";
-import { UpdateWishlistItemDialog } from "./update-wishlist-item-dialog";
 
 interface WishlistItem {
-  id: string;
+  id: IdBranded<"wishlist-item">;
   title: string;
   description: string;
-  links: string[];
+  links: readonly string[];
   estimatedPrice: string | null;
 }
 
-export function WishlistItemsEmpty({ wishlistId }: { wishlistId: string }) {
+export function WishlistItemsEmpty({ wishlistId }: { wishlistId: IdBranded<"wishlist"> }) {
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <CircleSlash2Icon />
         </EmptyMedia>
-        <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
-        <EmptyDescription>
-          You haven&apos;t created any wishlist items yet. Get started by creating your first
-          wishlist item.
-        </EmptyDescription>
+        <EmptyTitle>{m.item_emptyTitle()}</EmptyTitle>
+        <EmptyDescription>{m.item_emptyDescription()}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <CreateWishlistItemDialog wishlistId={wishlistId}>
           <DialogTrigger className="mx-4 w-full" render={<Button />}>
             <GiftIcon />
-            <span>Create Wishlist Item</span>
+            <span>{m.item_createEmpty()}</span>
           </DialogTrigger>
         </CreateWishlistItemDialog>
       </EmptyContent>
@@ -80,8 +78,8 @@ export function WishlistItemsEmptyPublic() {
         <EmptyMedia variant="icon">
           <CircleSlash2Icon />
         </EmptyMedia>
-        <EmptyTitle>No Wishlist Items Yet</EmptyTitle>
-        <EmptyDescription>There aren&apos;t any items in this wishlist.</EmptyDescription>
+        <EmptyTitle>{m.item_emptyTitle()}</EmptyTitle>
+        <EmptyDescription>{m.item_emptyPublicDescription()}</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );
@@ -90,12 +88,12 @@ export function WishlistItemsEmptyPublic() {
 export function CreateWishlistItemButton({
   wishlistId,
   ...props
-}: { wishlistId: string } & React.ComponentProps<typeof Button>) {
+}: { wishlistId: IdBranded<"wishlist"> } & React.ComponentProps<typeof Button>) {
   return (
     <CreateWishlistItemDialog wishlistId={wishlistId}>
       <DialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
         <PlusIcon />
-        <span>Create new wishlist item</span>
+        <span>{m.item_createNew()}</span>
       </DialogTrigger>
     </CreateWishlistItemDialog>
   );
@@ -129,7 +127,14 @@ export function WishlistItem({
             key={`${wishlistItem.id}-${index}-link`}
             size="sm"
             // oxlint-disable-next-line anchor-has-content
-            render={<a href={link} target="_blank" rel="noopener noreferrer" />}
+            render={
+              <a
+                href={link}
+                aria-label={new URL(link).hostname}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            }
           >
             <ItemContent>
               <ItemTitle>{new URL(link).hostname}</ItemTitle>
@@ -151,13 +156,13 @@ export function UpdateWishlistItemButton({
   ...props
 }: {
   wishlistItem: WishlistItem;
-  wishlistId: string;
+  wishlistId: IdBranded<"wishlist">;
 } & React.ComponentProps<typeof Button>) {
   return (
     <UpdateWishlistItemDialog wishlistItem={wishlistItem} wishlistId={wishlistId}>
       <DialogTrigger render={<Button variant="outline" {...props} />}>
         <EditIcon />
-        <span>Edit</span>
+        <span>{m.action_edit()}</span>
       </DialogTrigger>
     </UpdateWishlistItemDialog>
   );
@@ -168,52 +173,49 @@ export function DeleteWishlistItemButton({
   wishlistId,
   ...props
 }: {
-  wishlistItemId: string;
-  wishlistId: string;
+  wishlistItemId: IdBranded<"wishlist-item">;
+  wishlistId: IdBranded<"wishlist">;
 } & React.ComponentProps<typeof Button>) {
-  const deleteWishlistItem = useDeleteWishlistItemMutation({ wishlistId });
+  const deleteWishlistItem = useDeleteWishlistItem(wishlistId);
 
-  return (
-    <DeleteAlertDialog onClick={() => deleteWishlistItem.mutate({ wishlistItemId })} {...props} />
-  );
+  return <DeleteAlertDialog onClick={() => deleteWishlistItem.mutate(wishlistItemId)} {...props} />;
 }
 
 export function ArchiveWishlistItemButton({
   wishlistItem,
   wishlistId,
 }: {
-  wishlistItem: { id: string; status: "active" | "archived" };
-  wishlistId: string;
+  wishlistItem: { id: IdBranded<"wishlist-item">; status: "active" | "archived" };
+  wishlistId: IdBranded<"wishlist">;
 }) {
-  const archiveWishlistItem = useSetStatusWishlistItemMutation({ wishlistId });
+  const archiveWishlistItem = useSetItemStatus(wishlistId);
   return (
     <>
       {wishlistItem.status === "active" && (
         <AlertDialog>
           <AlertDialogTrigger render={<Button variant="outline" />}>
             <ArchiveIcon />
-            <span>Archive</span>
+            <span>{m.item_archive()}</span>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Archive Item</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will archive the item and remove locks placed on it by other users. You can
-                reactivate the item later.
-              </AlertDialogDescription>
+              <AlertDialogTitle>{m.item_archiveTitle()}</AlertDialogTitle>
+              <AlertDialogDescription>{m.item_archiveDescription()}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+              <AlertDialogClose render={<Button variant="ghost" />}>
+                {m.action_cancel()}
+              </AlertDialogClose>
               <AlertDialogClose
                 render={<Button />}
                 onClick={() =>
                   archiveWishlistItem.mutate({
-                    wishlistItemId: wishlistItem.id,
+                    itemId: wishlistItem.id,
                     status: "archived",
                   })
                 }
               >
-                Continue
+                {m.action_continue()}
               </AlertDialogClose>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -224,13 +226,13 @@ export function ArchiveWishlistItemButton({
           variant="outline"
           onClick={() =>
             archiveWishlistItem.mutate({
-              wishlistItemId: wishlistItem.id,
+              itemId: wishlistItem.id,
               status: "active",
             })
           }
         >
           <ArchiveIcon />
-          <span>Activate</span>
+          <span>{m.item_activate()}</span>
         </Button>
       )}
     </>

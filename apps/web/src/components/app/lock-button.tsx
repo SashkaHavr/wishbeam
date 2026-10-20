@@ -1,6 +1,7 @@
 import { LockIcon, UnlockIcon } from "lucide-react";
 import type React from "react";
 
+import { m } from "@wishbeam/intl/messages";
 import { cn } from "~/lib/utils";
 
 import { Button } from "../ui/button";
@@ -38,19 +39,19 @@ export function LockButton({
       {lockStatus === "unlocked" && (
         <>
           <LockIcon />
-          <span>Lock item</span>
+          <span>{m.item_lock()}</span>
         </>
       )}
       {lockStatus === "lockedByCurrentUser" && (
         <>
           <UnlockIcon />
-          <span>Unlock item</span>
+          <span>{m.item_unlock()}</span>
         </>
       )}
       {lockStatus === "lockedByAnotherUser" && (
         <>
           <LockIcon />
-          <span>Locked</span>
+          <span>{m.item_locked()}</span>
         </>
       )}
     </Button>

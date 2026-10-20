@@ -1,55 +1,64 @@
 import { revalidateLogic } from "@tanstack/react-form";
-import { TRPCClientError } from "@trpc/client";
+import { Predicate, Schema } from "effect";
 import { XIcon } from "lucide-react";
-import z from "zod";
 
-import { useLoggedInAuth } from "~/hooks/route-context";
+import type { ApiOutput } from "@wishbeam/api-contract";
+import { MemberInput } from "@wishbeam/api-contract/features/wishlists";
+import type { IdBranded } from "@wishbeam/db/id-branded";
+import { m } from "@wishbeam/intl/messages";
+import { useSession } from "~/lib/auth";
 import { cn } from "~/lib/utils";
 
-import { FormForm } from "./form/form";
-import { FormField } from "./form/form-field";
-import { FormFieldError } from "./form/form-field-error";
-import { FormInputGroupInput } from "./form/form-input-group-input";
-import { FormSubmitButton } from "./form/form-submit-button";
-import { useAppForm } from "./form/use-app-form";
+import {
+  FormForm,
+  FormField,
+  FormFieldError,
+  FormInputGroupInput,
+  FormSubmitButton,
+  useAppForm,
+} from "./form";
 import { Button } from "./ui/button";
 import { InputGroup, InputGroupAddon } from "./ui/input-group";
 import { Item, ItemActions, ItemContent, ItemGroup, ItemTitle } from "./ui/item";
 
 interface Props {
   className?: string;
-  users: { id: string; name: string; email: string }[];
+  users: ReadonlyArray<ApiOutput["wishlists"]["getMembers"][number]>;
   addUser: (input: { email: string }) => Promise<unknown>;
-  deleteUser: (input: { userId: string }) => void;
+  deleteUser: (input: { userId: IdBranded<"user"> }) => void;
 }
 
 export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUser }: Props) {
-  const { user: currentUser } = useLoggedInAuth();
-
+  const { user: currentUser } = useSession();
   const form = useAppForm({
     defaultValues: { email: "" },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: z.object({
-        email: z.email().refine((email) => email !== currentUser.email, {
-          error: "You cannot add yourself",
-        }),
-      }),
+      onDynamic: Schema.toStandardSchemaV1(
+        MemberInput.check(
+          Schema.makeFilter((value) => value.email !== currentUser.email || m.member_cannotSelf()),
+        ),
+      ),
     },
     onSubmit: async ({ value, formApi }) => {
       try {
         await addUser(value);
         formApi.reset();
       } catch (error) {
-        if (error instanceof TRPCClientError) {
-          formApi.fieldInfo.email?.instance?.setErrorMap({
-            onSubmit: { message: error.message },
-          });
-        }
+        formApi.setErrorMap({
+          onSubmit: {
+            fields: {
+              email: Predicate.isTagged(error, "WishlistUserNotFound")
+                ? m.error_userNotFound()
+                : Predicate.isTagged(error, "WishlistMemberConflict")
+                  ? m.error_memberConflict()
+                  : m.routeDefault_error(),
+            },
+          },
+        });
       }
     },
   });
-
   return (
     <div className={cn("flex flex-col gap-2 p-1", users.length === 0 && "mt-1", className)}>
       {users.length > 0 && (
@@ -63,11 +72,8 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
                 <Button
                   size="icon-sm"
                   variant="ghost"
-                  onClick={() =>
-                    deleteUser({
-                      userId: user.id,
-                    })
-                  }
+                  aria-label={m.action_remove()}
+                  onClick={() => deleteUser({ userId: user.id })}
                 >
                   <XIcon />
                 </Button>
@@ -82,9 +88,12 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
             {() => (
               <FormField>
                 <InputGroup>
-                  <FormInputGroupInput placeholder="user@example.com" />
+                  <FormInputGroupInput
+                    placeholder="user@example.com"
+                    aria-label={m.member_email()}
+                  />
                   <InputGroupAddon align="inline-end">
-                    <FormSubmitButton variant="default">Add</FormSubmitButton>
+                    <FormSubmitButton variant="default">{m.action_add()}</FormSubmitButton>
                   </InputGroupAddon>
                 </InputGroup>
                 <FormFieldError />

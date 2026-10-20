@@ -5,19 +5,24 @@
   "imports": {
     "#*": "./src/*.ts"
   },
+  "scripts": {
+    "build": "vp pack",
+    "start": "node dist/server.mjs"
+  },
   "devDependencies": {
     "@effect/opentelemetry": "catalog:",
     "@effect/platform-node": "catalog:",
+    "@effect/sql-pg": "catalog:",
     "@opentelemetry/exporter-trace-otlp-proto": "catalog:",
     "@opentelemetry/sdk-trace-base": "catalog:",
     "@opentelemetry/sdk-trace-node": "catalog:",
+    "@types/node": "catalog:",
     "@wishbeam/api-contract": "workspace:*",
     "@wishbeam/auth": "workspace:*",
     "@wishbeam/config": "workspace:*",
     "@wishbeam/db": "workspace:*",
     "@wishbeam/services": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
-    "@types/node": "catalog:",
     "drizzle-orm": "catalog:",
     "effect": "catalog:",
     "evlog": "catalog:",

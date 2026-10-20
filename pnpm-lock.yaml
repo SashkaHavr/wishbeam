@@ -326,6 +326,9 @@ importers:
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.0.5(effect@4.0.5)(redis@6.3.0(@opentelemetry/api@1.9.1))
+      '@effect/sql-pg':
+        specifier: 'catalog:'
+        version: 4.0.5(effect@4.0.5)
       '@opentelemetry/exporter-trace-otlp-proto':
         specifier: 'catalog:'
         version: 0.223.0(@opentelemetry/api@1.9.1)
@@ -335,6 +338,9 @@ importers:
       '@opentelemetry/sdk-trace-node':
         specifier: 'catalog:'
         version: 2.12.0(@opentelemetry/api@1.9.1)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.5
       '@wishbeam/api-contract':
         specifier: workspace:*
         version: link:../../packages/api-contract
@@ -353,9 +359,6 @@ importers:
       '@wishbeam/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.5
       drizzle-orm:
         specifier: 'catalog:'
         version: 1.0.0-rc.5-ab785fc(patch_hash=3950e17147ada8617814968873950c8fbcc1f03700997bbf21247a76c12231f5)(@effect/sql-pg@4.0.5(effect@4.0.5))(@effect/sql-pglite@4.0.5(effect@4.0.5))(@electric-sql/pglite@0.5.10)(@opentelemetry/api@1.9.1)(effect@4.0.5)(pg@8.23.1)(valibot@1.5.0(typescript@7.0.2))(zod@4.6.7)
@@ -374,30 +377,12 @@ importers:
       '@base-ui/react':
         specifier: 1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@wishbeam/api':
-        specifier: workspace:*
-        version: link:../api
-      '@wishbeam/api-contract':
-        specifier: workspace:*
-        version: link:../../packages/api-contract
-      '@wishbeam/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
-      '@wishbeam/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@wishbeam/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      '@wishbeam/intl':
-        specifier: workspace:*
-        version: link:../../packages/intl
-      '@wishbeam/services':
-        specifier: workspace:*
-        version: link:../../packages/services
-      '@wishbeam/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
+      '@fontsource-variable/inter':
+        specifier: 5.2.8
+        version: 5.2.8
+      '@fontsource-variable/source-serif-4':
+        specifier: 5.2.9
+        version: 5.2.9
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.3.3(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2))
@@ -428,6 +413,30 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.1.2(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2))(oxc-transform-react@0.154.0)
+      '@wishbeam/api':
+        specifier: workspace:*
+        version: link:../api
+      '@wishbeam/api-contract':
+        specifier: workspace:*
+        version: link:../../packages/api-contract
+      '@wishbeam/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@wishbeam/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@wishbeam/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@wishbeam/intl':
+        specifier: workspace:*
+        version: link:../../packages/intl
+      '@wishbeam/services':
+        specifier: workspace:*
+        version: link:../../packages/services
+      '@wishbeam/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       better-auth:
         specifier: 'catalog:'
         version: 1.7.10(@opentelemetry/api@1.9.1)(@tanstack/react-start@1.169.3(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.14))(drizzle-kit@1.0.0-rc.5-ab785fc)(drizzle-orm@1.0.0-rc.5-ab785fc(patch_hash=3950e17147ada8617814968873950c8fbcc1f03700997bbf21247a76c12231f5)(@effect/sql-pg@4.0.5(effect@4.0.5))(@effect/sql-pglite@4.0.5(effect@4.0.5))(@electric-sql/pglite@0.5.10)(@opentelemetry/api@1.9.1)(effect@4.0.5)(pg@8.23.1)(valibot@1.5.0(typescript@7.0.2))(zod@4.6.7))(pg@8.23.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.0.5)
@@ -473,6 +482,9 @@ importers:
 
   packages/api-contract:
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.5
       '@wishbeam/auth':
         specifier: workspace:*
         version: link:../auth
@@ -482,18 +494,24 @@ importers:
       '@wishbeam/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.5
+      base-x:
+        specifier: 5.0.1
+        version: 5.0.1
       effect:
         specifier: 'catalog:'
         version: 4.0.5
+      uuid:
+        specifier: 14.0.3
+        version: 14.0.3
 
   packages/auth:
     devDependencies:
       '@better-auth/drizzle-adapter':
         specifier: 1.7.10
         version: 1.7.10(@better-auth/core@1.7.10(@better-auth/utils@0.5.0)(@better-fetch/fetch@1.3.2)(@opentelemetry/api@1.9.1)(better-call@1.4.2(zod@4.6.7))(jose@6.2.12)(kysely@0.29.6)(nanostores@1.5.5))(@better-auth/utils@0.5.0)(drizzle-orm@1.0.0-rc.5-ab785fc(patch_hash=3950e17147ada8617814968873950c8fbcc1f03700997bbf21247a76c12231f5)(@effect/sql-pg@4.0.5(effect@4.0.5))(@effect/sql-pglite@4.0.5(effect@4.0.5))(@electric-sql/pglite@0.5.10)(@opentelemetry/api@1.9.1)(effect@4.0.5)(pg@8.23.1)(valibot@1.5.0(typescript@7.0.2))(zod@4.6.7))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.5
       '@wishbeam/config':
         specifier: workspace:*
         version: link:../config
@@ -503,9 +521,6 @@ importers:
       '@wishbeam/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.5
       better-auth:
         specifier: 'catalog:'
         version: 1.7.10(@opentelemetry/api@1.9.1)(@tanstack/react-start@1.169.3(@voidzero-dev/vite-plus-core@1.3.0(@types/node@26.6.5)(jiti@2.7.0)(typescript@7.0.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.14))(drizzle-kit@1.0.0-rc.5-ab785fc)(drizzle-orm@1.0.0-rc.5-ab785fc(patch_hash=3950e17147ada8617814968873950c8fbcc1f03700997bbf21247a76c12231f5)(@effect/sql-pg@4.0.5(effect@4.0.5))(@effect/sql-pglite@4.0.5(effect@4.0.5))(@electric-sql/pglite@0.5.10)(@opentelemetry/api@1.9.1)(effect@4.0.5)(pg@8.23.1)(valibot@1.5.0(typescript@7.0.2))(zod@4.6.7))(pg@8.23.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.0.5)
@@ -515,12 +530,12 @@ importers:
 
   packages/config:
     devDependencies:
-      '@wishbeam/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.5
+      '@wishbeam/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       effect:
         specifier: 'catalog:'
         version: 4.0.5
@@ -539,15 +554,15 @@ importers:
       '@electric-sql/pglite-prepopulatedfs':
         specifier: 0.5.10
         version: 0.5.10(@electric-sql/pglite@0.5.10)
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.6.5
       '@wishbeam/config':
         specifier: workspace:*
         version: link:../config
       '@wishbeam/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.6.5
       drizzle-kit:
         specifier: 'catalog:'
         version: 1.0.0-rc.5-ab785fc
@@ -584,12 +599,12 @@ importers:
 
   packages/services:
     devDependencies:
-      '@wishbeam/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.5
+      '@wishbeam/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       effect:
         specifier: 'catalog:'
         version: 4.0.5
@@ -1136,6 +1151,12 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fontsource-variable/inter@5.2.8':
+    resolution: {integrity: sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ==}
+
+  '@fontsource-variable/source-serif-4@5.2.9':
+    resolution: {integrity: sha512-PPcxjLFk/fS0WHg79pDM2YNvz61kC+oYZ5cWZZyCS0DHpJncmuYOuiZAsvj4tDxlWPBEvxxcRLQQNmSaRbPkqw==}
 
   '@graphql-typed-document-node/core@3.2.0':
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
@@ -2709,6 +2730,9 @@ packages:
 
   babel-dead-code-elimination@1.0.12:
     resolution: {integrity: sha512-GERT7L2TiYcYDtYk1IpD+ASAYXjKbLTDPhBtYj7X1NuRMDTMtAx9kyBenub1Ev41lo91OHCKdmP+egTDmfQ7Ig==}
+
+  base-x@5.0.1:
+    resolution: {integrity: sha512-M7uio8Zt++eg3jPj+rHMfCC+IuygQHHCOU+IYsVtik6FWjuYpVt/+MRKcgsAMHh8mMFAwnB+Bs+mTrFiXjMzKg==}
 
   baseline-browser-mapping@2.11.28:
     resolution: {integrity: sha512-br0LOmjJqr6Rt4AEkadbcNf67Zpo7EPwKsWbjnRrJIa1QYFHQBqM4C7F2WTbV8ahTEcg1Eo+Y0aWjjORInYFyA==}
@@ -4321,6 +4345,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
+  '@fontsource-variable/inter@5.2.8': {}
+
+  '@fontsource-variable/source-serif-4@5.2.9': {}
+
   '@graphql-typed-document-node/core@3.2.0(graphql@16.14.2)':
     dependencies:
       graphql: 16.14.2
@@ -5513,6 +5541,8 @@ snapshots:
       '@babel/types': 7.29.8
     transitivePeerDependencies:
       - supports-color
+
+  base-x@5.0.1: {}
 
   baseline-browser-mapping@2.11.28: {}
 

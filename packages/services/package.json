@@ -10,8 +10,8 @@
   },
   "scripts": {},
   "devDependencies": {
-    "@wishbeam/typescript-config": "workspace:*",
     "@types/node": "catalog:",
+    "@wishbeam/typescript-config": "workspace:*",
     "effect": "catalog:",
     "evlog": "catalog:"
   }

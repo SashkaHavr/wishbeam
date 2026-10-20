@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Gift } from "lucide-react";
 
+import { m } from "@wishbeam/intl/messages";
 import { cn } from "~/lib/utils";
 
 export function Logo({
@@ -17,7 +18,7 @@ export function Logo({
   return (
     <Link
       to="/"
-      aria-label="home"
+      aria-label={m.nav_home()}
       className={cn("flex items-center gap-2  text-secondary-foreground", className)}
       {...props}
     >

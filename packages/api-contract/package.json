@@ -10,10 +10,12 @@
     "./*": "./src/*.ts"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@wishbeam/auth": "workspace:*",
     "@wishbeam/db": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
-    "@types/node": "catalog:",
-    "effect": "catalog:"
+    "base-x": "5.0.1",
+    "effect": "catalog:",
+    "uuid": "14.0.3"
   }
 }

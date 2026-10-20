@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { Field, FieldError, FieldLabel } from "./ui/field";
 import { Form } from "./ui/form";
 import { Input } from "./ui/input";
+import { InputGroupInput } from "./ui/input-group";
+import { Textarea } from "./ui/textarea";
 
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
@@ -54,9 +56,43 @@ export function FormInput(
     "value" | "onValueChange" | "onBlur" | "name" | "id"
   >,
 ) {
-  const field = useFieldContext<string>();
+  const field = useFieldContext<string | null>();
   return (
     <Input
+      value={field.state.value ?? ""}
+      onValueChange={field.handleChange}
+      onBlur={field.handleBlur}
+      {...props}
+    />
+  );
+}
+
+export function FormTextarea(
+  props: Omit<
+    React.ComponentProps<typeof Textarea>,
+    "value" | "onChange" | "onBlur" | "name" | "id"
+  >,
+) {
+  const field = useFieldContext<string>();
+  return (
+    <Textarea
+      value={field.state.value}
+      onChange={(event) => field.handleChange(event.target.value)}
+      onBlur={field.handleBlur}
+      {...props}
+    />
+  );
+}
+
+export function FormInputGroupInput(
+  props: Omit<
+    React.ComponentProps<typeof InputGroupInput>,
+    "value" | "onValueChange" | "onBlur" | "name" | "id"
+  >,
+) {
+  const field = useFieldContext<string>();
+  return (
+    <InputGroupInput
       value={field.state.value}
       onValueChange={field.handleChange}
       onBlur={field.handleBlur}

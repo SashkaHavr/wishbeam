@@ -93,7 +93,7 @@ export default defineRailway(async () => {
     },
   });
 
-  return project("reactlith-iac-test", {
+  return project("wishbeam", {
     resources: [db, web, drizzleGateway, drizzleGatewayVolume],
   });
 });

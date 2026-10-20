@@ -36,7 +36,21 @@ export const relations = defineRelations(schema, (r) => ({
       optional: false,
     }),
   },
+  wishlistPublicUsersSavedShare: {
+    wishlist: r.one.wishlist({
+      from: r.wishlistPublicUsersSavedShare.wishlistId,
+      to: r.wishlist.id,
+      optional: false,
+    }),
+    user: r.one.user({
+      from: r.wishlistPublicUsersSavedShare.userId,
+      to: r.user.id,
+      optional: false,
+    }),
+  },
   wishlistItem: {
     wishlist: r.one.wishlist({ optional: false }),
   },
 }));
+
+export { schema };
