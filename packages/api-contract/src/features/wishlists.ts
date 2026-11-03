@@ -1,8 +1,8 @@
 import { Schema } from "effect";
 import { HttpApiEndpoint, HttpApiGroup } from "effect/http-api";
 
-import { IdPublic } from "#id-public";
-import { AuthenticationMiddleware } from "#middleware/authentication";
+import { IdPublic } from "#/id-public";
+import { AuthenticationMiddleware } from "#/middleware/authentication";
 import { IdBranded } from "@wishbeam/db/id-branded";
 
 export class WishlistNotFound extends Schema.TaggedError<WishlistNotFound>()(

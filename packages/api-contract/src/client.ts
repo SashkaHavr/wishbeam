@@ -1,11 +1,11 @@
 import type { HttpApiClient, HttpApiEndpoint } from "effect/http-api";
 import { HttpApi } from "effect/http-api";
 
-import { ConfigApi } from "#features/config";
-import { EventsApi, PublicEventsApi } from "#features/events";
-import { WishlistItemsApi, PublicWishlistItemsApi } from "#features/wishlist-items";
-import { WishlistsApi, PublicWishlistsApi } from "#features/wishlists";
-import { GlobalMiddleware } from "#middleware/global";
+import { ConfigApi } from "#/features/config";
+import { EventsApi, PublicEventsApi } from "#/features/events";
+import { WishlistItemsApi, PublicWishlistItemsApi } from "#/features/wishlist-items";
+import { WishlistsApi, PublicWishlistsApi } from "#/features/wishlists";
+import { GlobalMiddleware } from "#/middleware/global";
 
 export class Api extends HttpApi.make("api")
   .add(

@@ -1,9 +1,9 @@
 import { Schema } from "effect";
 import { HttpApiEndpoint, HttpApiGroup } from "effect/http-api";
 
-import { WishlistNotFound, WishlistParams } from "#features/wishlists";
-import { IdPublic } from "#id-public";
-import { AuthenticationMiddleware } from "#middleware/authentication";
+import { WishlistNotFound, WishlistParams } from "#/features/wishlists";
+import { IdPublic } from "#/id-public";
+import { AuthenticationMiddleware } from "#/middleware/authentication";
 
 export class WishlistItemNotFound extends Schema.TaggedError<WishlistItemNotFound>()(
   "WishlistItemNotFound",

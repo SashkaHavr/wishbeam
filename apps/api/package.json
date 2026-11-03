@@ -3,16 +3,14 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": "./src/*.ts"
-  },
-  "scripts": {
-    "build": "vp pack",
-    "start": "node dist/server.mjs"
+    "#/*": "./src/*.ts"
   },
   "devDependencies": {
     "@effect/opentelemetry": "catalog:",
     "@effect/platform-node": "catalog:",
     "@effect/sql-pg": "catalog:",
+    "@opentelemetry/api": "catalog:",
+    "@opentelemetry/api-logs": "catalog:",
     "@opentelemetry/exporter-trace-otlp-proto": "catalog:",
     "@opentelemetry/sdk-trace-base": "catalog:",
     "@opentelemetry/sdk-trace-node": "catalog:",

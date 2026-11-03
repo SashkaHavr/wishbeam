@@ -8,19 +8,19 @@ import { HttpApiBuilder } from "effect/http-api";
 import { defineEvlog, definePlugin, toLoggerConfig, toMiddlewareOptions } from "evlog";
 import { initLoggerLayer, loggerLayer, routerLayer } from "evlog/effect";
 
-import { ApiConfig } from "#config";
-import { ConfigApiLiveWithServices } from "#features/config/layer";
-import { EventsApiLive, PublicEventsApiLive } from "#features/events/layer";
-import { WishlistEvents } from "#features/events/service";
-import { WishlistItemsApiLive, PublicWishlistItemsApiLive } from "#features/wishlist-items/layer";
+import { ApiConfig } from "#/config";
+import { ConfigApiLiveWithServices } from "#/features/config/layer";
+import { EventsApiLive, PublicEventsApiLive } from "#/features/events/layer";
+import { WishlistEvents } from "#/features/events/service";
+import { WishlistItemsApiLive, PublicWishlistItemsApiLive } from "#/features/wishlist-items/layer";
 import {
   WishlistsApiLive,
   PublicWishlistsApiLive,
   WishlistServices,
-} from "#features/wishlists/layer";
-import { AuthenticationMiddlewareLive } from "#middleware/authentication/layer";
-import { GlobalMiddlewareLive } from "#middleware/global/layer";
-import { AuthorizationMiddlewareLive } from "#middleware/permission/layer";
+} from "#/features/wishlists/layer";
+import { AuthenticationMiddlewareLive } from "#/middleware/authentication/layer";
+import { GlobalMiddlewareLive } from "#/middleware/global/layer";
+import { AuthorizationMiddlewareLive } from "#/middleware/permission/layer";
 import { Api } from "@wishbeam/api-contract";
 import { BetterAuth } from "@wishbeam/auth";
 import { Auth } from "@wishbeam/auth/service";

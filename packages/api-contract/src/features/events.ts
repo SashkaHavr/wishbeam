@@ -1,8 +1,8 @@
 import { Schema } from "effect";
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema } from "effect/http-api";
 
-import { WishlistNotFound, WishlistParams } from "#features/wishlists";
-import { AuthenticationMiddleware } from "#middleware/authentication";
+import { WishlistNotFound, WishlistParams } from "#/features/wishlists";
+import { AuthenticationMiddleware } from "#/middleware/authentication";
 
 export const Invalidation = Schema.Struct({ type: Schema.Literal("wishlists") });
 
