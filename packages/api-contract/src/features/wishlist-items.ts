@@ -16,11 +16,14 @@ export class WishlistItemLockConflict extends Schema.TaggedError<WishlistItemLoc
   { httpApiStatus: 409 },
 ) {}
 const HttpUrl = Schema.String.check(
-  Schema.makeFilter((value) => {
-    if (!URL.canParse(value)) return false;
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  }),
+  Schema.makeFilter(
+    (value) => {
+      if (!URL.canParse(value)) return false;
+      const url = new URL(value);
+      return url.protocol === "http:" || url.protocol === "https:";
+    },
+    { expected: "a valid HTTP or HTTPS URL" },
+  ),
 );
 export const EstimatedPrice = Schema.String.check(Schema.isMaxLength(50));
 export const WishlistItemInput = Schema.Struct({
