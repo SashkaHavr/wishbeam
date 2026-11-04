@@ -43,11 +43,19 @@ function WishlistFormDialog({
   const form = useAppForm({
     defaultValues: initialValue,
     validationLogic: revalidateLogic(),
-    validators: { onDynamic: Schema.toStandardSchemaV1(WishlistInput) },
-    onSubmit: async ({ value }) => {
+    validators: {
+      onDynamic: Schema.toStandardSchemaV1(
+        WishlistInput.mapFields((fields) => ({
+          ...fields,
+          title: fields.title.annotate({ message: m.error_wishlistTitle() }),
+        })),
+      ),
+    },
+    onSubmit: async ({ value, formApi }) => {
       try {
-        await onSave(value);
+        await onSave(Schema.decodeSync(WishlistInput)(value));
         setOpen(false);
+        if (!update) formApi.reset();
       } catch {
         form.setErrorMap({ onSubmit: { fields: { title: m.routeDefault_error() } } });
       }

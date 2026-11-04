@@ -35,7 +35,10 @@ export function AddDeleteUsersByEmailForm({ className, users, addUser, deleteUse
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: Schema.toStandardSchemaV1(
-        MemberInput.check(
+        MemberInput.mapFields((fields) => ({
+          ...fields,
+          email: fields.email.annotate({ message: m.error_invalidEmail() }),
+        })).check(
           Schema.makeFilter((value) => value.email !== currentUser.email || m.member_cannotSelf()),
         ),
       ),

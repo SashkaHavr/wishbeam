@@ -30,6 +30,8 @@
   "error_memberConflict": "This person is already an owner or member, or cannot be removed.",
   "error_userNotFound": "No account exists with that email address.",
   "error_lockConflict": "This reservation has changed. Please try again.",
+  "error_invalidEmail": "Enter a valid email address.",
+  "error_wishlistTitle": "Enter a title between 1 and 100 characters that isn't only whitespace.",
   "auth_loginGoogle": "Login with Google",
   "auth_login": "Log in",
   "auth_loginDescription": "Please log in to continue",

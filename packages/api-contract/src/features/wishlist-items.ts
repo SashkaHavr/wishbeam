@@ -27,20 +27,25 @@ const HttpUrl = Schema.String.check(
 );
 export const EstimatedPrice = Schema.String.check(Schema.isMaxLength(50));
 export const WishlistItemInput = Schema.Struct({
-  title: Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(100)),
-  description: Schema.String.check(Schema.isMaxLength(500)),
+  title: Schema.Trim.check(Schema.isMinLength(1), Schema.isMaxLength(100)),
+  description: Schema.Trim.check(Schema.isMaxLength(500)),
   links: Schema.Array(HttpUrl).check(Schema.isMaxLength(5)),
   estimatedPrice: Schema.NullOr(EstimatedPrice),
 });
+const WishlistItemOutputFields = {
+  ...WishlistItemInput.fields,
+  title: Schema.toEncoded(WishlistItemInput.fields.title),
+  description: Schema.toEncoded(WishlistItemInput.fields.description),
+};
 export const ItemStatus = Schema.Literals(["active", "archived"]);
 export const WishlistItemOutput = Schema.Struct({
   id: IdPublic("wishlist-item"),
-  ...WishlistItemInput.fields,
+  ...WishlistItemOutputFields,
   status: ItemStatus,
 });
 export const SharedWishlistItemOutput = Schema.Struct({
   id: IdPublic("wishlist-item"),
-  ...WishlistItemInput.fields,
+  ...WishlistItemOutputFields,
   lockStatus: Schema.Literals(["unlocked", "lockedByCurrentUser", "lockedByAnotherUser"]),
 });
 export const ItemParams = Schema.Struct({

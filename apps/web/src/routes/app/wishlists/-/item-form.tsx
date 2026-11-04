@@ -62,13 +62,16 @@ function ItemFormDialog({
       estimatedPrice: initialValue.estimatedPrice ?? "",
     },
     validators: { onSubmit: Schema.toStandardSchemaV1(ItemFormSchema) },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value, formApi }) => {
       try {
-        await onSave({
-          ...value,
-          estimatedPrice: value.estimatedPrice === "" ? null : value.estimatedPrice,
-        });
+        await onSave(
+          Schema.decodeSync(WishlistItemInput)({
+            ...value,
+            estimatedPrice: value.estimatedPrice === "" ? null : value.estimatedPrice,
+          }),
+        );
         setOpen(false);
+        if (!update) formApi.reset();
       } catch {
         form.setErrorMap({ onSubmit: { fields: { title: m.routeDefault_error() } } });
       }
@@ -85,7 +88,7 @@ function ItemFormDialog({
       {children}
       <DialogContent>
         <form.AppForm>
-          <FormForm>
+          <FormForm className="contents">
             <DialogHeader>
               <DialogTitle>{update ? m.item_update() : m.item_createNew()}</DialogTitle>
               <DialogDescription>

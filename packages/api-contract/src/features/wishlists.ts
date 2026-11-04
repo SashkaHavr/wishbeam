@@ -27,19 +27,23 @@ export class WishlistUserNotFound extends Schema.TaggedError<WishlistUserNotFoun
 ) {}
 
 export const WishlistInput = Schema.Struct({
-  title: Schema.String.check(Schema.isMinLength(1), Schema.isMaxLength(100)),
-  description: Schema.String.check(Schema.isMaxLength(500)),
+  title: Schema.Trim.check(Schema.isMaxLength(100), Schema.isMinLength(1)),
+  description: Schema.Trim.check(Schema.isMaxLength(500)),
 });
+const WishlistOutputFields = {
+  title: Schema.toEncoded(WishlistInput.fields.title),
+  description: Schema.toEncoded(WishlistInput.fields.description),
+};
 export const ShareStatus = Schema.Literals(["private", "shared", "public"]);
 export const WishlistOutput = Schema.Struct({
   id: IdPublic("wishlist"),
-  ...WishlistInput.fields,
+  ...WishlistOutputFields,
   shareStatus: ShareStatus,
   currentUserIsCreator: Schema.Boolean,
 });
 export const SharedWishlistOutput = Schema.Struct({
   id: IdPublic("wishlist"),
-  ...WishlistInput.fields,
+  ...WishlistOutputFields,
 });
 export const MemberOutput = Schema.Struct({
   id: IdBranded("user"),
