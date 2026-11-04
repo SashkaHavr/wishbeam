@@ -1,11 +1,17 @@
+import { sql } from "drizzle-orm";
 import { timestamp, uuid } from "drizzle-orm/pg-core";
-import { v7 as uuidv7 } from "uuid";
+import type { Brand } from "effect";
 
-export const baseTable = {
-  id: uuid().primaryKey().$defaultFn(uuidv7),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-};
+export function baseTable<T extends string>() {
+  return {
+    id: uuid()
+      .$type<Brand.Branded<string, T>>()
+      .primaryKey()
+      .default(sql`uuidv7()`),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  };
+}

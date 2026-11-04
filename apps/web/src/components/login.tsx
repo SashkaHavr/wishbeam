@@ -1,11 +1,8 @@
-// oxlint-disable anchor-is-valid
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
-import { UserIcon } from "lucide-react";
-import { useState } from "react";
+import { useRouteContext } from "@tanstack/react-router";
+import { cn } from "cn";
 
-import { authClient, useResetAuth } from "~/lib/auth";
-import { useTRPC } from "~/lib/trpc";
-import { cn } from "~/lib/utils";
+import { m } from "@wishbeam/intl/messages";
+import { useGoogleSignIn } from "~/queries/auth";
 
 import { Google } from "./icons/brands";
 import { Button } from "./ui/button";
@@ -20,79 +17,17 @@ import {
   DialogPanel,
   DialogTitle,
 } from "./ui/dialog";
-import { Field } from "./ui/field";
 import { Fieldset } from "./ui/fieldset";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
-import { Spinner } from "./ui/spinner";
 
 export function LoginButtons() {
-  const trpc = useTRPC();
-  const authConfig = useSuspenseQuery(
-    trpc.config.general.queryOptions(undefined, { select: (data) => data.auth }),
-  );
-  const resetAuth = useResetAuth();
-
-  const [selectedTestUser, setSelectedTestUser] = useState<string>("0");
-  const loginAsTestUser = useMutation({
-    mutationFn: async ({ user }: { user: number }) => {
-      if (!authConfig.data.testAuth) return;
-      await authClient.signIn.email({
-        email: `user${user}@example.com`,
-        password: `password${user}`,
-      });
-      await resetAuth();
-    },
-  });
-
-  const loginGoogle = useMutation({
-    mutationFn: async () =>
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: window.location.href,
-      }),
-  });
-
+  const config = useRouteContext({ from: "__root__", select: (context) => context.authConfig });
+  const login = useGoogleSignIn(config.googleEmulate);
   return (
     <Fieldset>
-      {authConfig.data.testAuth && (
-        <Field className="grid grid-cols-2">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() =>
-              loginAsTestUser.mutate({
-                user: parseInt(selectedTestUser, 10),
-              })
-            }
-            disabled={loginAsTestUser.isPending}
-          >
-            {loginAsTestUser.isPending && <Spinner />}
-            <UserIcon />
-            Login with
-          </Button>
-          <Select
-            value={selectedTestUser}
-            onValueChange={(value) => setSelectedTestUser(value as string)}
-          >
-            <SelectTrigger>
-              <span>{`Test User ${selectedTestUser}`}</span>
-            </SelectTrigger>
-            <SelectContent>
-              {Array.from(Array.from({ length: 100 }).keys()).map((user) => (
-                <SelectItem key={user} value={user.toString()}>
-                  Test User {user}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
-      )}
-      {authConfig.data.googleOAuth && (
-        <Button variant="outline" type="button" onClick={() => loginGoogle.mutate()}>
-          <Google />
-          Login with Google
-        </Button>
-      )}
+      <Button variant="outline" type="button" onClick={() => login.mutate()}>
+        <Google />
+        {m.auth_loginGoogle()}
+      </Button>
     </Fieldset>
   );
 }
@@ -102,8 +37,8 @@ export function LoginCard({ className, ...props }: React.ComponentProps<"div">) 
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome</CardTitle>
-          <CardDescription>Sign in below to continue</CardDescription>
+          <CardTitle className="text-xl">{m.auth_welcome()}</CardTitle>
+          <CardDescription>{m.auth_signInDescription()}</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginButtons />
@@ -116,20 +51,20 @@ export function LoginCard({ className, ...props }: React.ComponentProps<"div">) 
 export function LoginDialog({
   children,
   ...props
-}: React.ComponentProps<typeof Dialog> & { children?: React.ReactNode }) {
+}: Omit<React.ComponentProps<typeof Dialog>, "children"> & { children?: React.ReactNode }) {
   return (
     <Dialog {...props}>
       {children}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Log in</DialogTitle>
-          <DialogDescription>Please log in to continue</DialogDescription>
+          <DialogTitle>{m.auth_login()}</DialogTitle>
+          <DialogDescription>{m.auth_loginDescription()}</DialogDescription>
         </DialogHeader>
         <DialogPanel>
           <LoginButtons />
         </DialogPanel>
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>Close</DialogClose>
+          <DialogClose render={<Button variant="outline" />}>{m.action_close()}</DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

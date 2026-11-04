@@ -1,29 +1,29 @@
-FROM oven/bun:1.3.11-alpine AS base
-
-# Install and build
-FROM base AS build
+FROM ghcr.io/voidzero-dev/vite-plus:1.4.0 AS base
 WORKDIR /app
-COPY . .
-RUN bun ci
-RUN bun run --filter @wishbeam/web --filter @wishbeam/auth --filter @wishbeam/db build
 
-# Run
-FROM base AS runner
+FROM base AS prepare
+COPY --chown=vp:vp . .
+RUN vp add -g turbo@$(node -p "require('./package.json').devDependencies.turbo")
+RUN turbo prune @wishbeam/web --docker
 
-RUN apk --no-cache add curl
-HEALTHCHECK --interval=1s --timeout=10s CMD [ "curl", "http://localhost:3000/trpc/health" ]
+FROM base AS build
+COPY --from=prepare --chown=vp:vp /app/out/json/ .
+RUN vp install --frozen-lockfile
+COPY --from=prepare --chown=vp:vp /app/out/full/ .
+RUN vpr intl#build
+RUN vpr web#build
+
+FROM node:26.12.0-slim
+WORKDIR /app
+
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --start-interval=1s \
+  CMD [ "node", "-e", "fetch('http://localhost:3000/health').then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))" ]
 
 ENV NODE_ENV=production
 
+COPY --from=build /app/apps/web/dist ./apps/web
 
-WORKDIR /infra
-COPY /packages/db/drizzle ./db/drizzle
-COPY --from=build /app/packages/db/dist ./db
-COPY --from=build /app/packages/auth/dist ./auth
-
-WORKDIR /app
-COPY --from=build /app/apps/web/dist .
-
-USER bun
+USER node
 EXPOSE 3000
-CMD [ "bun", "run", "./server/index.mjs" ]
+WORKDIR /app/apps/web
+CMD [ "node", "./server/index.mjs" ]

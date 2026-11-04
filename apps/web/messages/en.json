@@ -1,8 +1,0 @@
-{
-  "routeComponents": {
-    "error": "Something went wrong",
-    "notFound": "Not Found",
-    "notFoundDescription": "The page you're looking for doesn't exist.",
-    "returnToHomePage": "Return to Home page"
-  }
-}

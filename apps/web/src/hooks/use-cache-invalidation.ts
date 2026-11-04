@@ -1,45 +1,38 @@
-import { skipToken, useQueryClient } from "@tanstack/react-query";
-import { useRouteContext } from "@tanstack/react-router";
-import { useSubscription } from "@trpc/tanstack-react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { Effect, Schedule, Stream } from "effect";
+import { useEffect } from "react";
 
-import { useTRPC } from "~/lib/trpc";
+import type { IdBranded } from "@wishbeam/db/id-branded";
+import { getApiClient } from "~/lib/api";
+import { wishlistQueryKey } from "~/queries/wishlists";
 
-export function useCacheInvalidation() {
-  const trpc = useTRPC();
+export function useCacheInvalidation(publicWishlistId?: IdBranded<"wishlist">) {
   const queryClient = useQueryClient();
-  const auth = useRouteContext({ from: "__root__", select: (s) => s.auth });
-  useSubscription(
-    trpc.cache.invalidations.subscriptionOptions(auth.loggedIn ? void 0 : skipToken, {
-      onData: (data) => {
-        switch (data.type) {
-          case "wishlists":
-            void queryClient.invalidateQueries({
-              queryKey: trpc.wishlists.pathKey(),
-            });
-            break;
+  useEffect(() => {
+    const controller = new AbortController();
+    const stream = Stream.unwrap(
+      Effect.gen(function* () {
+        if (publicWishlistId) {
+          return yield* getApiClient().publicEvents.subscribe({ params: { id: publicWishlistId } });
         }
-      },
-    }),
-  );
-}
-
-export function usePublicWishlistCacheInvalidation(wishlistId: string) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
-  useSubscription(
-    trpc.cache.invalidationsPublic.subscriptionOptions(
-      { wishlistId },
-      {
-        onData: (data) => {
-          switch (data.type) {
-            case "wishlists":
-              void queryClient.invalidateQueries({
-                queryKey: trpc.wishlists.pathKey(),
-              });
-              break;
-          }
-        },
-      },
-    ),
-  );
+        return yield* getApiClient().events.subscribe();
+      }),
+    );
+    const subscription = stream.pipe(
+      Stream.runForEach(() =>
+        Effect.promise(async () => {
+          await queryClient.invalidateQueries({
+            queryKey: publicWishlistId
+              ? wishlistQueryKey.byId(publicWishlistId)
+              : wishlistQueryKey.all(),
+          });
+        }),
+      ),
+      Effect.retry(Schedule.spaced("2 seconds")),
+    );
+    void Effect.runPromise(subscription, { signal: controller.signal }).catch(() => {
+      // Aborting the subscription on navigation is expected.
+    });
+    return () => controller.abort();
+  }, [queryClient, publicWishlistId]);
 }

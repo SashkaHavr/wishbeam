@@ -1,5 +1,6 @@
 import type { LinkProps } from "@tanstack/react-router";
-import { useRouterState } from "@tanstack/react-router";
+import { useHydrated, useRouterState } from "@tanstack/react-router";
+import { cn } from "cn";
 import {
   ChevronLeftIcon,
   ListCheckIcon,
@@ -12,13 +13,11 @@ import {
 import type React from "react";
 import { useState } from "react";
 
-import { useLoggedInAuth } from "~/hooks/route-context";
-import { useIsClient } from "~/hooks/use-is-client";
-import { useSignout } from "~/lib/auth";
-import { cn } from "~/lib/utils";
+import { m } from "@wishbeam/intl/messages";
+import { useSession, useSignout } from "~/lib/auth";
 
 import { Logo } from "./logo";
-import { useTheme } from "./theme/context";
+import { useSetTheme, useTheme } from "./theme";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button, LinkButton } from "./ui/button";
 import { Separator } from "./ui/separator";
@@ -34,19 +33,19 @@ import {
 
 interface NavLinkProps {
   to: LinkProps["to"];
-  label: string;
+  label: () => string;
   icon: React.ComponentType;
 }
 
 const mainLinks: NavLinkProps[] = [
   {
     to: "/app/wishlists",
-    label: "My wishlists",
+    label: m.nav_myWishlists,
     icon: ListCheckIcon,
   },
   {
     to: "/app/shared",
-    label: "Shared with me",
+    label: m.nav_sharedWithMe,
     icon: Share2Icon,
   },
 ];
@@ -59,28 +58,29 @@ export function isMainLinkPath(path?: string) {
 
 function ThemeSwitcher() {
   const theme = useTheme();
-  const isClient = useIsClient();
+  const setTheme = useSetTheme();
+  const isClient = useHydrated();
 
   return (
     <>
-      {(!isClient || theme.resolvedTheme === "light") && (
+      {(!isClient || theme === "light") && (
         <Button
           variant="ghost"
           className="w-full justify-start dark:hidden"
-          onClick={() => theme.setTheme("dark")}
+          onClick={() => void setTheme("dark")}
         >
           <MoonIcon />
-          <span>Dark mode</span>
+          <span>{m.nav_darkMode()}</span>
         </Button>
       )}
-      {(!isClient || theme.resolvedTheme === "dark") && (
+      {(!isClient || theme === "dark") && (
         <Button
           variant="ghost"
           className="hidden w-full justify-start dark:inline-flex"
-          onClick={() => theme.setTheme("light")}
+          onClick={() => void setTheme("light")}
         >
           <SunIcon />
-          <span>Light mode</span>
+          <span>{m.nav_lightMode()}</span>
         </Button>
       )}
     </>
@@ -111,7 +111,7 @@ export function SidebarLinks({ onNavigate }: { onNavigate?: () => void }) {
           className="justify-start data-[status=active]:bg-accent data-[status=active]:text-accent-foreground"
         >
           <link.icon />
-          <span>{link.label}</span>
+          <span>{link.label()}</span>
         </LinkButton>
       ))}
     </div>
@@ -119,7 +119,7 @@ export function SidebarLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function SidebarFooter() {
-  const auth = useLoggedInAuth();
+  const auth = useSession();
   const signout = useSignout();
 
   return (
@@ -133,7 +133,7 @@ export function SidebarFooter() {
         </div>
         <Button onClick={() => signout.mutate()} variant="ghost" className="justify-start">
           <LogOutIcon />
-          <span>Log out</span>
+          <span>{m.auth_logOut()}</span>
         </Button>
       </div>
     </div>
@@ -161,7 +161,7 @@ export function DesktopNav({ className, ...props }: React.ComponentProps<"aside"
         ) : (
           <LinkButton variant="ghost" to=".." className="justify-start">
             <ChevronLeftIcon />
-            <span>Back</span>
+            <span>{m.nav_back()}</span>
           </LinkButton>
         )}
       </div>
@@ -195,7 +195,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
       ) : (
         <LinkButton variant="ghost" to="..">
           <ChevronLeftIcon />
-          <span>Back</span>
+          <span>{m.nav_back()}</span>
         </LinkButton>
       )}
       <div className="grow" />
@@ -210,7 +210,7 @@ export function MobileNav({ className, ...props }: React.ComponentProps<"div">) 
         <SheetPopup side="right" className="w-64.25 px-2" showCloseButton={false}>
           <SheetHeader className="items-center">
             <Logo withName onClick={closeNav} />
-            <SheetDescription className="sr-only">Navigation menu</SheetDescription>
+            <SheetDescription className="sr-only">{m.nav_menu()}</SheetDescription>
           </SheetHeader>
           <SheetPanel className="p-2">
             <SidebarLinks onNavigate={closeNav} />

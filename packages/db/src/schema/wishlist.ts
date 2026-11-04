@@ -1,8 +1,16 @@
 import { sql } from "drizzle-orm";
-import { index, integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgEnum,
+  snakeCase,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
-import { baseTable } from "#utils/base-table.ts";
-import { oneToMany, oneToManyCascadeOnDelete, oneToManyNullable } from "#utils/foreign-keys.ts";
+import { baseTable } from "#/utils/base-table";
+import { oneToManyCascadeOnDelete, oneToManyNullable } from "#/utils/foreign-keys";
 
 import { user } from "./auth";
 
@@ -10,8 +18,8 @@ export const wishlistShareStatus = pgEnum("wishlist_share_status", ["private", "
 
 export const wishlistStatus = pgEnum("wishlist_status", ["active", "archived"]);
 
-export const wishlist = pgTable("wishlist", {
-  ...baseTable,
+export const wishlist = snakeCase.table("wishlist", {
+  ...baseTable<"wishlist">(),
   title: text().notNull(),
   description: text().notNull(),
   shareStatus: wishlistShareStatus().notNull().default("private"),
@@ -19,21 +27,21 @@ export const wishlist = pgTable("wishlist", {
 
 export const wishlistOwnerRole = pgEnum("wishlist_owner_role", ["owner", "creator"]);
 
-export const wishlistOwner = pgTable(
+export const wishlistOwner = snakeCase.table(
   "wishlist_owner",
   {
-    ...baseTable,
-    wishlistId: oneToMany(() => wishlist.id),
-    userId: oneToMany(() => user.id),
+    ...baseTable<"wishlist-owner">(),
+    wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
+    userId: oneToManyCascadeOnDelete(() => user.id),
     role: wishlistOwnerRole().notNull(),
   },
-  (table) => [index().on(table.wishlistId), index().on(table.userId)],
+  (table) => [uniqueIndex().on(table.wishlistId, table.userId), index().on(table.userId)],
 );
 
-export const wishlistItem = pgTable(
+export const wishlistItem = snakeCase.table(
   "wishlist_item",
   {
-    ...baseTable,
+    ...baseTable<"wishlist-item">(),
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
     order: integer().generatedByDefaultAsIdentity().notNull(),
     title: text().notNull(),
@@ -45,27 +53,27 @@ export const wishlistItem = pgTable(
     status: wishlistStatus().notNull().default("active"),
     estimatedPrice: text(),
     lockedUserId: oneToManyNullable(() => user.id),
-    lockChangedAt: timestamp().notNull().defaultNow(),
+    lockChangedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index().on(table.wishlistId)],
 );
 
-export const wishlistUsersSharedWith = pgTable(
+export const wishlistUsersSharedWith = snakeCase.table(
   "wishlist_users_shared_with",
   {
-    ...baseTable,
+    ...baseTable<"wishlist-users-shared-with">(),
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
     userId: oneToManyCascadeOnDelete(() => user.id),
   },
-  (table) => [index().on(table.wishlistId), index().on(table.userId)],
+  (table) => [uniqueIndex().on(table.wishlistId, table.userId), index().on(table.userId)],
 );
 
-export const wishlistPublicUsersSavedShare = pgTable(
+export const wishlistPublicUsersSavedShare = snakeCase.table(
   "wishlist_public_users_saved_share",
   {
-    ...baseTable,
+    ...baseTable<"wishlist-public-users-saved-share">(),
     wishlistId: oneToManyCascadeOnDelete(() => wishlist.id),
     userId: oneToManyCascadeOnDelete(() => user.id),
   },
-  (table) => [index().on(table.wishlistId), index().on(table.userId)],
+  (table) => [uniqueIndex().on(table.wishlistId, table.userId), index().on(table.userId)],
 );

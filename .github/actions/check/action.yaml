@@ -1,0 +1,10 @@
+name: Check project
+
+runs:
+  using: composite
+  steps:
+    - uses: voidzero-dev/setup-vp@v1.22.0
+    - shell: bash
+      run: vp check
+    - shell: bash
+      run: vp test

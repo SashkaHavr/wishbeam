@@ -1,8 +1,0 @@
-name: Run workspace check
-on:
-  pull_request:
-
-jobs:
-  run-check:
-    uses: ./.github/workflows/check-reusable.yaml
-    secrets: inherit

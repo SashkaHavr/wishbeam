@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CircleSlash2Icon, GiftIcon } from "lucide-react";
 
-import { CreateWishlistDialog } from "~/components/app/create-wishlist-dialog";
+import { m } from "@wishbeam/intl/messages";
 import { CreateWishlistButton, Wishlist, WishlistList } from "~/components/app/wishlist";
 import { PageLayout } from "~/components/page-layout";
 import { Button } from "~/components/ui/button";
@@ -15,22 +15,19 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/components/ui/empty";
-import { useTRPC } from "~/lib/trpc";
+import { allWishlistsQueryOptions } from "~/queries/wishlists";
+
+import { CreateWishlistDialog } from "./-/wishlist-form";
 
 export const Route = createFileRoute("/app/wishlists/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(context.trpc.wishlists.owned.getAll.queryOptions());
+    await context.queryClient.query({ ...allWishlistsQueryOptions, staleTime: "static" });
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const trpc = useTRPC();
-  const { data: wishlists } = useSuspenseQuery(
-    trpc.wishlists.owned.getAll.queryOptions(void 0, {
-      select: (data) => data.wishlists,
-    }),
-  );
+  const { data: wishlists } = useSuspenseQuery(allWishlistsQueryOptions);
 
   if (wishlists.length === 0) {
     return (
@@ -40,17 +37,14 @@ function RouteComponent() {
             <EmptyMedia variant="icon">
               <CircleSlash2Icon />
             </EmptyMedia>
-            <EmptyTitle>No Wishlists Yet</EmptyTitle>
-            <EmptyDescription>
-              You haven&apos;t created any wishlists yet. Get started by creating your first
-              wishlist.
-            </EmptyDescription>
+            <EmptyTitle>{m.wishlist_emptyTitle()}</EmptyTitle>
+            <EmptyDescription>{m.wishlist_emptyDescription()}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <CreateWishlistDialog>
               <DialogTrigger className="mx-4 w-full" render={<Button />}>
                 <GiftIcon />
-                <span>Create Wishlist</span>
+                <span>{m.wishlist_createEmpty()}</span>
               </DialogTrigger>
             </CreateWishlistDialog>
           </EmptyContent>

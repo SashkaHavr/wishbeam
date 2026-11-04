@@ -1,33 +1,58 @@
-import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react";
+import evlog from "evlog/nitro/v3";
 import { nitro } from "nitro/vite";
-import { defineConfig } from "vite";
+import { defineConfig, lazyPlugins } from "vite-plus";
 
 export default defineConfig({
   build: {
     rolldownOptions: {
-      external: ["bun"],
+      checks: {
+        moduleLevelDirective: false,
+      },
     },
-  },
-  dev: {
-    preTransformRequests: false,
   },
   server: {
     port: 3000,
-    host: "127.0.0.1",
+    host: "0.0.0.0",
+    strictPort: true,
   },
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: [
+  plugins: lazyPlugins(() => [
     tailwindcss(),
     tanstackStart(),
-    nitro({ preset: "bun", output: { dir: "dist" }, compressPublicAssets: { brotli: true } }),
-    react(),
-    babel({
-      presets: [reactCompilerPreset()],
+    nitro({
+      routes: {
+        "/health": { handler: "src/nitro/health", method: "GET" },
+        "/api/ingest": { handler: "src/nitro/log-ingest", method: "POST" },
+        "/api/**": { handler: "src/nitro/api" },
+      },
+      plugins: ["src/server-shutdown.ts"],
+      output: { dir: "dist" },
+      compressPublicAssets: { gzip: true, brotli: true },
+      experimental: {
+        asyncContext: true,
+      },
+      modules: [
+        evlog({
+          env: { service: "web-server" },
+          exclude: ["/api/**"],
+          sampling: {
+            rates: {
+              info: 0,
+              warn: 0,
+              debug: 0,
+              error: 100,
+            },
+            keep: [{ status: 400 }, { duration: 500 }],
+          },
+          redact: false,
+        }),
+      ],
     }),
-  ],
+    react({ compiler: true }),
+  ]),
 });

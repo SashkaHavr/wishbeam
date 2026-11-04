@@ -169,3 +169,8 @@ yarn-error.*
 
 .tanstack
 .nitro
+
+.codex
+references/
+.vitest/
+.pnpm-store/

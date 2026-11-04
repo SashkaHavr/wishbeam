@@ -1,14 +1,16 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { cn } from "cn";
 import { ChevronRightIcon, PlusIcon } from "lucide-react";
 import type React from "react";
 
-import { cn } from "~/lib/utils";
+import type { IdBranded } from "@wishbeam/db/id-branded";
+import { m } from "@wishbeam/intl/messages";
+import { CreateWishlistDialog } from "~/routes/app/wishlists/-/wishlist-form";
 
 import { Button } from "../ui/button";
 import { DialogTrigger } from "../ui/dialog";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemTitle } from "../ui/item";
-import { CreateWishlistDialog } from "./create-wishlist-dialog";
 
 const _wishlistPages = ["/app/wishlists/$id", "/app/shared/$id"] satisfies LinkProps["to"][];
 
@@ -17,7 +19,7 @@ export function Wishlist({
   targetPage,
 }: {
   wishlist: {
-    id: string;
+    id: IdBranded<"wishlist">;
     title: string;
     description: string;
   };
@@ -48,7 +50,7 @@ export function CreateWishlistButton(props: React.ComponentProps<typeof Button>)
     <CreateWishlistDialog>
       <DialogTrigger render={<Button size="lg" variant="outline" {...props} />}>
         <PlusIcon />
-        <span>Create new wishlist</span>
+        <span>{m.wishlist_createNew()}</span>
       </DialogTrigger>
     </CreateWishlistDialog>
   );

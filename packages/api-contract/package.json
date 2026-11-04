@@ -1,0 +1,21 @@
+{
+  "name": "@wishbeam/api-contract",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*.ts"
+  },
+  "exports": {
+    ".": "./src/client.ts",
+    "./*": "./src/*.ts"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@wishbeam/auth": "workspace:*",
+    "@wishbeam/db": "workspace:*",
+    "@wishbeam/typescript-config": "workspace:*",
+    "base-x": "5.0.1",
+    "effect": "catalog:",
+    "uuid": "14.0.3"
+  }
+}

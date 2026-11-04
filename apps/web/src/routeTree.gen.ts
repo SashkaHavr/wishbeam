@@ -9,66 +9,49 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
-import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
-import { Route as TrpcSplatRouteImport } from './routes/trpc.$'
-import { Route as AuthSplatRouteImport } from './routes/auth.$'
-import { Route as publicLoginRouteImport } from './routes/(public)/login'
-import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
+import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as publicLoginIndexRouteImport } from './routes/(public)/login/index'
+import { Route as publicSharedIdRouteImport } from './routes/(public)/shared/$id'
 import { Route as AppSharedIndexRouteImport } from './routes/app/shared/index'
-import { Route as AppWishlistsIdRouteImport } from './routes/app/wishlists/$id'
 import { Route as AppSharedIdRouteImport } from './routes/app/shared/$id'
-import { Route as publicSharedIdRouteImport } from './routes/(public)/shared.$id'
+import { Route as AppWishlistsIndexRouteImport } from './routes/app/wishlists/index'
+import { Route as AppWishlistsIdRouteImport } from './routes/app/wishlists/$id'
 
-const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRouteRoute,
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const TrpcSplatRoute = TrpcSplatRouteImport.update({
-  id: '/trpc/$',
-  path: '/trpc/$',
-  getParentRoute: () => rootRouteImport,
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const AuthSplatRoute = AuthSplatRouteImport.update({
-  id: '/auth/$',
-  path: '/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const publicLoginRoute = publicLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const publicLoginIndexRoute = publicLoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const AppWishlistsIndexRoute = AppWishlistsIndexRouteImport.update({
-  id: '/wishlists/',
-  path: '/wishlists/',
-  getParentRoute: () => AppRouteRoute,
+const publicSharedIdRoute = publicSharedIdRouteImport.update({
+  id: '/shared/$id',
+  path: '/shared/$id',
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const AppSharedIndexRoute = AppSharedIndexRouteImport.update({
   id: '/shared/',
   path: '/shared/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppWishlistsIdRoute = AppWishlistsIdRouteImport.update({
-  id: '/wishlists/$id',
-  path: '/wishlists/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppSharedIdRoute = AppSharedIdRouteImport.update({
@@ -76,34 +59,35 @@ const AppSharedIdRoute = AppSharedIdRouteImport.update({
   path: '/shared/$id',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const publicSharedIdRoute = publicSharedIdRouteImport.update({
-  id: '/shared/$id',
-  path: '/shared/$id',
-  getParentRoute: () => publicRouteRoute,
+const AppWishlistsIndexRoute = AppWishlistsIndexRouteImport.update({
+  id: '/wishlists/',
+  path: '/wishlists/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppWishlistsIdRoute = AppWishlistsIdRouteImport.update({
+  id: '/wishlists/$id',
+  path: '/wishlists/$id',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
-  '/login': typeof publicLoginRoute
-  '/auth/$': typeof AuthSplatRoute
-  '/trpc/$': typeof TrpcSplatRoute
   '/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/login/': typeof publicLoginIndexRoute
   '/app/shared/': typeof AppSharedIndexRoute
   '/app/wishlists/': typeof AppWishlistsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof publicLoginRoute
-  '/auth/$': typeof AuthSplatRoute
-  '/trpc/$': typeof TrpcSplatRoute
   '/': typeof publicIndexRoute
   '/app': typeof AppIndexRoute
   '/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/login': typeof publicLoginIndexRoute
   '/app/shared': typeof AppSharedIndexRoute
   '/app/wishlists': typeof AppWishlistsIndexRoute
 }
@@ -111,14 +95,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(public)': typeof publicRouteRouteWithChildren
   '/app': typeof AppRouteRouteWithChildren
-  '/(public)/login': typeof publicLoginRoute
-  '/auth/$': typeof AuthSplatRoute
-  '/trpc/$': typeof TrpcSplatRoute
   '/(public)/': typeof publicIndexRoute
   '/app/': typeof AppIndexRoute
   '/(public)/shared/$id': typeof publicSharedIdRoute
   '/app/shared/$id': typeof AppSharedIdRoute
   '/app/wishlists/$id': typeof AppWishlistsIdRoute
+  '/(public)/login/': typeof publicLoginIndexRoute
   '/app/shared/': typeof AppSharedIndexRoute
   '/app/wishlists/': typeof AppWishlistsIndexRoute
 }
@@ -126,40 +108,34 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/app'
-    | '/login'
-    | '/auth/$'
-    | '/trpc/$'
     | '/'
     | '/app/'
     | '/shared/$id'
     | '/app/shared/$id'
     | '/app/wishlists/$id'
+    | '/login/'
     | '/app/shared/'
     | '/app/wishlists/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
-    | '/auth/$'
-    | '/trpc/$'
     | '/'
     | '/app'
     | '/shared/$id'
     | '/app/shared/$id'
     | '/app/wishlists/$id'
+    | '/login'
     | '/app/shared'
     | '/app/wishlists'
   id:
     | '__root__'
     | '/(public)'
     | '/app'
-    | '/(public)/login'
-    | '/auth/$'
-    | '/trpc/$'
     | '/(public)/'
     | '/app/'
     | '/(public)/shared/$id'
     | '/app/shared/$id'
     | '/app/wishlists/$id'
+    | '/(public)/login/'
     | '/app/shared/'
     | '/app/wishlists/'
   fileRoutesById: FileRoutesById
@@ -167,19 +143,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   publicRouteRoute: typeof publicRouteRouteWithChildren
   AppRouteRoute: typeof AppRouteRouteWithChildren
-  AuthSplatRoute: typeof AuthSplatRoute
-  TrpcSplatRoute: typeof TrpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(public)': {
       id: '/(public)'
       path: ''
@@ -187,12 +154,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(public)/': {
       id: '/(public)/'
@@ -201,46 +168,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/trpc/$': {
-      id: '/trpc/$'
-      path: '/trpc/$'
-      fullPath: '/trpc/$'
-      preLoaderRoute: typeof TrpcSplatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/auth/$': {
-      id: '/auth/$'
-      path: '/auth/$'
-      fullPath: '/auth/$'
-      preLoaderRoute: typeof AuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(public)/login': {
-      id: '/(public)/login'
+    '/(public)/login/': {
+      id: '/(public)/login/'
       path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof publicLoginRouteImport
+      fullPath: '/login/'
+      preLoaderRoute: typeof publicLoginIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/app/wishlists/': {
-      id: '/app/wishlists/'
-      path: '/wishlists'
-      fullPath: '/app/wishlists/'
-      preLoaderRoute: typeof AppWishlistsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
+    '/(public)/shared/$id': {
+      id: '/(public)/shared/$id'
+      path: '/shared/$id'
+      fullPath: '/shared/$id'
+      preLoaderRoute: typeof publicSharedIdRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/app/shared/': {
       id: '/app/shared/'
       path: '/shared'
       fullPath: '/app/shared/'
       preLoaderRoute: typeof AppSharedIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/wishlists/$id': {
-      id: '/app/wishlists/$id'
-      path: '/wishlists/$id'
-      fullPath: '/app/wishlists/$id'
-      preLoaderRoute: typeof AppWishlistsIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/shared/$id': {
@@ -250,26 +203,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSharedIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/(public)/shared/$id': {
-      id: '/(public)/shared/$id'
-      path: '/shared/$id'
-      fullPath: '/shared/$id'
-      preLoaderRoute: typeof publicSharedIdRouteImport
-      parentRoute: typeof publicRouteRoute
+    '/app/wishlists/': {
+      id: '/app/wishlists/'
+      path: '/wishlists'
+      fullPath: '/app/wishlists/'
+      preLoaderRoute: typeof AppWishlistsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/app/wishlists/$id': {
+      id: '/app/wishlists/$id'
+      path: '/wishlists/$id'
+      fullPath: '/app/wishlists/$id'
+      preLoaderRoute: typeof AppWishlistsIdRouteImport
+      parentRoute: typeof AppRouteRoute
     }
   }
 }
 
 interface publicRouteRouteChildren {
-  publicLoginRoute: typeof publicLoginRoute
   publicIndexRoute: typeof publicIndexRoute
   publicSharedIdRoute: typeof publicSharedIdRoute
+  publicLoginIndexRoute: typeof publicLoginIndexRoute
 }
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
-  publicLoginRoute: publicLoginRoute,
   publicIndexRoute: publicIndexRoute,
   publicSharedIdRoute: publicSharedIdRoute,
+  publicLoginIndexRoute: publicLoginIndexRoute,
 }
 
 const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
@@ -299,8 +259,6 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   publicRouteRoute: publicRouteRouteWithChildren,
   AppRouteRoute: AppRouteRouteWithChildren,
-  AuthSplatRoute: AuthSplatRoute,
-  TrpcSplatRoute: TrpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

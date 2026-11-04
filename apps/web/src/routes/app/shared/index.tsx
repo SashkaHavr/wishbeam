@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CircleSlash2Icon } from "lucide-react";
 
+import { m } from "@wishbeam/intl/messages";
 import { Wishlist, WishlistList } from "~/components/app/wishlist";
 import { PageLayout } from "~/components/page-layout";
 import {
@@ -11,22 +12,17 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "~/components/ui/empty";
-import { useTRPC } from "~/lib/trpc";
+import { sharedWishlistsQueryOptions } from "~/queries/wishlists";
 
 export const Route = createFileRoute("/app/shared/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(context.trpc.wishlists.shared.getAll.queryOptions());
+    await context.queryClient.query({ ...sharedWishlistsQueryOptions, staleTime: "static" });
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const trpc = useTRPC();
-  const { data: wishlists } = useSuspenseQuery(
-    trpc.wishlists.shared.getAll.queryOptions(void 0, {
-      select: (data) => data.wishlists,
-    }),
-  );
+  const { data: wishlists } = useSuspenseQuery(sharedWishlistsQueryOptions);
 
   if (wishlists.length === 0) {
     return (
@@ -36,8 +32,8 @@ function RouteComponent() {
             <EmptyMedia variant="icon">
               <CircleSlash2Icon />
             </EmptyMedia>
-            <EmptyTitle>No Wishlists Yet</EmptyTitle>
-            <EmptyDescription>Nobody has shared any wishlists with you yet. 😢</EmptyDescription>
+            <EmptyTitle>{m.wishlist_emptyTitle()}</EmptyTitle>
+            <EmptyDescription>{m.wishlist_sharedEmptyDescription()}</EmptyDescription>
           </EmptyHeader>
         </Empty>
       </PageLayout>

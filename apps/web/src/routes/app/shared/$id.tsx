@@ -1,6 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { cn } from "cn";
 
+import type { ApiErrors } from "@wishbeam/api-contract";
 import { LockButton } from "~/components/app/lock-button";
 import {
   WishlistItem,
@@ -10,56 +12,55 @@ import {
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
 import { ItemFooter } from "~/components/ui/item";
+import { parseWishlistParams, stringifyWishlistParams } from "~/lib/wishlist-params";
 import {
-  useLockWishlistItemMutation,
-  useUnlockWishlistItemMutation,
-} from "~/hooks/mutations/wishlists.shared.items";
-import { useTRPC } from "~/lib/trpc";
-import { cn } from "~/lib/utils";
+  isOwnedQueryOptions,
+  sharedWishlistItemsQueryOptions,
+  sharedWishlistQueryOptions,
+  useLockWishlistItem,
+  useUnlockWishlistItem,
+} from "~/queries/wishlists";
 
 export const Route = createFileRoute("/app/shared/$id")({
+  params: { parse: parseWishlistParams, stringify: stringifyWishlistParams },
   beforeLoad: async ({ context, params }) => {
-    const isOwnedWishlist = await context.queryClient.ensureQueryData(
-      context.trpc.wishlists.owned.isOwned.queryOptions({ wishlistId: params.id }),
-    );
-    if (isOwnedWishlist.isOwned) {
+    const isOwnedWishlist = await context.queryClient.query({
+      ...isOwnedQueryOptions(params.id),
+      staleTime: "static",
+    });
+    if (isOwnedWishlist) {
       throw redirect({ to: "/app/wishlists/$id", params: { id: params.id } });
     }
   },
   loader: async ({ context, params }) => {
-    await Promise.all([
-      context.queryClient.ensureQueryData(
-        context.trpc.wishlists.shared.getById.queryOptions({
-          wishlistId: params.id,
+    try {
+      await Promise.all([
+        context.queryClient.query({
+          ...sharedWishlistQueryOptions(params.id),
+          staleTime: "static",
         }),
-      ),
-      context.queryClient.ensureQueryData(
-        context.trpc.wishlists.shared.items.getAll.queryOptions({
-          wishlistId: params.id,
+        context.queryClient.query({
+          ...sharedWishlistItemsQueryOptions(params.id),
+          staleTime: "static",
         }),
-      ),
-    ]);
+      ]);
+    } catch (err) {
+      const error = err as ApiErrors["wishlists"]["getSharedById"];
+      if (error._tag === "WishlistNotFound") throw notFound();
+      throw error;
+    }
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const trpc = useTRPC();
-
   const wishlistId = Route.useParams({ select: (state) => state.id });
-  const { data: wishlist } = useSuspenseQuery(
-    trpc.wishlists.shared.getById.queryOptions({ wishlistId }, { select: (data) => data.wishlist }),
-  );
+  const { data: wishlist } = useSuspenseQuery(sharedWishlistQueryOptions(wishlistId));
 
-  const { data: wishlistItems } = useSuspenseQuery(
-    trpc.wishlists.shared.items.getAll.queryOptions(
-      { wishlistId },
-      { select: (data) => data.wishlistItems },
-    ),
-  );
+  const { data: wishlistItems } = useSuspenseQuery(sharedWishlistItemsQueryOptions(wishlistId));
 
-  const lockItem = useLockWishlistItemMutation(wishlistId);
-  const unlockItem = useUnlockWishlistItemMutation(wishlistId);
+  const lockItem = useLockWishlistItem(wishlistId);
+  const unlockItem = useUnlockWishlistItem(wishlistId);
 
   return (
     <PageLayout>
@@ -82,8 +83,8 @@ function RouteComponent() {
                   <LockButton
                     className="grow"
                     lockStatus={wishlistItem.lockStatus}
-                    lockAction={() => lockItem.mutate({ wishlistItemId: wishlistItem.id })}
-                    unlockAction={() => unlockItem.mutate({ wishlistItemId: wishlistItem.id })}
+                    lockAction={() => lockItem.mutate(wishlistItem.id)}
+                    unlockAction={() => unlockItem.mutate(wishlistItem.id)}
                   />
                 </ItemFooter>
               </WishlistItem>

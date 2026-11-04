@@ -1,8 +1,7 @@
 import { cva } from "class-variance-authority";
 import type { VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 import type React from "react";
-
-import { cn } from "~/lib/utils";
 
 const emptyMediaVariants = cva(
   "flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -86,7 +85,7 @@ export function EmptyTitle({
 }: React.ComponentProps<"div">): React.ReactElement {
   return (
     <div
-      className={cn("font-heading font-semibold text-xl", className)}
+      className={cn("font-bold font-heading text-xl", className)}
       data-slot="empty-title"
       {...props}
     />

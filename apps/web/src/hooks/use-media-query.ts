@@ -24,12 +24,11 @@ function resolveMax(value: Breakpoint | number): string {
   return `(max-width: ${px - 1}px)`;
 }
 
-// oxlint-disable-next-line typescript/ban-types
 function parseQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): string {
   if (typeof query !== "string") {
     const parts: string[] = [];
-    if (query.min !== null && query.min !== undefined) parts.push(resolveMin(query.min));
-    if (query.max !== null && query.max !== undefined) parts.push(resolveMax(query.max));
+    if (query.min !== undefined) parts.push(resolveMin(query.min));
+    if (query.max !== undefined) parts.push(resolveMax(query.max));
     if (query.pointer === "coarse") parts.push("(pointer: coarse)");
     if (query.pointer === "fine") parts.push("(pointer: fine)");
     if (parts.length === 0) return "(min-width: 0px)";
@@ -62,7 +61,6 @@ export type MediaQueryInput = {
   pointer?: "coarse" | "fine";
 };
 
-// oxlint-disable-next-line typescript/ban-types
 export function useMediaQuery(query: BreakpointQuery | MediaQueryInput | (string & {})): boolean {
   const mediaQuery = parseQuery(query);
 

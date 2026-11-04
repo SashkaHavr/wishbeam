@@ -3,30 +3,31 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#*": "./src/*"
+    "#/*": "./src/*.ts"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema/index.ts"
+    "./id-branded": "./src/utils/id-branded.ts",
+    "./test-db": "./src/test-db.ts"
   },
   "scripts": {
-    "build": "bun build --entrypoints ./src/migrate.ts --outdir ./dist --target bun",
-    "db:generate": "bunx --bun drizzle-kit generate",
-    "db:migrate": "bun run ./src/migrate.ts",
-    "db:push": "bunx --bun drizzle-kit push",
-    "db:studio": "bunx --bun drizzle-kit studio"
-  },
-  "dependencies": {
-    "@wishbeam/env": "workspace:*",
-    "better-result": "catalog:",
-    "drizzle-kit": "catalog:drizzle",
-    "drizzle-orm": "catalog:drizzle",
-    "uuid": "catalog:",
-    "zod": "catalog:"
+    "dev": "vpr studio",
+    "push": "vp exec drizzle-kit push",
+    "studio": "vp exec drizzle-kit studio --host 0.0.0.0"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
+    "@effect/sql-pg": "catalog:",
+    "@effect/sql-pglite": "catalog:",
+    "@electric-sql/pglite": "0.5.14",
+    "@electric-sql/pglite-prepopulatedfs": "0.5.14",
+    "@types/node": "catalog:",
+    "@wishbeam/config": "workspace:*",
     "@wishbeam/typescript-config": "workspace:*",
-    "typescript": "catalog:"
+    "drizzle-kit": "catalog:",
+    "drizzle-orm": "catalog:",
+    "drizzle-seed": "catalog:",
+    "effect": "catalog:",
+    "pg": "catalog:",
+    "vitest": "catalog:"
   }
 }

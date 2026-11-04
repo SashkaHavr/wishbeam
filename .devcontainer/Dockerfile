@@ -1,5 +1,21 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:24-bookworm
-USER node
+FROM ghcr.io/voidzero-dev/vite-plus:1.4.0 AS build-extensions
 
-RUN npm install -g bun@1.3.11
-ENV BUN_INSTALL_BIN=/home/node/.local/bin
+COPY --chown=vp:vp .devcontainer/proxy-links /app
+WORKDIR /app
+RUN vpx @vscode/vsce@3 package --no-dependencies --out /app/proxy-links.vsix
+
+FROM ghcr.io/voidzero-dev/vite-plus:1.4.0
+
+COPY --from=build-extensions /app/proxy-links.vsix /extensions/proxy-links/
+
+ENV pnpm_config_store_dir=/home/vp/.local/share/pnpm/store
+
+WORKDIR /home/vp/wishbeam
+COPY --chown=vp:vp package.json ./
+RUN vp env install
+
+RUN vp add -g --allow-build=@opencode/cli @opencode/cli@2
+RUN vp add -g @railway/cli@5
+
+RUN vp add -g agent-browser@0.41
+RUN agent-browser install --with-deps

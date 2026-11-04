@@ -1,45 +1,78 @@
 services:
   devcontainer:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ../..:/workspaces:cached
+      - ../:/home/vp/wishbeam:cached
+      - opencode-auth:/home/vp/.local/share/opencode
+      - devcontainer-opencode-config:/home/vp/.config/opencode
+      - devcontainer-pnpm-store:/home/vp/.local/share/pnpm/store
     networks:
       - db-network
-      - redis-network
+      - otel-network
+      - devcontainer-proxy
     command: sleep infinity
     environment:
       DATABASE_URL: postgresql://postgres:mysecretpassword@db:5432/postgres
-      REDIS_URL: redis://redis:6379
-      TEST_AUTH: true
       BETTER_AUTH_SECRET: abcdefghijklmnopqrstuvwxyz123456789
-      BETTER_AUTH_ALLOWED_HOSTS: '["localhost:*", "127.0.0.1:*"]'
+      BETTER_AUTH_ALLOWED_HOSTS_0: localhost:*
+      BETTER_AUTH_ALLOWED_HOSTS_1: http://web.wishbeam.localhost
+      GOOGLE_CLIENT_ID: my-client-id.apps.googleusercontent.com
+      GOOGLE_CLIENT_SECRET: GOCSPX-secret
+      GOOGLE_EMULATE_URL: http://emulate.localhost
+      GOOGLE_EMULATE_INTERNAL_URL: http://emulate
+      PUBLIC_URL: http://web.wishbeam.localhost
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:4318
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wishbeam-web.rule=Host(`web.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-web.service=wishbeam-web
+      - traefik.http.services.wishbeam-web.loadbalancer.server.port=3000
+      - traefik.http.routers.wishbeam-opencode.rule=Host(`opencode.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-opencode.service=wishbeam-opencode
+      - traefik.http.services.wishbeam-opencode.loadbalancer.server.port=4096
+      - traefik.http.routers.wishbeam-db.rule=Host(`db.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-db.service=wishbeam-db
+      - traefik.http.services.wishbeam-db.loadbalancer.server.port=4983
+  otel:
+    image: ghcr.io/ctrlspice/otel-desktop-viewer:latest
+    networks:
+      - otel-network
+      - devcontainer-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.wishbeam-otel.rule=Host(`otel.wishbeam.localhost`)
+      - traefik.http.routers.wishbeam-otel.service=wishbeam-otel
+      - traefik.http.services.wishbeam-otel.loadbalancer.server.port=8000
   db:
-    image: postgres:17
+    image: postgres:18
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - pg-18-data:/var/lib/postgresql
     networks:
       - db-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres", "-t", "10"]
-      interval: 1s
-      timeout: 10s
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      start_period: 10s
+      start_interval: 1s
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
-  redis:
-    image: redis:8
-    restart: unless-stopped
-    networks:
-      - redis-network
 
 networks:
   db-network:
-  redis-network:
+  otel-network:
+  devcontainer-proxy:
+    external: true
 
 volumes:
-  db-data:
+  pg-18-data:
+  opencode-auth:
+  devcontainer-opencode-config:
+    external: true
+  devcontainer-pnpm-store:
+    external: true

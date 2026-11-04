@@ -1,0 +1,17 @@
+{
+  "name": "@wishbeam/config",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*.ts"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {},
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@wishbeam/typescript-config": "workspace:*",
+    "effect": "catalog:"
+  }
+}

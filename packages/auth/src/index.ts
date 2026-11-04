@@ -1,51 +1,86 @@
+import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin } from "better-auth/plugins";
+import { admin, genericOAuth } from "better-auth/plugins";
+import { Context, Effect, Layer, Redacted } from "effect";
 
-import { logPlugin } from "#log-plugin.ts";
-import { ac, roles } from "#permissions.ts";
-import { db } from "@wishbeam/db";
-import { envAuth } from "@wishbeam/env/auth";
+import { ac, roles } from "#/permissions";
+import { AuthConfig } from "@wishbeam/config/auth";
+import { DrizzlePostgres, schema } from "@wishbeam/db";
 
-export const auth = betterAuth({
-  basePath: "/auth",
-  baseURL: {
-    allowedHosts: [...envAuth.BETTER_AUTH_ALLOWED_HOSTS],
-  },
-  secret: envAuth.BETTER_AUTH_SECRET,
-  session: {
-    cookieCache: {
-      enabled: true,
-      // 5 minutes
-      maxAge: 5 * 60,
-    },
-  },
-  database: drizzleAdapter(db, {
-    provider: "pg",
+export class BetterAuth extends Context.Service<BetterAuth>()("auth/BetterAuth", {
+  make: Effect.gen(function* () {
+    const db = yield* DrizzlePostgres;
+    const config = yield* AuthConfig;
+    const googleEmulateUrl = config.googleEmulateUrl.valueOrUndefined;
+    const googleEmulateInternalUrl = config.googleEmulateInternalUrl.valueOrUndefined;
+    const ipAddressHeaders = config.ipAddressHeaders.valueOrUndefined;
+
+    return betterAuth({
+      basePath: "/api/auth",
+      baseURL: {
+        allowedHosts: [...config.allowedHosts],
+      },
+      secret: Redacted.value(config.secret),
+      session: {
+        cookieCache: {
+          enabled: true,
+          // 5 minutes
+          maxAge: 5 * 60,
+        },
+        // 1 year
+        expiresIn: 60 * 60 * 24 * 365,
+      },
+      database: drizzleAdapter(db, {
+        provider: "pg",
+        schema: schema,
+      }),
+      plugins: [
+        admin({ ac, roles }),
+        ...(googleEmulateUrl
+          ? [
+              genericOAuth({
+                config: [
+                  {
+                    providerId: "google-emulate",
+                    clientId: config.googleClientId,
+                    clientSecret: Redacted.value(config.googleClientSecret),
+                    authorizationUrl: new URL("/o/oauth2/v2/auth", googleEmulateUrl).href,
+                    tokenUrl: new URL("/oauth2/token", googleEmulateInternalUrl ?? googleEmulateUrl)
+                      .href,
+                  },
+                ],
+              }),
+            ]
+          : []),
+      ],
+      advanced: {
+        trustedProxyHeaders: true,
+        database: {
+          generateId: false,
+        },
+        ipAddress: {
+          ipAddressHeaders: ipAddressHeaders ? [...ipAddressHeaders] : undefined,
+        },
+      },
+      socialProviders: {
+        google: {
+          clientId: config.googleClientId,
+          clientSecret: Redacted.value(config.googleClientSecret),
+          enabled: googleEmulateUrl === undefined,
+        },
+      },
+    });
   }),
-  socialProviders: {
-    google:
-      envAuth.GOOGLE_CLIENT_ID && envAuth.GOOGLE_CLIENT_SECRET
-        ? {
-            clientId: envAuth.GOOGLE_CLIENT_ID,
-            clientSecret: envAuth.GOOGLE_CLIENT_SECRET,
-          }
-        : undefined,
-  },
-  plugins: [admin({ ac, roles }), logPlugin],
-  emailAndPassword: {
-    enabled: envAuth.TEST_AUTH,
-    disableSignUp: true,
-  },
-  advanced: {
-    database: {
-      generateId: false,
-    },
-  },
-});
+}) {
+  static readonly layer = Layer.effect(this, this.make).pipe(
+    Layer.provide(AuthConfig.layer),
+    Layer.provideMerge(DrizzlePostgres.layer),
+  );
+  static readonly layerWithoutDependencies = Layer.effect(this, this.make);
+}
 
-export type AuthType = typeof auth;
+export type SessionType = BetterAuth["Service"]["$Infer"]["Session"];
 
-export type Permissions = {
+export type AuthPermissions = {
   [K in keyof typeof ac.statements]?: (typeof ac.statements)[K][number][];
 };
