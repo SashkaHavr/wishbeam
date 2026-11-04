@@ -1,7 +1,7 @@
 import { useRouteContext } from "@tanstack/react-router";
+import { cn } from "cn";
 
 import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 import { useGoogleSignIn } from "~/queries/auth";
 
 import { Google } from "./icons/brands";

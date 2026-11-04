@@ -1,4 +1,5 @@
 import { revalidateLogic } from "@tanstack/react-form";
+import { cn } from "cn";
 import { Predicate, Schema } from "effect";
 import { XIcon } from "lucide-react";
 
@@ -7,7 +8,6 @@ import { MemberInput } from "@wishbeam/api-contract/features/wishlists";
 import type { IdBranded } from "@wishbeam/db/id-branded";
 import { m } from "@wishbeam/intl/messages";
 import { useSession } from "~/lib/auth";
-import { cn } from "~/lib/utils";
 
 import {
   FormForm,

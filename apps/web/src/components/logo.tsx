@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { cn } from "cn";
 import { Gift } from "lucide-react";
 
 import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 
 export function Logo({
   withName,

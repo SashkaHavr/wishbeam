@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import {
   ArchiveIcon,
   CircleSlash2Icon,
@@ -10,7 +11,6 @@ import React from "react";
 
 import type { IdBranded } from "@wishbeam/db/id-branded";
 import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 import { useDeleteWishlistItem, useSetItemStatus } from "~/queries/wishlists";
 import {
   CreateWishlistItemDialog,

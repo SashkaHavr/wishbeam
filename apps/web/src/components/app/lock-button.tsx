@@ -1,8 +1,8 @@
+import { cn } from "cn";
 import { LockIcon, UnlockIcon } from "lucide-react";
 import type React from "react";
 
 import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 
 import { Button } from "../ui/button";
 

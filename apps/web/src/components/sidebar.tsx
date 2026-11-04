@@ -1,5 +1,6 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { useHydrated, useRouterState } from "@tanstack/react-router";
+import { cn } from "cn";
 import {
   ChevronLeftIcon,
   ListCheckIcon,
@@ -14,7 +15,6 @@ import { useState } from "react";
 
 import { m } from "@wishbeam/intl/messages";
 import { useSession, useSignout } from "~/lib/auth";
-import { cn } from "~/lib/utils";
 
 import { Logo } from "./logo";
 import { useSetTheme, useTheme } from "./theme";

@@ -1,5 +1,4 @@
-import { environmentManager } from "@tanstack/react-query";
-import { useState } from "react";
+import * as React from "react";
 
 export function useCopyToClipboard({
   timeout = 2000,
@@ -7,15 +6,22 @@ export function useCopyToClipboard({
 }: {
   timeout?: number;
   onCopy?: () => void;
-} = {}) {
-  const [isCopied, setIsCopied] = useState(false);
+} = {}): { copyToClipboard: (value: string) => void; isCopied: boolean } {
+  const [isCopied, setIsCopied] = React.useState(false);
+  const timeoutIdRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const copyToClipboard = (value: string) => {
-    if (environmentManager.isServer() || !value) {
+  const copyToClipboard = (value: string): void => {
+    // oxlint-disable-next-line typescript/strict-boolean-expressions
+    if (typeof window === "undefined" || !navigator.clipboard.writeText) {
       return;
     }
 
+    if (!value) return;
+
     navigator.clipboard.writeText(value).then(() => {
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
       setIsCopied(true);
 
       if (onCopy) {
@@ -23,12 +29,22 @@ export function useCopyToClipboard({
       }
 
       if (timeout !== 0) {
-        setTimeout(() => {
+        timeoutIdRef.current = setTimeout(() => {
           setIsCopied(false);
+          timeoutIdRef.current = null;
         }, timeout);
       }
     }, console.error);
   };
 
-  return { isCopied, copyToClipboard };
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return (): void => {
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+    };
+  }, []);
+
+  return { copyToClipboard, isCopied };
 }

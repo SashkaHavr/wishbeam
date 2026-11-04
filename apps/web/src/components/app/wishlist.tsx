@@ -1,11 +1,11 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { cn } from "cn";
 import { ChevronRightIcon, PlusIcon } from "lucide-react";
 import type React from "react";
 
 import type { IdBranded } from "@wishbeam/db/id-branded";
 import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 import { CreateWishlistDialog } from "~/routes/app/wishlists/-/wishlist-form";
 
 import { Button } from "../ui/button";

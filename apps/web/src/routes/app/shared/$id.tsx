@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { cn } from "cn";
 
 import type { ApiErrors } from "@wishbeam/api-contract";
 import { LockButton } from "~/components/app/lock-button";
@@ -11,7 +12,6 @@ import {
 } from "~/components/app/wishlist-items";
 import { PageLayout } from "~/components/page-layout";
 import { ItemFooter } from "~/components/ui/item";
-import { cn } from "~/lib/utils";
 import { parseWishlistParams, stringifyWishlistParams } from "~/lib/wishlist-params";
 import {
   isOwnedQueryOptions,

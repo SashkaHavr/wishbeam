@@ -1,8 +1,6 @@
+import { cn } from "cn";
 import { Loader2Icon } from "lucide-react";
 import type React from "react";
-
-import { m } from "@wishbeam/intl/messages";
-import { cn } from "~/lib/utils";
 
 export function Spinner({
   className,
@@ -10,7 +8,7 @@ export function Spinner({
 }: React.ComponentProps<typeof Loader2Icon>): React.ReactElement {
   return (
     <Loader2Icon
-      aria-label={m.status_loading()}
+      aria-label="Loading"
       className={cn("animate-spin", className)}
       role="status"
       {...props}
