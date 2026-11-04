@@ -162,7 +162,6 @@ const deploy = Effect.gen(function* () {
       "DATABASE_URL",
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET",
-      "GOOGLE_EMULATE_URL",
     ],
     "drizzle-gateway": ["MASTERPASS"],
   };
